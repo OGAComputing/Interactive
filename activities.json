@@ -1,102 +1,102 @@
 [
   {
     "path": "Demo/Spanish/spanish_speaking_exercises.html",
-    "title": "spanish speaking exercises",
+    "title": "Spanish Speaking Skills",
     "year": "Demo",
     "topic": "Spanish",
-    "type": "Activity",
-    "stars": 0,
-    "desc": "",
-    "color": "teal"
+    "type": "Practice",
+    "stars": 4,
+    "desc": "5 exercises covering question words, sentence types, gap fills, tense recognition, and developed responses",
+    "color": "purple"
   },
   {
     "path": "Y11/Legislation/FillInBlanks.html",
-    "title": "FillInBlanks",
+    "title": "Legislation Activities",
     "year": "Year 11",
     "topic": "Legislation",
-    "type": "Activity",
-    "stars": 0,
-    "desc": "",
-    "color": "teal"
+    "type": "Practice",
+    "stars": 3,
+    "desc": "3 drag-and-drop gap-fill exercises covering key legislation terms, DPA responsibilities, and scenario application",
+    "color": "orange"
   },
   {
     "path": "Y11/NetworkHardware/router_switch_venn.html",
-    "title": "router switch venn",
+    "title": "Router vs Switch",
     "year": "Year 11",
-    "topic": "Networkhardware",
-    "type": "Activity",
-    "stars": 0,
-    "desc": "",
-    "color": "teal"
+    "topic": "Network Hardware",
+    "type": "Practice",
+    "stars": 2,
+    "desc": "Drag-and-drop Venn diagram sorting router-only, switch-only, and shared features of network devices",
+    "color": "red"
   },
   {
     "path": "Y11/Networks/network_topology_builder.html",
-    "title": "network topology builder",
+    "title": "Network Topology Builder",
     "year": "Year 11",
     "topic": "Networks",
-    "type": "Activity",
-    "stars": 0,
-    "desc": "",
-    "color": "teal"
+    "type": "Challenge",
+    "stars": 4,
+    "desc": "Interactive canvas — build star and mesh topologies across 6 tasks covering peer-to-peer and client-server models",
+    "color": "cyan"
   },
   {
     "path": "Y8/Python/Casting.html",
-    "title": "Casting",
+    "title": "Casting Exercises",
     "year": "Year 8",
     "topic": "Python",
-    "type": "Activity",
-    "stars": 0,
-    "desc": "",
+    "type": "Practice",
+    "stars": 3,
+    "desc": "3 tabbed exercises on writing type-cast fixes, deciding when to cast, and mixed casting in Python",
     "color": "teal"
   },
   {
     "path": "Y9/HardwareNetworks/memory_exercises.html",
-    "title": "memory exercises",
+    "title": "Primary & Secondary Memory",
     "year": "Year 9",
-    "topic": "Hardwarenetworks",
-    "type": "Activity",
-    "stars": 0,
-    "desc": "",
-    "color": "teal"
+    "topic": "Hardware & Networks",
+    "type": "Practice",
+    "stars": 3,
+    "desc": "Fill-in-the-blanks and diagram-building exercises on primary and secondary memory",
+    "color": "blue"
   },
   {
     "path": "Y9/HardwareNetworks/network_topology_builder.html",
-    "title": "network topology builder",
+    "title": "Network Topology Builder",
     "year": "Year 9",
-    "topic": "Hardwarenetworks",
-    "type": "Activity",
-    "stars": 0,
-    "desc": "",
-    "color": "teal"
+    "topic": "Hardware & Networks",
+    "type": "Challenge",
+    "stars": 4,
+    "desc": "Interactive canvas — build star and mesh topologies across 6 tasks covering peer-to-peer and client-server models",
+    "color": "cyan"
   },
   {
     "path": "Y9/HardwareNetworks/ram_rom_exercise.html",
-    "title": "ram rom exercise",
+    "title": "RAM vs ROM Sorting",
     "year": "Year 9",
-    "topic": "Hardwarenetworks",
-    "type": "Activity",
-    "stars": 0,
-    "desc": "",
-    "color": "teal"
+    "topic": "Hardware & Networks",
+    "type": "Practice",
+    "stars": 2,
+    "desc": "3 drag-and-sort tasks covering RAM vs ROM, types of memory, and why secondary storage is needed",
+    "color": "blue"
   },
   {
     "path": "Y9/HardwareNetworks/secondary_storage_characteristics.html",
-    "title": "secondary storage characteristics",
+    "title": "Secondary Storage Characteristics",
     "year": "Year 9",
-    "topic": "Hardwarenetworks",
-    "type": "Activity",
-    "stars": 0,
-    "desc": "",
-    "color": "teal"
+    "topic": "Hardware & Networks",
+    "type": "Practice",
+    "stars": 3,
+    "desc": "MCQs, matching, gap fills, and scenario questions comparing speed, cost, capacity, and portability across storage types",
+    "color": "indigo"
   },
   {
     "path": "Y9/HardwareNetworks/secondary_storage_types.html",
-    "title": "secondary storage types",
+    "title": "Secondary Storage Types",
     "year": "Year 9",
-    "topic": "Hardwarenetworks",
-    "type": "Activity",
-    "stars": 0,
-    "desc": "",
-    "color": "teal"
+    "topic": "Hardware & Networks",
+    "type": "Practice",
+    "stars": 3,
+    "desc": "MCQs, matching, gap fills, and drag-and-sort classifying magnetic, optical, and solid-state storage devices",
+    "color": "indigo"
   }
 ]
