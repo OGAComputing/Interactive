@@ -162,6 +162,13 @@
       color: #2a4060;
       padding: 1.5rem;
     }
+    #build-meta {
+      font-size: 0.7rem;
+      color: #1e3048;
+      margin-top: 0.3rem;
+      font-family: 'Courier New', monospace;
+      letter-spacing: 0.03em;
+    }
   </style>
 </head>
 <body>
@@ -181,7 +188,10 @@
   <div id="content"></div>
 </main>
 
-<footer>CS Activities Hub</footer>
+<footer>
+  CS Activities Hub
+  <div id="build-meta"></div>
+</footer>
 
 <script>
   const COLOR = {
@@ -275,6 +285,16 @@
       el.className = 'error';
       el.textContent = 'Could not load activities: ' + err.message;
     });
+
+  // ── Fetch build metadata for footer ──────────────────────
+  fetch('meta.json?v=' + Date.now())
+    .then(r => r.ok ? r.json() : null)
+    .then(meta => {
+      if (!meta) return;
+      document.getElementById('build-meta').textContent =
+        `${meta.version} · ${meta.deployed} · ${meta.activities} activities · ${meta.sha}`;
+    })
+    .catch(() => {}); // Fail silently — meta.json may not exist on first deploy
 </script>
 
 </body>
