@@ -1,0 +1,661 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Secondary Storage – Exercise 1</title>
+<link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=DM+Sans:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0d0d1a;
+    --surface: #16162a;
+    --surface2: #1e1e36;
+    --border: #2e2e52;
+    --text: #e8e8f0;
+    --muted: #7878a0;
+    --accent: #a855f7;
+    --accent2: #6366f1;
+    --gold: #f59e0b;
+    --green: #22c55e;
+    --red: #ef4444;
+    --radius: 10px;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'DM Sans', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+    padding: 24px 16px 48px;
+  }
+
+  h1 {
+    font-family: 'Space Mono', monospace;
+    font-size: 1.3rem;
+    color: var(--accent);
+    text-align: center;
+    margin-bottom: 6px;
+    letter-spacing: 1px;
+  }
+  .subtitle {
+    text-align: center;
+    color: var(--muted);
+    font-size: 0.85rem;
+    margin-bottom: 24px;
+    font-family: 'Space Mono', monospace;
+  }
+
+  .tab-bar {
+    display: flex;
+    gap: 6px;
+    flex-wrap: wrap;
+    justify-content: center;
+    margin-bottom: 24px;
+  }
+  .tab-btn {
+    font-family: 'Space Mono', monospace;
+    font-size: 0.72rem;
+    padding: 8px 14px;
+    border-radius: 6px;
+    border: 2px solid var(--border);
+    background: var(--surface);
+    color: var(--muted);
+    cursor: pointer;
+    transition: all .2s;
+    white-space: nowrap;
+  }
+  .tab-btn.active { border-color: var(--accent); color: var(--text); background: var(--surface2); }
+  .tab-btn.done-gold { background: var(--gold); border-color: var(--gold); color: #000; }
+  .tab-btn.done-green { background: var(--green); border-color: var(--green); color: #000; }
+
+  .panel { display: none; }
+  .panel.active { display: block; }
+
+  .card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 22px 20px;
+    max-width: 780px;
+    margin: 0 auto 20px;
+  }
+  .card h2 {
+    font-family: 'Space Mono', monospace;
+    font-size: 0.95rem;
+    color: var(--accent);
+    margin-bottom: 14px;
+  }
+  .card p { color: var(--muted); font-size: 0.88rem; margin-bottom: 14px; line-height: 1.5; }
+
+  /* DRAG + DROP */
+  .drag-area {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    min-height: 44px;
+    padding: 10px;
+    border-radius: 8px;
+    border: 2px dashed var(--border);
+    background: var(--bg);
+    transition: border-color .2s;
+    margin-bottom: 8px;
+  }
+  .drag-area.over { border-color: var(--accent); }
+
+  .chip {
+    font-family: 'Space Mono', monospace;
+    font-size: 0.75rem;
+    padding: 6px 12px;
+    border-radius: 20px;
+    background: var(--surface2);
+    border: 1.5px solid var(--accent2);
+    color: var(--text);
+    cursor: grab;
+    user-select: none;
+    transition: opacity .2s, transform .15s;
+  }
+  .chip:active { cursor: grabbing; transform: scale(1.05); }
+  .chip.locked-correct { border-color: var(--gold); background: rgba(245,158,11,0.15); cursor: default; }
+  .chip.locked-green   { border-color: var(--green); background: rgba(34,197,94,0.12);  cursor: default; }
+
+  .drop-row { display: grid; gap: 10px; margin-bottom: 12px; }
+  .drop-col {
+    background: var(--surface2);
+    border-radius: 8px;
+    padding: 10px;
+    border: 2px solid var(--border);
+    transition: border-color .2s;
+  }
+  .drop-col.over { border-color: var(--accent); }
+  .drop-col h3 {
+    font-family: 'Space Mono', monospace;
+    font-size: 0.72rem;
+    color: var(--accent2);
+    margin-bottom: 8px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+  }
+  .drop-zone { min-height: 38px; display: flex; flex-wrap: wrap; gap: 6px; }
+
+  /* MCQ */
+  .question-block { margin-bottom: 22px; }
+  .question-block .q-text { font-size: 0.92rem; margin-bottom: 10px; line-height: 1.5; color: var(--text); }
+  .options { display: flex; flex-direction: column; gap: 7px; }
+  .opt-btn {
+    font-family: 'DM Sans', sans-serif;
+    font-size: 0.88rem;
+    padding: 10px 14px;
+    border-radius: 8px;
+    border: 1.5px solid var(--border);
+    background: var(--surface2);
+    color: var(--text);
+    text-align: left;
+    cursor: pointer;
+    transition: all .15s;
+  }
+  .opt-btn:hover:not(:disabled) { border-color: var(--accent2); }
+  .opt-btn.correct     { border-color: var(--gold);  background: rgba(245,158,11,0.12); color: var(--gold); }
+  .opt-btn.wrong       { border-color: var(--red);   background: rgba(239,68,68,0.1);   color: var(--red);  opacity:.7; }
+  .opt-btn.correct-late{ border-color: var(--green); background: rgba(34,197,94,0.1);   color: var(--green); }
+
+  /* MATCH */
+  .match-pairs { display: grid; grid-template-columns: 1fr 1fr; gap: 10px 40px; margin-bottom: 14px; }
+  .match-item {
+    font-size: 0.85rem;
+    padding: 9px 12px;
+    border-radius: 8px;
+    border: 1.5px solid var(--border);
+    background: var(--surface2);
+    cursor: pointer;
+    transition: all .15s;
+    text-align: center;
+    user-select: none;
+  }
+  .match-item:hover:not(.matched-gold):not(.matched-green) { border-color: var(--accent2); }
+  .match-item.selected      { border-color: var(--accent);  background: rgba(168,85,247,0.1); }
+  .match-item.matched-gold  { border-color: var(--gold);    background: rgba(245,158,11,0.12); color: var(--gold);  cursor: default; }
+  .match-item.matched-green { border-color: var(--green);   background: rgba(34,197,94,0.12);  color: var(--green); cursor: default; }
+  .match-item.wrong-flash   { border-color: var(--red);     background: rgba(239,68,68,0.1); }
+  .col-label { font-family:'Space Mono',monospace; font-size:0.7rem; color:var(--muted); margin-bottom:6px; letter-spacing:1px; text-transform:uppercase; }
+
+  /* BUTTONS */
+  .check-btn {
+    font-family: 'Space Mono', monospace;
+    font-size: 0.78rem;
+    padding: 9px 20px;
+    border-radius: 7px;
+    border: none;
+    background: var(--accent2);
+    color: #fff;
+    cursor: pointer;
+    transition: background .2s;
+    margin-top: 6px;
+  }
+  .check-btn:hover { background: var(--accent); }
+  .reset-btn {
+    font-family: 'Space Mono', monospace;
+    font-size: 0.72rem;
+    padding: 7px 16px;
+    border-radius: 7px;
+    border: 1.5px solid var(--border);
+    background: transparent;
+    color: var(--muted);
+    cursor: pointer;
+    transition: all .2s;
+    margin-left: 8px;
+  }
+  .reset-btn:hover { border-color: var(--red); color: var(--red); }
+
+  .feedback {
+    font-family: 'Space Mono', monospace;
+    font-size: 0.78rem;
+    margin-top: 10px;
+    padding: 8px 12px;
+    border-radius: 6px;
+    display: none;
+  }
+  .feedback.show { display: block; }
+  .feedback.ok   { background: rgba(245,158,11,0.1);  color: var(--gold);  border: 1px solid var(--gold); }
+  .feedback.redo { background: rgba(239,68,68,0.08);  color: #f87171;      border: 1px solid #f87171; }
+  .feedback.good { background: rgba(34,197,94,0.1);   color: var(--green); border: 1px solid var(--green); }
+
+  .banner {
+    display: none;
+    font-family: 'Space Mono', monospace;
+    font-size: 20px;
+    font-weight: 700;
+    text-align: center;
+    padding: 18px;
+    border-radius: 10px;
+    margin-top: 16px;
+    max-width: 780px;
+    margin-left: auto;
+    margin-right: auto;
+  }
+  .banner.gold-banner  { background: rgba(245,158,11,0.15); color: var(--gold);  border: 2px solid var(--gold); }
+  .banner.green-banner { background: rgba(34,197,94,0.1);   color: var(--green); border: 2px solid var(--green); }
+
+  .firework { position: fixed; pointer-events: none; z-index: 999; }
+  .spark {
+    position: absolute;
+    width: 6px; height: 6px;
+    border-radius: 50%;
+    animation: spark-fly 0.9s ease-out forwards;
+  }
+  @keyframes spark-fly {
+    0%   { transform: translate(0,0) scale(1); opacity:1; }
+    100% { transform: translate(var(--dx),var(--dy)) scale(0); opacity:0; }
+  }
+  @keyframes pulse-gold  { 0%,100%{box-shadow:0 0 0 0 rgba(245,158,11,0)}  50%{box-shadow:0 0 30px 12px rgba(245,158,11,0.18)} }
+  @keyframes pulse-green { 0%,100%{box-shadow:0 0 0 0 rgba(34,197,94,0)}   50%{box-shadow:0 0 30px 12px rgba(34,197,94,0.15)} }
+  .pulse-gold  { animation: pulse-gold  1.6s ease-in-out; }
+  .pulse-green { animation: pulse-green 1.6s ease-in-out; }
+</style>
+</head>
+<body>
+
+<h1>// secondary_storage</h1>
+<p class="subtitle">Exercise 1 of 2 · Y9 Computer Science</p>
+
+<div class="tab-bar" id="tabBar">
+  <button class="tab-btn active" onclick="switchTab(0)" id="tabBtn0">1 · What is it?</button>
+  <button class="tab-btn"        onclick="switchTab(1)" id="tabBtn1">2 · Storage Types</button>
+  <button class="tab-btn"        onclick="switchTab(2)" id="tabBtn2">3 · Sort Devices</button>
+</div>
+
+<!-- ═══════════ PANEL 0: WHAT IS SECONDARY STORAGE? ═══════════ -->
+<div class="panel active" id="panel0">
+  <div class="card">
+    <h2>What is Secondary Storage?</h2>
+    <p>Answer each question by choosing the correct option.</p>
+
+    <div class="question-block" id="p0q1">
+      <div class="q-text">1. Secondary storage is used to store data…</div>
+      <div class="options">
+        <button class="opt-btn" onclick="mcq(this,'p0q1',false)">Temporarily, while the computer is on</button>
+        <button class="opt-btn" onclick="mcq(this,'p0q1',true)">Permanently, even when the power is off</button>
+        <button class="opt-btn" onclick="mcq(this,'p0q1',false)">Only while programs are running</button>
+      </div>
+    </div>
+
+    <div class="question-block" id="p0q2">
+      <div class="q-text">2. Secondary storage is described as <em>non-volatile</em>. What does non-volatile mean?</div>
+      <div class="options">
+        <button class="opt-btn" onclick="mcq(this,'p0q2',false)">It runs very fast</button>
+        <button class="opt-btn" onclick="mcq(this,'p0q2',false)">It loses data when power is removed</button>
+        <button class="opt-btn" onclick="mcq(this,'p0q2',true)">It keeps data when power is removed</button>
+      </div>
+    </div>
+
+    <div class="question-block" id="p0q3">
+      <div class="q-text">3. Which of the following is an example of PRIMARY memory (not secondary storage)?</div>
+      <div class="options">
+        <button class="opt-btn" onclick="mcq(this,'p0q3',false)">Hard Disk Drive (HDD)</button>
+        <button class="opt-btn" onclick="mcq(this,'p0q3',true)">RAM</button>
+        <button class="opt-btn" onclick="mcq(this,'p0q3',false)">USB Pen Drive</button>
+        <button class="opt-btn" onclick="mcq(this,'p0q3',false)">SSD</button>
+      </div>
+    </div>
+
+    <div class="question-block" id="p0q4">
+      <div class="q-text">4. Why do we need secondary storage if we already have RAM?</div>
+      <div class="options">
+        <button class="opt-btn" onclick="mcq(this,'p0q4',false)">RAM is too slow to be useful</button>
+        <button class="opt-btn" onclick="mcq(this,'p0q4',true)">RAM is volatile — data is lost when the computer turns off</button>
+        <button class="opt-btn" onclick="mcq(this,'p0q4',false)">RAM cannot store programs</button>
+      </div>
+    </div>
+
+    <button class="check-btn" onclick="checkMCQPanel(0,4,'p0')">Check answers</button>
+    <button class="reset-btn" onclick="resetMCQPanel(0,4,'p0')">Reset</button>
+    <div class="feedback" id="feedback-p0"></div>
+    <div class="banner" id="banner0"></div>
+  </div>
+</div>
+
+<!-- ═══════════ PANEL 1: HOW EACH TYPE WORKS ═══════════ -->
+<div class="panel" id="panel1">
+  <div class="card">
+    <h2>How Does Each Type Work?</h2>
+    <p>Match each description on the left to the correct storage type on the right. Click a description, then click its match.</p>
+
+    <div class="col-label">Descriptions &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Types</div>
+    <div class="match-pairs">
+      <div>
+        <div class="match-item" id="m1_d1" data-id="d1" data-col="left" onclick="matchClick(this,'m1')">Magnetises tiny areas on a spinning disc or tape to store data</div>
+        <div class="match-item" id="m1_d2" data-id="d2" data-col="left" onclick="matchClick(this,'m1')" style="margin-top:10px;">Shines a laser to read bumps and pits on a reflective disc</div>
+        <div class="match-item" id="m1_d3" data-id="d3" data-col="left" onclick="matchClick(this,'m1')" style="margin-top:10px;">Stores data on microchips with no moving parts at all</div>
+      </div>
+      <div>
+        <div class="match-item" id="m1_t1" data-id="t_optical"  data-col="right" onclick="matchClick(this,'m1')">Optical</div>
+        <div class="match-item" id="m1_t2" data-id="t_magnetic" data-col="right" onclick="matchClick(this,'m1')" style="margin-top:10px;">Magnetic</div>
+        <div class="match-item" id="m1_t3" data-id="t_solid"    data-col="right" onclick="matchClick(this,'m1')" style="margin-top:10px;">Solid State</div>
+      </div>
+    </div>
+
+    <p style="margin-top:10px;">Now answer these questions:</p>
+
+    <div class="question-block" id="p1q1">
+      <div class="q-text">5. Which type of secondary storage has no moving parts?</div>
+      <div class="options">
+        <button class="opt-btn" onclick="mcq(this,'p1q1',false)">Magnetic</button>
+        <button class="opt-btn" onclick="mcq(this,'p1q1',false)">Optical</button>
+        <button class="opt-btn" onclick="mcq(this,'p1q1',true)">Solid State</button>
+      </div>
+    </div>
+
+    <div class="question-block" id="p1q2">
+      <div class="q-text">6. A Blu-ray disc uses which type of storage?</div>
+      <div class="options">
+        <button class="opt-btn" onclick="mcq(this,'p1q2',false)">Magnetic</button>
+        <button class="opt-btn" onclick="mcq(this,'p1q2',true)">Optical</button>
+        <button class="opt-btn" onclick="mcq(this,'p1q2',false)">Solid State</button>
+      </div>
+    </div>
+
+    <button class="check-btn" onclick="checkPanel1()">Check answers</button>
+    <button class="reset-btn" onclick="resetPanel1()">Reset</button>
+    <div class="feedback" id="feedback-p1"></div>
+    <div class="banner" id="banner1"></div>
+  </div>
+</div>
+
+<!-- ═══════════ PANEL 2: SORT DEVICES ═══════════ -->
+<div class="panel" id="panel2">
+  <div class="card">
+    <h2>Sort the Storage Devices</h2>
+    <p>Drag each device into the correct column: Magnetic, Optical, or Solid State.</p>
+
+    <div class="drag-area" id="chipPool">
+      <div class="chip" draggable="true" data-device="HDD"    data-type="magnetic">Hard Disk Drive (HDD)</div>
+      <div class="chip" draggable="true" data-device="CD"     data-type="optical">CD</div>
+      <div class="chip" draggable="true" data-device="SSD"    data-type="solid">SSD</div>
+      <div class="chip" draggable="true" data-device="USB"    data-type="solid">USB Pen Drive</div>
+      <div class="chip" draggable="true" data-device="DVD"    data-type="optical">DVD</div>
+      <div class="chip" draggable="true" data-device="Tape"   data-type="magnetic">Magnetic Tape</div>
+      <div class="chip" draggable="true" data-device="SD"     data-type="solid">SD Card</div>
+      <div class="chip" draggable="true" data-device="BluRay" data-type="optical">Blu-ray Disc</div>
+    </div>
+
+    <div class="drop-row" style="grid-template-columns:1fr 1fr 1fr;">
+      <div class="drop-col" id="zone-magnetic" data-type="magnetic">
+        <h3>🔵 Magnetic</h3>
+        <div class="drop-zone" id="dz-magnetic"></div>
+      </div>
+      <div class="drop-col" id="zone-optical" data-type="optical">
+        <h3>🟡 Optical</h3>
+        <div class="drop-zone" id="dz-optical"></div>
+      </div>
+      <div class="drop-col" id="zone-solid" data-type="solid">
+        <h3>🟢 Solid State</h3>
+        <div class="drop-zone" id="dz-solid"></div>
+      </div>
+    </div>
+
+    <button class="check-btn" onclick="checkDragDrop()">Check answers</button>
+    <button class="reset-btn" onclick="resetDragDrop()">Reset</button>
+    <div class="feedback" id="feedback-p2"></div>
+    <div class="banner" id="banner2"></div>
+  </div>
+</div>
+
+<script>
+let currentTab = 0;
+function switchTab(i) {
+  document.querySelectorAll('.panel').forEach((p,j)=>p.classList.toggle('active',j===i));
+  document.querySelectorAll('.tab-btn').forEach((b,j)=>b.classList.toggle('active',j===i));
+  currentTab = i;
+}
+
+// ── MCQ ──
+const mcqState = {};
+
+function mcq(btn, qId, isCorrect) {
+  if (mcqState[qId]?.answered) return;
+  const block = document.getElementById(qId);
+  const buttons = block.querySelectorAll('.opt-btn');
+  buttons.forEach(b => b.disabled = true);
+  if (isCorrect) {
+    btn.classList.add('correct');
+    mcqState[qId] = {answered:true, correct:true};
+  } else {
+    btn.classList.add('wrong');
+    buttons.forEach(b => { if (b.onclick.toString().includes('true')) b.classList.add('correct-late'); });
+    mcqState[qId] = {answered:true, correct:false};
+  }
+}
+
+function checkMCQPanel(panelIdx, count, prefix) {
+  let answered=0, correct=0;
+  for (let i=1; i<=count; i++) {
+    const s = mcqState[`${prefix}q${i}`];
+    if (s?.answered) { answered++; if(s.correct) correct++; }
+  }
+  const fb = document.getElementById(`feedback-${prefix}`);
+  if (answered < count) {
+    fb.className='feedback show redo';
+    fb.textContent=`Answer all ${count} questions first! (${answered}/${count} done)`;
+    return;
+  }
+  if (correct === count) {
+    fb.className='feedback show ok';
+    fb.textContent=`★ Perfect! All ${count} correct!`;
+    completePanelGold(panelIdx, fb);
+  } else {
+    fb.className='feedback show good';
+    fb.textContent=`✓ ${correct}/${count} correct — check the highlighted answers.`;
+    completePanelGreen(panelIdx, fb);
+  }
+}
+
+function resetMCQPanel(panelIdx, count, prefix) {
+  for (let i=1; i<=count; i++) {
+    delete mcqState[`${prefix}q${i}`];
+    const block = document.getElementById(`${prefix}q${i}`);
+    if (!block) continue;
+    block.querySelectorAll('.opt-btn').forEach(b => { b.disabled=false; b.className='opt-btn'; });
+  }
+  const fb = document.getElementById(`feedback-${prefix}`);
+  fb.className='feedback';
+  const banner = document.getElementById(`banner${panelIdx}`);
+  banner.style.display='none'; banner.className='banner';
+  const btn = document.getElementById(`tabBtn${panelIdx}`);
+  btn.className='tab-btn'+(currentTab===panelIdx?' active':'');
+}
+
+// ── MATCH ──
+const matchState = {};
+
+function matchClick(el, prefix) {
+  if (el.classList.contains('matched-gold') || el.classList.contains('matched-green')) return;
+  if (!matchState[prefix]) matchState[prefix] = {selected:null, errors:0};
+  const ms = matchState[prefix];
+  const col = el.dataset.col;
+
+  if (!ms.selected) {
+    if (col === 'left') {
+      document.querySelectorAll(`[id^="${prefix}_"]`).forEach(e=>e.classList.remove('selected'));
+      el.classList.add('selected');
+      ms.selected = el;
+    }
+    return;
+  }
+  if (col === 'left') {
+    document.querySelectorAll(`[id^="${prefix}_"]`).forEach(e=>e.classList.remove('selected'));
+    el.classList.add('selected');
+    ms.selected = el;
+    return;
+  }
+  const leftEl = ms.selected;
+  const leftId = leftEl.dataset.id;
+  const rightId = el.dataset.id;
+  const correct = (leftId==='d1'&&rightId==='t_magnetic') ||
+                  (leftId==='d2'&&rightId==='t_optical')  ||
+                  (leftId==='d3'&&rightId==='t_solid');
+
+  if (correct) {
+    const cls = ms.errors===0 ? 'matched-gold' : 'matched-green';
+    leftEl.classList.remove('selected');
+    leftEl.classList.add(cls);
+    el.classList.add(cls);
+    ms.selected = null;
+  } else {
+    ms.errors++;
+    el.classList.add('wrong-flash');
+    leftEl.classList.add('wrong-flash');
+    setTimeout(()=>{
+      el.classList.remove('wrong-flash');
+      leftEl.classList.remove('wrong-flash','selected');
+      ms.selected = null;
+    }, 700);
+  }
+}
+
+function checkPanel1() {
+  const leftItems = document.querySelectorAll('[id^="m1_d"]');
+  const allMatched = [...leftItems].every(el=>el.classList.contains('matched-gold')||el.classList.contains('matched-green'));
+  let mcqAnswered=0, mcqCorrect=0;
+  ['p1q1','p1q2'].forEach(q=>{
+    const s=mcqState[q];
+    if(s?.answered){mcqAnswered++;if(s.correct)mcqCorrect++;}
+  });
+  const fb = document.getElementById('feedback-p1');
+  if (!allMatched) { fb.className='feedback show redo'; fb.textContent='Complete all the matching pairs first!'; return; }
+  if (mcqAnswered<2) { fb.className='feedback show redo'; fb.textContent='Answer questions 5 and 6 too!'; return; }
+  const anyErrors = [...leftItems].some(el=>el.classList.contains('matched-green'));
+  if (!anyErrors && mcqCorrect===2) {
+    fb.className='feedback show ok';
+    fb.textContent='★ Perfect! All matches and questions correct!';
+    completePanelGold(1, fb);
+  } else {
+    fb.className='feedback show good';
+    fb.textContent=`✓ Done — MCQ: ${mcqCorrect}/2 correct. Green matches needed more than one attempt.`;
+    completePanelGreen(1, fb);
+  }
+}
+
+function resetPanel1() {
+  document.querySelectorAll('[id^="m1_"]').forEach(el=>el.className='match-item');
+  if (matchState['m1']) delete matchState['m1'];
+  ['p1q1','p1q2'].forEach(q=>delete mcqState[q]);
+  document.querySelectorAll('#panel1 .opt-btn').forEach(b=>{b.disabled=false;b.className='opt-btn';});
+  document.getElementById('feedback-p1').className='feedback';
+  document.getElementById('banner1').style.display='none';
+  document.getElementById('banner1').className='banner';
+  document.getElementById('tabBtn1').className='tab-btn'+(currentTab===1?' active':'');
+}
+
+// ── DRAG & DROP ──
+let draggedChip = null;
+
+document.addEventListener('DOMContentLoaded', ()=>{
+  document.querySelectorAll('.chip').forEach(c=>{
+    c.addEventListener('dragstart', e=>{ draggedChip=c; e.dataTransfer.effectAllowed='move'; });
+  });
+  ['magnetic','optical','solid'].forEach(type=>{
+    const col = document.getElementById(`zone-${type}`);
+    const pool = document.getElementById('chipPool');
+    [col, pool].forEach(zone=>{
+      zone.addEventListener('dragover', e=>{ e.preventDefault(); zone.classList.add('over'); });
+      zone.addEventListener('dragleave', ()=>zone.classList.remove('over'));
+      zone.addEventListener('drop', e=>{
+        e.preventDefault();
+        zone.classList.remove('over');
+        if (!draggedChip||draggedChip.classList.contains('locked-correct')||draggedChip.classList.contains('locked-green')) return;
+        const target = zone.dataset.type ? document.getElementById(`dz-${zone.dataset.type}`) : zone;
+        target.appendChild(draggedChip);
+        draggedChip = null;
+      });
+    });
+  });
+});
+
+function checkDragDrop() {
+  let correct=0, wrong=0;
+  ['magnetic','optical','solid'].forEach(type=>{
+    const dz = document.getElementById(`dz-${type}`);
+    dz.querySelectorAll('.chip').forEach(c=>{
+      if (c.dataset.type===type) { correct++; c.classList.add('locked-correct'); }
+      else { wrong++; document.getElementById('chipPool').appendChild(c); }
+    });
+  });
+  const fb = document.getElementById('feedback-p2');
+  const total = 8;
+  if (correct===total) {
+    fb.className='feedback show ok';
+    fb.textContent=`★ Perfect! All ${total} devices sorted correctly!`;
+    completePanelGold(2, fb);
+  } else {
+    fb.className='feedback show good';
+    fb.textContent=`✓ ${correct}/${total} correct so far. Wrong ones returned to the pool — try again!`;
+  }
+}
+
+function resetDragDrop() {
+  const pool = document.getElementById('chipPool');
+  ['magnetic','optical','solid'].forEach(type=>{
+    const dz=document.getElementById(`dz-${type}`);
+    [...dz.children].forEach(c=>pool.appendChild(c));
+  });
+  pool.querySelectorAll('.chip').forEach(c=>{ c.className='chip'; c.draggable=true; });
+  document.getElementById('feedback-p2').className='feedback';
+  document.getElementById('banner2').style.display='none';
+  document.getElementById('banner2').className='banner';
+  document.getElementById('tabBtn2').className='tab-btn'+(currentTab===2?' active':'');
+}
+
+// ── COMPLETION ──
+function completePanelGold(panelIdx, fbEl) {
+  const panel = document.getElementById(`panel${panelIdx}`);
+  panel.classList.add('pulse-gold');
+  setTimeout(()=>panel.classList.remove('pulse-gold'), 1700);
+  const banner = document.getElementById(`banner${panelIdx}`);
+  banner.className='banner gold-banner';
+  banner.textContent='★ Excellent work — first attempt correct!';
+  banner.style.display='block';
+  const btn = document.getElementById(`tabBtn${panelIdx}`);
+  btn.className='tab-btn done-gold'+(currentTab===panelIdx?' active':'');
+  btn.textContent='★ '+btn.textContent.replace(/[★✓]/g,'').trim();
+  launchFireworks();
+}
+
+function completePanelGreen(panelIdx) {
+  const panel = document.getElementById(`panel${panelIdx}`);
+  panel.classList.add('pulse-green');
+  setTimeout(()=>panel.classList.remove('pulse-green'), 1700);
+  const banner = document.getElementById(`banner${panelIdx}`);
+  banner.className='banner green-banner';
+  banner.textContent='✓ Completed — well done!';
+  banner.style.display='block';
+  const btn = document.getElementById(`tabBtn${panelIdx}`);
+  btn.className='tab-btn done-green'+(currentTab===panelIdx?' active':'');
+  btn.textContent='✓ '+btn.textContent.replace(/[★✓]/g,'').trim();
+}
+
+function launchFireworks() {
+  const colours = ['#f59e0b','#fbbf24','#fde68a','#a78bfa','#818cf8'];
+  for (let f=0; f<5; f++) {
+    setTimeout(()=>{
+      const fw = document.createElement('div');
+      fw.className='firework';
+      fw.style.left=(15+Math.random()*70)+'vw';
+      fw.style.top=(15+Math.random()*50)+'vh';
+      document.body.appendChild(fw);
+      for (let s=0; s<18; s++) {
+        const spark = document.createElement('div');
+        spark.className='spark';
+        const angle=(s/18)*360, dist=50+Math.random()*60;
+        spark.style.setProperty('--dx',Math.cos(angle*Math.PI/180)*dist+'px');
+        spark.style.setProperty('--dy',Math.sin(angle*Math.PI/180)*dist+'px');
+        spark.style.background=colours[Math.floor(Math.random()*colours.length)];
+        fw.appendChild(spark);
+      }
+      setTimeout(()=>fw.remove(),1000);
+    }, f*200);
+  }
+}
+</script>
+</body>
+</html>

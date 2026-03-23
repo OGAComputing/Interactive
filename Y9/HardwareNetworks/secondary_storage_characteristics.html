@@ -1,0 +1,621 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Secondary Storage – Exercise 2</title>
+<link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=DM+Sans:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0d0d1a;
+    --surface: #16162a;
+    --surface2: #1e1e36;
+    --border: #2e2e52;
+    --text: #e8e8f0;
+    --muted: #7878a0;
+    --accent: #a855f7;
+    --accent2: #6366f1;
+    --gold: #f59e0b;
+    --green: #22c55e;
+    --red: #ef4444;
+    --radius: 10px;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'DM Sans', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+    padding: 24px 16px 48px;
+  }
+
+  h1 {
+    font-family: 'Space Mono', monospace;
+    font-size: 1.3rem;
+    color: var(--accent);
+    text-align: center;
+    margin-bottom: 6px;
+    letter-spacing: 1px;
+  }
+  .subtitle {
+    text-align: center;
+    color: var(--muted);
+    font-size: 0.85rem;
+    margin-bottom: 24px;
+    font-family: 'Space Mono', monospace;
+  }
+
+  .tab-bar {
+    display: flex;
+    gap: 6px;
+    flex-wrap: wrap;
+    justify-content: center;
+    margin-bottom: 24px;
+  }
+  .tab-btn {
+    font-family: 'Space Mono', monospace;
+    font-size: 0.72rem;
+    padding: 8px 14px;
+    border-radius: 6px;
+    border: 2px solid var(--border);
+    background: var(--surface);
+    color: var(--muted);
+    cursor: pointer;
+    transition: all .2s;
+    white-space: nowrap;
+  }
+  .tab-btn.active { border-color: var(--accent); color: var(--text); background: var(--surface2); }
+  .tab-btn.done-gold  { background: var(--gold);  border-color: var(--gold);  color: #000; }
+  .tab-btn.done-green { background: var(--green); border-color: var(--green); color: #000; }
+
+  .panel { display: none; }
+  .panel.active { display: block; }
+
+  .card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 22px 20px;
+    max-width: 780px;
+    margin: 0 auto 20px;
+  }
+  .card h2 {
+    font-family: 'Space Mono', monospace;
+    font-size: 0.95rem;
+    color: var(--accent);
+    margin-bottom: 14px;
+  }
+  .card p { color: var(--muted); font-size: 0.88rem; margin-bottom: 14px; line-height: 1.5; }
+
+  /* MCQ */
+  .question-block { margin-bottom: 22px; }
+  .question-block .q-text { font-size: 0.92rem; margin-bottom: 10px; line-height: 1.5; color: var(--text); }
+  .options { display: flex; flex-direction: column; gap: 7px; }
+  .opt-btn {
+    font-family: 'DM Sans', sans-serif;
+    font-size: 0.88rem;
+    padding: 10px 14px;
+    border-radius: 8px;
+    border: 1.5px solid var(--border);
+    background: var(--surface2);
+    color: var(--text);
+    text-align: left;
+    cursor: pointer;
+    transition: all .15s;
+  }
+  .opt-btn:hover:not(:disabled) { border-color: var(--accent2); }
+  .opt-btn.correct      { border-color: var(--gold);  background: rgba(245,158,11,0.12); color: var(--gold); }
+  .opt-btn.wrong        { border-color: var(--red);   background: rgba(239,68,68,0.1);   color: var(--red);  opacity:.7; }
+  .opt-btn.correct-late { border-color: var(--green); background: rgba(34,197,94,0.1);   color: var(--green); }
+
+  /* SCENARIO */
+  .scenario-box {
+    background: var(--bg);
+    border-left: 3px solid var(--accent2);
+    padding: 12px 14px;
+    border-radius: 0 8px 8px 0;
+    margin-bottom: 12px;
+    font-size: 0.88rem;
+    line-height: 1.55;
+    color: var(--text);
+  }
+  .scenario-label {
+    font-family: 'Space Mono', monospace;
+    font-size: 0.72rem;
+    color: var(--muted);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin-bottom: 6px;
+    margin-top: 18px;
+  }
+  .scenario-select {
+    font-family: 'DM Sans', sans-serif;
+    font-size: 0.88rem;
+    padding: 9px 12px;
+    border-radius: 8px;
+    border: 1.5px solid var(--border);
+    background: var(--surface2);
+    color: var(--text);
+    width: 100%;
+    margin-bottom: 8px;
+    cursor: pointer;
+  }
+  .scenario-select:disabled { opacity: .6; cursor: default; }
+  .justify-input {
+    font-family: 'DM Sans', sans-serif;
+    font-size: 0.85rem;
+    padding: 10px 12px;
+    border-radius: 8px;
+    border: 1.5px solid var(--border);
+    background: var(--surface2);
+    color: var(--text);
+    width: 100%;
+    resize: vertical;
+    min-height: 64px;
+    margin-bottom: 8px;
+  }
+  .justify-input:focus { outline: none; border-color: var(--accent2); }
+  .justify-input::placeholder { color: var(--muted); }
+
+  /* BUTTONS */
+  .check-btn {
+    font-family: 'Space Mono', monospace;
+    font-size: 0.78rem;
+    padding: 9px 20px;
+    border-radius: 7px;
+    border: none;
+    background: var(--accent2);
+    color: #fff;
+    cursor: pointer;
+    transition: background .2s;
+    margin-top: 6px;
+  }
+  .check-btn:hover { background: var(--accent); }
+  .reset-btn {
+    font-family: 'Space Mono', monospace;
+    font-size: 0.72rem;
+    padding: 7px 16px;
+    border-radius: 7px;
+    border: 1.5px solid var(--border);
+    background: transparent;
+    color: var(--muted);
+    cursor: pointer;
+    transition: all .2s;
+    margin-left: 8px;
+  }
+  .reset-btn:hover { border-color: var(--red); color: var(--red); }
+
+  .feedback {
+    font-family: 'Space Mono', monospace;
+    font-size: 0.78rem;
+    margin-top: 10px;
+    padding: 8px 12px;
+    border-radius: 6px;
+    display: none;
+  }
+  .feedback.show { display: block; }
+  .feedback.ok   { background: rgba(245,158,11,0.1);  color: var(--gold);  border: 1px solid var(--gold); }
+  .feedback.redo { background: rgba(239,68,68,0.08);  color: #f87171;      border: 1px solid #f87171; }
+  .feedback.good { background: rgba(34,197,94,0.1);   color: var(--green); border: 1px solid var(--green); }
+
+  .banner {
+    display: none;
+    font-family: 'Space Mono', monospace;
+    font-size: 20px;
+    font-weight: 700;
+    text-align: center;
+    padding: 18px;
+    border-radius: 10px;
+    margin-top: 16px;
+    max-width: 780px;
+    margin-left: auto;
+    margin-right: auto;
+  }
+  .banner.gold-banner  { background: rgba(245,158,11,0.15); color: var(--gold);  border: 2px solid var(--gold); }
+  .banner.green-banner { background: rgba(34,197,94,0.1);   color: var(--green); border: 2px solid var(--green); }
+
+  /* REFERENCE TABLE */
+  .ref-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.8rem;
+    margin-top: 8px;
+    margin-bottom: 18px;
+  }
+  .ref-table th {
+    font-family: 'Space Mono', monospace;
+    font-size: 0.68rem;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    color: var(--accent2);
+    border-bottom: 1px solid var(--border);
+    padding: 7px 8px;
+    text-align: left;
+  }
+  .ref-table td {
+    padding: 7px 8px;
+    border-bottom: 1px solid var(--border);
+    color: var(--text);
+    vertical-align: top;
+    line-height: 1.4;
+  }
+  .ref-table tr:last-child td { border-bottom: none; }
+  .ref-table tr:hover td { background: var(--surface2); }
+
+  details {
+    margin-bottom: 16px;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    overflow: hidden;
+  }
+  summary {
+    font-family: 'Space Mono', monospace;
+    font-size: 0.75rem;
+    color: var(--muted);
+    padding: 10px 14px;
+    cursor: pointer;
+    background: var(--surface2);
+    list-style: none;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  summary::before { content: '▶'; font-size: 0.6rem; transition: transform .2s; }
+  details[open] summary::before { transform: rotate(90deg); }
+  details[open] summary { color: var(--text); }
+  .details-body { padding: 12px 14px; }
+
+  .firework { position: fixed; pointer-events: none; z-index: 999; }
+  .spark {
+    position: absolute;
+    width: 6px; height: 6px;
+    border-radius: 50%;
+    animation: spark-fly 0.9s ease-out forwards;
+  }
+  @keyframes spark-fly {
+    0%   { transform: translate(0,0) scale(1); opacity:1; }
+    100% { transform: translate(var(--dx),var(--dy)) scale(0); opacity:0; }
+  }
+  @keyframes pulse-gold  { 0%,100%{box-shadow:0 0 0 0 rgba(245,158,11,0)}  50%{box-shadow:0 0 30px 12px rgba(245,158,11,0.18)} }
+  @keyframes pulse-green { 0%,100%{box-shadow:0 0 0 0 rgba(34,197,94,0)}   50%{box-shadow:0 0 30px 12px rgba(34,197,94,0.15)} }
+  .pulse-gold  { animation: pulse-gold  1.6s ease-in-out; }
+  .pulse-green { animation: pulse-green 1.6s ease-in-out; }
+</style>
+</head>
+<body>
+
+<h1>// secondary_storage</h1>
+<p class="subtitle">Exercise 2 of 2 · Y9 Computer Science</p>
+
+<div class="tab-bar" id="tabBar">
+  <button class="tab-btn active" onclick="switchTab(0)" id="tabBtn0">1 · Characteristics</button>
+  <button class="tab-btn"        onclick="switchTab(1)" id="tabBtn1">2 · Scenarios</button>
+</div>
+
+<!-- ═══════════ PANEL 0: CHARACTERISTICS ═══════════ -->
+<div class="panel active" id="panel0">
+  <div class="card">
+    <h2>Characteristics of Secondary Storage</h2>
+    <p>Choose the correct definition or answer for each question.</p>
+
+    <div class="question-block" id="p0q1">
+      <div class="q-text">1. <strong>Capacity</strong> refers to…</div>
+      <div class="options">
+        <button class="opt-btn" onclick="mcq(this,'p0q1',false)">How quickly data can be read or written</button>
+        <button class="opt-btn" onclick="mcq(this,'p0q1',true)">The maximum amount of data that can be stored on the device</button>
+        <button class="opt-btn" onclick="mcq(this,'p0q1',false)">How easy it is to carry the device around</button>
+      </div>
+    </div>
+
+    <div class="question-block" id="p0q2">
+      <div class="q-text">2. <strong>Portability</strong> refers to…</div>
+      <div class="options">
+        <button class="opt-btn" onclick="mcq(this,'p0q2',false)">The price of the device</button>
+        <button class="opt-btn" onclick="mcq(this,'p0q2',false)">How quickly data can be accessed</button>
+        <button class="opt-btn" onclick="mcq(this,'p0q2',true)">How easy it is to carry the device around</button>
+      </div>
+    </div>
+
+    <div class="question-block" id="p0q3">
+      <div class="q-text">3. <strong>Access speed</strong> refers to…</div>
+      <div class="options">
+        <button class="opt-btn" onclick="mcq(this,'p0q3',true)">How quickly data on the device can be read or edited</button>
+        <button class="opt-btn" onclick="mcq(this,'p0q3',false)">How durable the device is</button>
+        <button class="opt-btn" onclick="mcq(this,'p0q3',false)">The maximum amount of data the device holds</button>
+      </div>
+    </div>
+
+    <div class="question-block" id="p0q4">
+      <div class="q-text">4. Which characteristic describes "the strength of the device — how long it lasts without breaking"?</div>
+      <div class="options">
+        <button class="opt-btn" onclick="mcq(this,'p0q4',false)">Portability</button>
+        <button class="opt-btn" onclick="mcq(this,'p0q4',true)">Durability</button>
+        <button class="opt-btn" onclick="mcq(this,'p0q4',false)">Capacity</button>
+        <button class="opt-btn" onclick="mcq(this,'p0q4',false)">Cost</button>
+      </div>
+    </div>
+
+    <div class="question-block" id="p0q5">
+      <div class="q-text">5. Which storage device generally offers the <strong>highest capacity at the lowest cost per GB</strong>?</div>
+      <div class="options">
+        <button class="opt-btn" onclick="mcq(this,'p0q5',false)">USB Pen Drive</button>
+        <button class="opt-btn" onclick="mcq(this,'p0q5',false)">SSD</button>
+        <button class="opt-btn" onclick="mcq(this,'p0q5',true)">Hard Disk Drive (HDD)</button>
+        <button class="opt-btn" onclick="mcq(this,'p0q5',false)">CD</button>
+      </div>
+    </div>
+
+    <div class="question-block" id="p0q6">
+      <div class="q-text">6. An SSD has faster access speed than an HDD. Why?</div>
+      <div class="options">
+        <button class="opt-btn" onclick="mcq(this,'p0q6',false)">SSDs use optical lasers to read data</button>
+        <button class="opt-btn" onclick="mcq(this,'p0q6',true)">SSDs have no moving parts, so there is no delay waiting for a disc to spin</button>
+        <button class="opt-btn" onclick="mcq(this,'p0q6',false)">SSDs hold more data than HDDs</button>
+      </div>
+    </div>
+
+    <div class="question-block" id="p0q7">
+      <div class="q-text">7. A USB pen drive is described as highly portable. Which TWO features make it portable? Choose the best answer.</div>
+      <div class="options">
+        <button class="opt-btn" onclick="mcq(this,'p0q7',false)">It has very high capacity and low cost</button>
+        <button class="opt-btn" onclick="mcq(this,'p0q7',true)">It is small and lightweight, so it can easily be carried between locations</button>
+        <button class="opt-btn" onclick="mcq(this,'p0q7',false)">It has fast access speed and no moving parts</button>
+      </div>
+    </div>
+
+    <button class="check-btn" onclick="checkMCQPanel(0,7,'p0')">Check answers</button>
+    <button class="reset-btn" onclick="resetMCQPanel(0,7,'p0')">Reset</button>
+    <div class="feedback" id="feedback-p0"></div>
+    <div class="banner" id="banner0"></div>
+  </div>
+</div>
+
+<!-- ═══════════ PANEL 1: SCENARIOS ═══════════ -->
+<div class="panel" id="panel1">
+  <div class="card">
+    <h2>Storage Scenarios</h2>
+    <p>Read each scenario. Choose the best storage device and justify your choice using at least one characteristic from the lesson (capacity, portability, access speed, durability, cost).</p>
+
+    <details>
+      <summary>📋 Reference: storage device characteristics</summary>
+      <div class="details-body">
+        <table class="ref-table">
+          <tr>
+            <th>Device</th><th>Type</th><th>Capacity</th><th>Speed</th><th>Portability</th><th>Cost</th>
+          </tr>
+          <tr><td>HDD</td><td>Magnetic</td><td>Up to several TB</td><td>Moderate</td><td>Low — bulky, spinning parts</td><td>Low per GB</td></tr>
+          <tr><td>SSD</td><td>Solid State</td><td>Up to ~4TB</td><td>Very fast</td><td>Good — no moving parts</td><td>Higher per GB</td></tr>
+          <tr><td>USB Pen Drive</td><td>Solid State</td><td>Up to ~256GB</td><td>Fast</td><td>Very high — tiny &amp; light</td><td>Cheap for the size</td></tr>
+          <tr><td>SD Card</td><td>Solid State</td><td>Up to ~256GB</td><td>Fast</td><td>Very high — tiny</td><td>Cheap for the size</td></tr>
+          <tr><td>CD / DVD</td><td>Optical</td><td>700MB / 4.5GB</td><td>Slow</td><td>Portable but fragile</td><td>Very cheap per disc</td></tr>
+          <tr><td>Blu-ray</td><td>Optical</td><td>Up to 128GB</td><td>Slow</td><td>Portable but fragile</td><td>Moderate</td></tr>
+          <tr><td>Magnetic Tape</td><td>Magnetic</td><td>100TB+</td><td>Very slow (sequential)</td><td>Low</td><td>Very cheap per GB</td></tr>
+        </table>
+      </div>
+    </details>
+
+    <!-- Scenario A -->
+    <div class="scenario-label">Scenario A</div>
+    <div class="scenario-box">
+      A university student moves between home, the library, and their university building every day. They need to carry their coursework documents (around 500MB total) between locations and access them on different computers.
+    </div>
+    <select class="scenario-select" id="sc1-device">
+      <option value="">-- Select the best device --</option>
+      <option value="cd">CD</option>
+      <option value="hdd">Hard Disk Drive (HDD)</option>
+      <option value="ssd">SSD</option>
+      <option value="usb">USB Pen Drive</option>
+      <option value="tape">Magnetic Tape</option>
+    </select>
+    <textarea class="justify-input" id="sc1-justify" placeholder="Justify your choice — mention at least one characteristic (e.g. portability, capacity, cost…)"></textarea>
+
+    <!-- Scenario B -->
+    <div class="scenario-label">Scenario B</div>
+    <div class="scenario-box">
+      A large company needs to back up 80TB of data. The backups only need to be accessed very rarely — perhaps once a year in an emergency. Cost per GB is the most important factor.
+    </div>
+    <select class="scenario-select" id="sc2-device">
+      <option value="">-- Select the best device --</option>
+      <option value="cd">CD</option>
+      <option value="hdd">Hard Disk Drive (HDD)</option>
+      <option value="ssd">SSD</option>
+      <option value="usb">USB Pen Drive</option>
+      <option value="tape">Magnetic Tape</option>
+    </select>
+    <textarea class="justify-input" id="sc2-justify" placeholder="Justify your choice…"></textarea>
+
+    <!-- Scenario C -->
+    <div class="scenario-label">Scenario C</div>
+    <div class="scenario-box">
+      A graphic designer needs a storage device built into their laptop. They work with very large video files and need the laptop to boot quickly and open files instantly. Budget is less of a concern.
+    </div>
+    <select class="scenario-select" id="sc3-device">
+      <option value="">-- Select the best device --</option>
+      <option value="cd">CD</option>
+      <option value="hdd">Hard Disk Drive (HDD)</option>
+      <option value="ssd">SSD</option>
+      <option value="usb">USB Pen Drive</option>
+      <option value="tape">Magnetic Tape</option>
+    </select>
+    <textarea class="justify-input" id="sc3-justify" placeholder="Justify your choice…"></textarea>
+
+    <!-- Scenario D -->
+    <div class="scenario-label">Scenario D</div>
+    <div class="scenario-box">
+      A wedding videographer wants to give each client a physical copy of their wedding video (around 4GB). The client doesn't need to edit it — just watch it on their TV or laptop. Cost per unit should be kept low.
+    </div>
+    <select class="scenario-select" id="sc4-device">
+      <option value="">-- Select the best device --</option>
+      <option value="dvd">DVD</option>
+      <option value="hdd">Hard Disk Drive (HDD)</option>
+      <option value="ssd">SSD</option>
+      <option value="usb">USB Pen Drive</option>
+      <option value="tape">Magnetic Tape</option>
+    </select>
+    <textarea class="justify-input" id="sc4-justify" placeholder="Justify your choice…"></textarea>
+
+    <button class="check-btn" onclick="checkScenarios()">Check answers</button>
+    <button class="reset-btn" onclick="resetScenarios()">Reset</button>
+    <div class="feedback" id="feedback-p1"></div>
+    <div class="banner" id="banner1"></div>
+  </div>
+</div>
+
+<script>
+let currentTab = 0;
+function switchTab(i) {
+  document.querySelectorAll('.panel').forEach((p,j)=>p.classList.toggle('active',j===i));
+  document.querySelectorAll('.tab-btn').forEach((b,j)=>b.classList.toggle('active',j===i));
+  currentTab = i;
+}
+
+// ── MCQ ──
+const mcqState = {};
+
+function mcq(btn, qId, isCorrect) {
+  if (mcqState[qId]?.answered) return;
+  const block = document.getElementById(qId);
+  const buttons = block.querySelectorAll('.opt-btn');
+  buttons.forEach(b => b.disabled = true);
+  if (isCorrect) {
+    btn.classList.add('correct');
+    mcqState[qId] = {answered:true, correct:true};
+  } else {
+    btn.classList.add('wrong');
+    buttons.forEach(b => { if (b.onclick.toString().includes('true')) b.classList.add('correct-late'); });
+    mcqState[qId] = {answered:true, correct:false};
+  }
+}
+
+function checkMCQPanel(panelIdx, count, prefix) {
+  let answered=0, correct=0;
+  for (let i=1; i<=count; i++) {
+    const s = mcqState[`${prefix}q${i}`];
+    if (s?.answered) { answered++; if(s.correct) correct++; }
+  }
+  const fb = document.getElementById(`feedback-${prefix}`);
+  if (answered < count) {
+    fb.className='feedback show redo';
+    fb.textContent=`Answer all ${count} questions first! (${answered}/${count} done)`;
+    return;
+  }
+  if (correct === count) {
+    fb.className='feedback show ok';
+    fb.textContent=`★ Perfect! All ${count} correct!`;
+    completePanelGold(panelIdx, fb);
+  } else {
+    fb.className='feedback show good';
+    fb.textContent=`✓ ${correct}/${count} correct — check the highlighted answers.`;
+    completePanelGreen(panelIdx, fb);
+  }
+}
+
+function resetMCQPanel(panelIdx, count, prefix) {
+  for (let i=1; i<=count; i++) {
+    delete mcqState[`${prefix}q${i}`];
+    const block = document.getElementById(`${prefix}q${i}`);
+    if (!block) continue;
+    block.querySelectorAll('.opt-btn').forEach(b => { b.disabled=false; b.className='opt-btn'; });
+  }
+  document.getElementById(`feedback-${prefix}`).className='feedback';
+  const banner = document.getElementById(`banner${panelIdx}`);
+  banner.style.display='none'; banner.className='banner';
+  const btn = document.getElementById(`tabBtn${panelIdx}`);
+  btn.className='tab-btn'+(currentTab===panelIdx?' active':'');
+}
+
+// ── SCENARIOS ──
+const scCorrect = {sc1:'usb', sc2:'tape', sc3:'ssd', sc4:'dvd'};
+
+function checkScenarios() {
+  const justifyOk = ['sc1','sc2','sc3','sc4'].every(sc=>{
+    return document.getElementById(`${sc}-justify`).value.trim().length > 10;
+  });
+  const fb = document.getElementById('feedback-p1');
+  if (!justifyOk) {
+    fb.className='feedback show redo';
+    fb.textContent='Write a justification for every scenario first!';
+    return;
+  }
+  let correct=0;
+  ['sc1','sc2','sc3','sc4'].forEach(sc=>{
+    if (document.getElementById(`${sc}-device`).value === scCorrect[sc]) correct++;
+  });
+  if (correct===4) {
+    fb.className='feedback show ok';
+    fb.textContent='★ All 4 scenarios correct! Great reasoning!';
+    completePanelGold(1, fb);
+  } else {
+    fb.className='feedback show good';
+    fb.textContent=`✓ ${correct}/4 devices correct. Re-read the scenarios and think about the key requirement in each one.`;
+    completePanelGreen(1, fb);
+  }
+}
+
+function resetScenarios() {
+  ['sc1','sc2','sc3','sc4'].forEach(sc=>{
+    document.getElementById(`${sc}-device`).value='';
+    document.getElementById(`${sc}-device`).disabled=false;
+    document.getElementById(`${sc}-justify`).value='';
+  });
+  document.getElementById('feedback-p1').className='feedback';
+  document.getElementById('banner1').style.display='none';
+  document.getElementById('banner1').className='banner';
+  document.getElementById('tabBtn1').className='tab-btn'+(currentTab===1?' active':'');
+}
+
+// ── COMPLETION ──
+function completePanelGold(panelIdx, fbEl) {
+  const panel = document.getElementById(`panel${panelIdx}`);
+  panel.classList.add('pulse-gold');
+  setTimeout(()=>panel.classList.remove('pulse-gold'), 1700);
+  const banner = document.getElementById(`banner${panelIdx}`);
+  banner.className='banner gold-banner';
+  banner.textContent='★ Excellent work — first attempt correct!';
+  banner.style.display='block';
+  const btn = document.getElementById(`tabBtn${panelIdx}`);
+  btn.className='tab-btn done-gold'+(currentTab===panelIdx?' active':'');
+  btn.textContent='★ '+btn.textContent.replace(/[★✓]/g,'').trim();
+  launchFireworks();
+}
+
+function completePanelGreen(panelIdx) {
+  const panel = document.getElementById(`panel${panelIdx}`);
+  panel.classList.add('pulse-green');
+  setTimeout(()=>panel.classList.remove('pulse-green'), 1700);
+  const banner = document.getElementById(`banner${panelIdx}`);
+  banner.className='banner green-banner';
+  banner.textContent='✓ Completed — well done!';
+  banner.style.display='block';
+  const btn = document.getElementById(`tabBtn${panelIdx}`);
+  btn.className='tab-btn done-green'+(currentTab===panelIdx?' active':'');
+  btn.textContent='✓ '+btn.textContent.replace(/[★✓]/g,'').trim();
+}
+
+function launchFireworks() {
+  const colours = ['#f59e0b','#fbbf24','#fde68a','#a78bfa','#818cf8'];
+  for (let f=0; f<5; f++) {
+    setTimeout(()=>{
+      const fw = document.createElement('div');
+      fw.className='firework';
+      fw.style.left=(15+Math.random()*70)+'vw';
+      fw.style.top=(15+Math.random()*50)+'vh';
+      document.body.appendChild(fw);
+      for (let s=0; s<18; s++) {
+        const spark = document.createElement('div');
+        spark.className='spark';
+        const angle=(s/18)*360, dist=50+Math.random()*60;
+        spark.style.setProperty('--dx',Math.cos(angle*Math.PI/180)*dist+'px');
+        spark.style.setProperty('--dy',Math.sin(angle*Math.PI/180)*dist+'px');
+        spark.style.background=colours[Math.floor(Math.random()*colours.length)];
+        fw.appendChild(spark);
+      }
+      setTimeout(()=>fw.remove(),1000);
+    }, f*200);
+  }
+}
+</script>
+</body>
+</html>
