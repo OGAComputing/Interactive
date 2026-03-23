@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Python Programming · Year 8</title>
+  <title>CS Activities</title>
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
@@ -20,7 +20,7 @@
       border-bottom: 3px solid #00b4b4;
       padding: 2rem 2.5rem 1.5rem;
     }
-    .header-inner { max-width: 960px; margin: 0 auto; }
+    .header-inner { max-width: 1100px; margin: 0 auto; }
     .header-eyebrow {
       font-size: 0.8rem;
       letter-spacing: 0.15em;
@@ -40,24 +40,47 @@
       color: #7a9ab5;
     }
 
+    /* ── Year tabs ── */
+    #year-tabs {
+      background: #0d1828;
+      border-bottom: 1px solid #1e3048;
+      padding: 0 2.5rem;
+      display: flex;
+      gap: 0;
+      max-width: 100%;
+      overflow-x: auto;
+    }
+    .year-tab {
+      padding: 0.85rem 1.4rem;
+      font-size: 0.85rem;
+      font-weight: 700;
+      color: #7a9ab5;
+      cursor: pointer;
+      border-bottom: 3px solid transparent;
+      white-space: nowrap;
+      transition: color 0.15s, border-color 0.15s;
+      user-select: none;
+    }
+    .year-tab:hover { color: #c8d8e8; }
+    .year-tab.active {
+      color: #00b4b4;
+      border-bottom-color: #00b4b4;
+    }
+
     /* ── Main ── */
     main {
-      max-width: 960px;
+      max-width: 1100px;
       margin: 0 auto;
       padding: 2rem 2.5rem 4rem;
     }
 
-    /* ── Loading / error states ── */
-    #status {
-      font-size: 0.9rem;
-      color: #7a9ab5;
-      padding: 2rem 0;
-    }
-    #status.error { color: #e05555; }
+    /* ── Year panel ── */
+    .year-panel { display: none; }
+    .year-panel.active { display: block; }
 
-    /* ── Lesson groups ── */
-    .lesson-group { margin-bottom: 2.5rem; }
-    .lesson-heading {
+    /* ── Topic groups ── */
+    .topic-group { margin-bottom: 2.5rem; }
+    .topic-heading {
       font-size: 0.75rem;
       font-weight: 700;
       letter-spacing: 0.12em;
@@ -124,6 +147,14 @@
       margin-top: 0.3rem;
     }
 
+    /* ── Loading / error ── */
+    #status {
+      font-size: 0.9rem;
+      color: #7a9ab5;
+      padding: 2rem 0;
+    }
+    #status.error { color: #e05555; }
+
     /* ── Footer ── */
     footer {
       text-align: center;
@@ -137,18 +168,20 @@
 
 <header>
   <div class="header-inner">
-    <div class="header-eyebrow">Python Programming</div>
-    <h1>Year 8 <span>Activities</span></h1>
-    <p class="header-sub">Select an activity to open it</p>
+    <div class="header-eyebrow">Computer Science</div>
+    <h1>Activities <span>Hub</span></h1>
+    <p class="header-sub">Select a year group, then choose an activity</p>
   </div>
 </header>
+
+<nav id="year-tabs"></nav>
 
 <main>
   <div id="status">Loading activities…</div>
   <div id="content"></div>
 </main>
 
-<footer>Python Programming · Year 8</footer>
+<footer>CS Activities Hub</footer>
 
 <script>
   const COLOR = {
@@ -163,40 +196,71 @@
     return `<span class="stars">${'★'.repeat(n)}${'☆'.repeat(4 - n)}</span>`;
   }
 
-  function buildCards(activities) {
-    // Group by lesson
-    const groups = {};
-    activities.forEach(a => {
-      if (!groups[a.lesson]) groups[a.lesson] = [];
-      groups[a.lesson].push(a);
-    });
-
-    return Object.keys(groups).sort().map(lesson => {
-      const cards = groups[lesson].map(a => {
-        const c = COLOR[a.color] || COLOR.teal;
-        return `
-          <a class="card" href="${a.page}" style="border-top:4px solid ${c.border}">
-            <div class="card-top">
-              <span class="badge" style="background:${c.badge}">${a.type}</span>
-              ${stars(a.stars)}
-            </div>
-            <div class="card-title">${a.title}</div>
-            <div class="card-desc">${a.desc}</div>
-            <div class="card-arrow">Open →</div>
-          </a>`;
-      }).join('');
-
-      return `
-        <div class="lesson-group">
-          <h2 class="lesson-heading">${lesson}</h2>
-          <div class="card-row">${cards}</div>
-        </div>`;
-    }).join('');
+  function slugify(str) {
+    return str.toLowerCase().replace(/\s+/g, '-').replace(/[^a-z0-9-]/g, '');
   }
 
-  // Fetch activities.json and render
-  // Cache-busting query string ensures updated JSON is always fetched
-  // after a new deployment, not served from the browser cache.
+  function buildUI(activities) {
+    // ── Group: year → topic → [activities] ──────────────────
+    const tree = {};
+    activities.forEach(a => {
+      if (!tree[a.year])          tree[a.year] = {};
+      if (!tree[a.year][a.topic]) tree[a.year][a.topic] = [];
+      tree[a.year][a.topic].push(a);
+    });
+
+    const years = Object.keys(tree).sort();
+    const tabsEl   = document.getElementById('year-tabs');
+    const contentEl = document.getElementById('content');
+
+    years.forEach((year, i) => {
+      // Tab
+      const tab = document.createElement('div');
+      tab.className = 'year-tab' + (i === 0 ? ' active' : '');
+      tab.textContent = year;
+      tab.dataset.year = slugify(year);
+      tab.addEventListener('click', () => switchYear(slugify(year)));
+      tabsEl.appendChild(tab);
+
+      // Panel
+      const panel = document.createElement('div');
+      panel.className = 'year-panel' + (i === 0 ? ' active' : '');
+      panel.id = 'panel-' + slugify(year);
+
+      Object.keys(tree[year]).sort().forEach(topic => {
+        const cards = tree[year][topic].map(a => {
+          const c = COLOR[a.color] || COLOR.teal;
+          return `
+            <a class="card" href="${a.path}" style="border-top:4px solid ${c.border}">
+              <div class="card-top">
+                <span class="badge" style="background:${c.badge}">${a.type}</span>
+                ${stars(a.stars)}
+              </div>
+              <div class="card-title">${a.title}</div>
+              <div class="card-desc">${a.desc}</div>
+              <div class="card-arrow">Open →</div>
+            </a>`;
+        }).join('');
+
+        panel.innerHTML += `
+          <div class="topic-group">
+            <h2 class="topic-heading">${topic}</h2>
+            <div class="card-row">${cards}</div>
+          </div>`;
+      });
+
+      contentEl.appendChild(panel);
+    });
+  }
+
+  function switchYear(yearSlug) {
+    document.querySelectorAll('.year-tab').forEach(t =>
+      t.classList.toggle('active', t.dataset.year === yearSlug));
+    document.querySelectorAll('.year-panel').forEach(p =>
+      p.classList.toggle('active', p.id === 'panel-' + yearSlug));
+  }
+
+  // ── Fetch and render ─────────────────────────────────────
   fetch('activities.json?v=' + Date.now())
     .then(r => {
       if (!r.ok) throw new Error('Could not load activities.json — ' + r.status);
@@ -204,7 +268,7 @@
     })
     .then(activities => {
       document.getElementById('status').remove();
-      document.getElementById('content').innerHTML = buildCards(activities);
+      buildUI(activities);
     })
     .catch(err => {
       const el = document.getElementById('status');
