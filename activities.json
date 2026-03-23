@@ -60,8 +60,28 @@
     "color": "teal"
   },
   {
+    "path": "Y9/HardwareNetworks/secondary_storage_characteristics.html",
+    "title": "secondary storage characteristics",
+    "year": "Year 9",
+    "topic": "Hardwarenetworks",
+    "type": "Activity",
+    "stars": 0,
+    "desc": "",
+    "color": "teal"
+  },
+  {
     "path": "Y9/HardwareNetworks/secondary_storage_exercises.html",
     "title": "secondary storage exercises",
+    "year": "Year 9",
+    "topic": "Hardwarenetworks",
+    "type": "Activity",
+    "stars": 0,
+    "desc": "",
+    "color": "teal"
+  },
+  {
+    "path": "Y9/HardwareNetworks/secondary_storage_types.html",
+    "title": "secondary storage types",
     "year": "Year 9",
     "topic": "Hardwarenetworks",
     "type": "Activity",
