@@ -1,0 +1,158 @@
+# .github/workflows/build-manifest.yml
+#
+# Runs automatically on every push to main.
+# Recursively scans subdirectories for HTML activity files and
+# rebuilds activities.json from metadata comments in each file.
+#
+# EXPECTED DIRECTORY STRUCTURE:
+#   YearGroup/Topic/filename.html
+#   e.g.  Y8/Python/L1_BugFix.html
+#         Y11/Legislation/FillInBlanks1.html
+#
+# The year group and topic are read directly from the folder path,
+# so you don't need to put them in the metadata comment.
+#
+# ADD THIS COMMENT NEAR THE TOP OF EACH ACTIVITY HTML FILE:
+#
+#   <!-- ACTIVITY
+#   title:  Bug-Fix Challenges
+#   type:   Practice
+#   stars:  4
+#   desc:   5 escalating bug-fix tasks in Thonny
+#   color:  green
+#   -->
+#
+# Note: 'year' and 'topic' are auto-filled from the folder path.
+# You only need title, type, stars, desc, color in the comment.
+#
+# FILES TO EXCLUDE from the index:
+# Any HTML file in a folder called '_drafts' will be skipped.
+# Any HTML file whose name starts with '_' will be skipped.
+# e.g.  Y8/Python/_work-in-progress.html  →  excluded
+#       Y8/_drafts/NewLesson.html          →  excluded
+
+name: Build activity manifest
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+jobs:
+  build-manifest:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+
+      - name: Generate activities.json
+        run: |
+          python3 << 'EOF'
+          import os, re, json
+
+          ACTIVITY_PATTERN = re.compile(r'<!--\s*ACTIVITY\s*(.*?)-->', re.DOTALL)
+          FIELD_PATTERN    = re.compile(r'^\s*(\w+)\s*:\s*(.+?)\s*$', re.MULTILINE)
+
+          # Year group folder names → display labels
+          # Add entries here if your folder names differ from display names.
+          # e.g. 'Y8' → 'Year 8',  'KS3' → 'KS3', etc.
+          # Unrecognised folders are title-cased automatically.
+          YEAR_LABELS = {
+            'Y7':  'Year 7',
+            'Y8':  'Year 8',
+            'Y9':  'Year 9',
+            'Y10': 'Year 10',
+            'Y11': 'Year 11',
+            'Y12': 'Year 12',
+            'Y13': 'Year 13',
+            'KS3': 'KS3',
+            'KS4': 'KS4',
+          }
+
+          activities = []
+
+          for dirpath, dirnames, filenames in os.walk('.'):
+            # Skip hidden dirs, node_modules, .github, and _drafts folders
+            dirnames[:] = [
+              d for d in sorted(dirnames)
+              if not d.startswith('.')
+              and d != 'node_modules'
+              and d != '_drafts'
+            ]
+
+            for filename in sorted(filenames):
+              if not filename.endswith('.html'):
+                continue
+              if filename.startswith('_'):
+                continue
+              if filename == 'index.html':
+                continue
+
+              filepath = os.path.join(dirpath, filename)
+              # Normalise to forward slashes, strip leading ./
+              rel_path = filepath.replace('\\', '/').lstrip('./')
+
+              # Split path into parts: e.g. ['Y8', 'Python', 'L1_BugFix.html']
+              parts = rel_path.split('/')
+
+              if len(parts) < 3:
+                # Must be at least YearGroup/Topic/file.html — skip root-level files
+                print(f"  Skipping (not in year/topic subfolder): {rel_path}")
+                continue
+
+              year_folder  = parts[0]
+              topic_folder = parts[1]
+              # Everything between topic and filename is ignored (allows deeper nesting)
+
+              year_label  = YEAR_LABELS.get(year_folder, year_folder.replace('_', ' ').title())
+              topic_label = topic_folder.replace('_', ' ').replace('-', ' ').title()
+
+              with open(filepath, encoding='utf-8') as fh:
+                content = fh.read()
+
+              meta_match = ACTIVITY_PATTERN.search(content)
+
+              if meta_match:
+                fields = dict(FIELD_PATTERN.findall(meta_match.group(1)))
+                activity = {
+                  'path':  rel_path,
+                  'title': fields.get('title', filename.replace('.html', '').replace('_', ' ')),
+                  'year':  year_label,
+                  'topic': topic_label,
+                  'type':  fields.get('type',  'Activity'),
+                  'stars': int(fields.get('stars', 0)),
+                  'desc':  fields.get('desc',  ''),
+                  'color': fields.get('color', 'teal'),
+                }
+              else:
+                # No metadata comment — include with auto-filled values
+                activity = {
+                  'path':  rel_path,
+                  'title': filename.replace('.html', '').replace('_', ' '),
+                  'year':  year_label,
+                  'topic': topic_label,
+                  'type':  'Activity',
+                  'stars': 0,
+                  'desc':  '',
+                  'color': 'teal',
+                }
+
+              activities.append(activity)
+              print(f"  Found: {rel_path} → {year_label} / {topic_label} / {activity['title']}")
+
+          with open('activities.json', 'w', encoding='utf-8') as fh:
+            json.dump(activities, fh, indent=2)
+
+          print(f"\nWrote activities.json with {len(activities)} entries.")
+          EOF
+
+      - name: Commit updated activities.json
+        run: |
+          git config user.name  "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add activities.json
+          git diff --staged --quiet || git commit -m "chore: rebuild activities.json [skip ci]"
+          git push
