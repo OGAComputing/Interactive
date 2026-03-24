@@ -1,12 +1,4 @@
 <!DOCTYPE html>
-<!-- ACTIVITY
-title:  Primary & Secondary Memory
-lesson: Year 9 — Hardware & Networks
-type:   Practice
-stars:  3
-desc:   Fill-in-the-blanks and diagram-building exercises on primary and secondary memory
-color:  blue
--->
 <html lang="en">
 <head>
 <meta charset="UTF-8">
@@ -809,6 +801,170 @@ function resetDiagram() {
 
 buildDiagram();
 setupZones();
+
+// ─────────────────────────────────────────
+// SAVE / LOAD PROGRESS (localStorage)
+// ─────────────────────────────────────────
+const SAVE_KEY = 'memory_exercises_v1';
+
+function saveProgress() {
+  try {
+    // Collect FITB state from DOM
+    const fitbBlanks = {};
+    sentences.forEach((s, i) => {
+      const blank = document.getElementById('blank-' + i);
+      if (blank) fitbBlanks[i] = { word: blank.dataset.word || '', locked: blank.dataset.locked === 'true' };
+    });
+    // Collect diagram state from DOM
+    const diagZones = {};
+    document.querySelectorAll('.drop-zone').forEach(zone => {
+      diagZones[zone.id] = {
+        parts: [...zone.querySelectorAll('.part')].map(p => p.dataset.partId),
+        locked: zone.dataset.locked === 'true'
+      };
+    });
+    const data = {
+      fitbBlanks, fitbEverWrong, fitbDone, fitbPerfect,
+      diagZones,  diagEverWrong, diagDone, diagPerfect,
+    };
+    localStorage.setItem(SAVE_KEY, JSON.stringify(data));
+  } catch(e) {}
+}
+
+function loadAndRestore() {
+  try {
+    const raw = localStorage.getItem(SAVE_KEY);
+    if (!raw) return;
+    const d = JSON.parse(raw);
+
+    // ── Restore FITB ──
+    if (d.fitbBlanks) {
+      fitbEverWrong = d.fitbEverWrong || false;
+      fitbDone      = d.fitbDone      || false;
+      fitbPerfect   = d.fitbPerfect   || false;
+
+      Object.entries(d.fitbBlanks).forEach(([i, v]) => {
+        const blank = document.getElementById('blank-' + i);
+        if (!blank || !v.word) return;
+        // Place the word
+        blank.textContent = v.word;
+        blank.classList.remove('empty');
+        blank.dataset.word = v.word;
+        blank.draggable = true;
+        // Find and mark the chip used
+        const chip = [...document.querySelectorAll('.word-chip')].find(c => c.dataset.word === v.word);
+        if (chip) { chip.classList.add('chip-used'); chip.draggable = false; chip.dataset.inBlank = 'blank-' + i; }
+        if (v.locked) {
+          blank.classList.add('sb-correct'); // reuse sb-correct for visual — or use 'correct'
+          blank.classList.add('correct');
+          blank.dataset.locked = 'true';
+        }
+      });
+      if (fitbDone) {
+        const score = document.getElementById('fitbScore');
+        score.style.display = 'inline-block';
+        score.textContent = 'Score: ' + sentences.length + ' / ' + sentences.length;
+        const fb = document.getElementById('fitbFeedback');
+        fb.style.display = 'block';
+        fb.textContent = fitbPerfect ? '🌟 Perfect first time — outstanding!' : '✅ All correct — well done!';
+        fb.style.color = fitbPerfect ? 'var(--gold-l)' : 'var(--green-l)';
+        setTabTick('fitb', fitbPerfect);
+      }
+    }
+
+    // ── Restore Diagram ──
+    if (d.diagZones) {
+      diagEverWrong = d.diagEverWrong || false;
+      diagDone      = d.diagDone      || false;
+      diagPerfect   = d.diagPerfect   || false;
+
+      Object.entries(d.diagZones).forEach(([zoneId, v]) => {
+        if (!v.parts || v.parts.length === 0) return;
+        const zone = document.getElementById(zoneId);
+        if (!zone) return;
+        const bank = document.getElementById('partBank');
+        v.parts.forEach(partId => {
+          const el = bank.querySelector('[data-part-id="' + partId + '"]');
+          if (!el) return;
+          zone.querySelector('.zone-hint')?.style && (zone.querySelector('.zone-hint').style.display = 'none');
+          zone.appendChild(el);
+          el.classList.add('placed-part');
+          if (v.locked) {
+            el.draggable = false;
+            el.style.cursor = 'default';
+          }
+        });
+        if (v.locked) {
+          zone.dataset.locked = 'true';
+          zone.classList.add('correct-zone');
+          const tick = zone.querySelector('.tick');
+          if (tick) { tick.style.display = 'block'; tick.textContent = '✓'; tick.style.color = 'var(--green-l)'; }
+        }
+      });
+
+      if (diagDone) {
+        const score = document.getElementById('diagScore');
+        score.style.display = 'inline-block';
+        score.textContent = diagPerfect ? '🌟 Perfect — 5/5!' : '✅ All correct — 5/5!';
+        score.style.color  = diagPerfect ? 'var(--gold-l)' : 'var(--green-l)';
+        setTabTick('diag', diagPerfect);
+      }
+    }
+
+    // ── Restore completion ──
+    if (fitbDone && diagDone) {
+      const perfect = fitbPerfect && diagPerfect;
+      triggerCompletion(perfect);
+    }
+
+  } catch(e) {}
+}
+
+// Patch cancelCompletion to also wipe saved data
+const _origCancel = cancelCompletion;
+cancelCompletion = function() {
+  _origCancel();
+  try { localStorage.removeItem(SAVE_KEY); } catch(e) {}
+};
+
+// Auto-save after every meaningful action
+(function(){
+  const toWrap = ['checkFITB','resetFITB','checkDiagram','resetDiagram'];
+  toWrap.forEach(name => {
+    const orig = window[name];
+    if (typeof orig === 'function') {
+      window[name] = function() {
+        const r = orig.apply(this, arguments);
+        saveProgress();
+        return r;
+      };
+    }
+  });
+  // Also save on drop events — patch after a short delay so DOM settles
+  const origBuildFITB = window.buildFITB;
+  window.buildFITB = function() {
+    origBuildFITB.apply(this, arguments);
+    // Wrap blank drop handlers to save after each drop
+    sentences.forEach((s, i) => {
+      const blank = document.getElementById('blank-' + i);
+      if (!blank) return;
+      blank.addEventListener('drop', () => setTimeout(saveProgress, 50));
+    });
+    document.getElementById('wordBank').addEventListener('drop', () => setTimeout(saveProgress, 50));
+  };
+  // Diagram parts save on drop
+  const origSetupZones = window.setupZones;
+  window.setupZones = function() {
+    origSetupZones.apply(this, arguments);
+    document.querySelectorAll('.drop-zone').forEach(zone => {
+      zone.addEventListener('drop', () => setTimeout(saveProgress, 50));
+    });
+    document.getElementById('partBank').addEventListener('drop', () => setTimeout(saveProgress, 50));
+  };
+})();
+
+// Run restore after a tick so all DOM is ready
+setTimeout(loadAndRestore, 0);
 </script>
 </body>
 </html>
