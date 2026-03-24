@@ -65,8 +65,8 @@
     "year": "Year 9",
     "topic": "Hardwarenetworks",
     "type": "Practice",
-    "stars": 2,
-    "desc": "3 drag-and-sort tasks covering RAM vs ROM, types of memory, and why secondary storage is needed",
+    "stars": 3,
+    "desc": "3 tasks covering RAM vs ROM card sort, types of primary memory, and spot the mistake on secondary storage",
     "color": "blue"
   },
   {
