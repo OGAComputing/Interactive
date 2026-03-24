@@ -51,13 +51,13 @@
   },
   {
     "path": "Y9/HardwareNetworks/memory_exercises.html",
-    "title": "Primary & Secondary Memory",
+    "title": "memory exercises",
     "year": "Year 9",
     "topic": "Hardwarenetworks",
-    "type": "Practice",
-    "stars": 3,
-    "desc": "Fill-in-the-blanks and diagram-building exercises on primary and secondary memory",
-    "color": "blue"
+    "type": "Activity",
+    "stars": 0,
+    "desc": "",
+    "color": "teal"
   },
   {
     "path": "Y9/HardwareNetworks/ram_rom_exercise.html",
