@@ -1,5 +1,45 @@
 [
   {
+    "path": "Demo/Spanish/spanish_speaking_exercises.html",
+    "title": "Spanish Speaking Skills",
+    "year": "Demo",
+    "topic": "Spanish",
+    "type": "Practice",
+    "stars": 4,
+    "desc": "5 exercises covering question words, sentence types, gap fills, tense recognition, and developed responses",
+    "color": "purple"
+  },
+  {
+    "path": "Y11/Legislation/FillInBlanks.html",
+    "title": "Legislation Activities",
+    "year": "Year 11",
+    "topic": "Legislation",
+    "type": "Practice",
+    "stars": 3,
+    "desc": "3 drag-and-drop gap-fill exercises covering key legislation terms, DPA responsibilities, and scenario application",
+    "color": "orange"
+  },
+  {
+    "path": "Y11/NetworkHardware/router_switch_venn.html",
+    "title": "Router vs Switch",
+    "year": "Year 11",
+    "topic": "Networkhardware",
+    "type": "Practice",
+    "stars": 2,
+    "desc": "Drag-and-drop Venn diagram sorting router-only, switch-only, and shared features of network devices",
+    "color": "red"
+  },
+  {
+    "path": "Y11/Networks/network_topology_builder.html",
+    "title": "Network Topology Builder",
+    "year": "Year 11",
+    "topic": "Networks",
+    "type": "Challenge",
+    "stars": 4,
+    "desc": "Interactive canvas \u2014 build star and mesh topologies across 6 tasks covering peer-to-peer and client-server models",
+    "color": "cyan"
+  },
+  {
     "path": "Y8/Python/Casting.html",
     "title": "Casting Exercises",
     "year": "Year 8",
@@ -58,45 +98,5 @@
     "stars": 3,
     "desc": "MCQs, matching, gap fills, and drag-and-sort classifying magnetic, optical, and solid-state storage devices",
     "color": "indigo"
-  },
-    {
-    "path": "Y11/Legislation/FillInBlanks.html",
-    "title": "Legislation Activities",
-    "year": "Year 11",
-    "topic": "Legislation",
-    "type": "Practice",
-    "stars": 3,
-    "desc": "3 drag-and-drop gap-fill exercises covering key legislation terms, DPA responsibilities, and scenario application",
-    "color": "orange"
-  },
-  {
-    "path": "Y11/NetworkHardware/router_switch_venn.html",
-    "title": "Router vs Switch",
-    "year": "Year 11",
-    "topic": "Networkhardware",
-    "type": "Practice",
-    "stars": 2,
-    "desc": "Drag-and-drop Venn diagram sorting router-only, switch-only, and shared features of network devices",
-    "color": "red"
-  },
-  {
-    "path": "Y11/Networks/network_topology_builder.html",
-    "title": "Network Topology Builder",
-    "year": "Year 11",
-    "topic": "Networks",
-    "type": "Challenge",
-    "stars": 4,
-    "desc": "Interactive canvas \u2014 build star and mesh topologies across 6 tasks covering peer-to-peer and client-server models",
-    "color": "cyan"
-  },
-    {
-    "path": "Demo/Spanish/spanish_speaking_exercises.html",
-    "title": "Spanish Speaking Skills",
-    "year": "Demo",
-    "topic": "Spanish",
-    "type": "Practice",
-    "stars": 4,
-    "desc": "5 exercises covering question words, sentence types, gap fills, tense recognition, and developed responses",
-    "color": "purple"
   }
 ]
