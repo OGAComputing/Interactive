@@ -262,10 +262,19 @@ color:  blue
   .t4-result { font-family:'Space Mono',monospace; font-size:13px; padding:10px 18px; border-radius:8px; background:var(--surface2); display:none; }
   .t4-result.show{display:inline-block;} .t4-result.ok{color:var(--green-l);} .t4-result.gold{color:var(--gold-l);} .t4-result.part{color:var(--amber-l);}
 
-  /* ── Stretch tab button ── */
+  /* ── Stretch tab button — hidden until all tasks go gold ── */
   .tab-btn-stretch {
+    display: none;
     border-color: var(--gold) !important;
     color: var(--gold-l) !important;
+  }
+  .tab-btn-stretch.unlocked {
+    display: inline-flex;
+    animation: stretch-appear 0.5s cubic-bezier(0.34,1.56,0.64,1);
+  }
+  @keyframes stretch-appear {
+    0%   { opacity:0; transform:scale(0.7); }
+    100% { opacity:1; transform:scale(1);   }
   }
   .tab-btn-stretch:hover { background: #2a1a00 !important; }
   .tab-btn-stretch.active { background: var(--gold) !important; border-color: var(--gold) !important; color: #000 !important; }
@@ -540,8 +549,18 @@ function triggerCompletion(perfect){
   const body=document.body,banner=document.getElementById('completionBanner');
   body.classList.remove('complete-green','complete-gold');
   banner.classList.remove('green-banner','gold-banner');
-  if(perfect){body.classList.add('complete-gold');banner.classList.add('gold-banner');banner.textContent='🌟  Superstar! Perfect score on all tasks — first time!  🌟';startFW(true);}
-  else{body.classList.add('complete-green');banner.classList.add('green-banner');banner.textContent='🎉  Well done — all tasks complete!  🎉';}
+  if(perfect){
+    body.classList.add('complete-gold');
+    banner.classList.add('gold-banner');
+    banner.textContent='🌟  Superstar! Perfect score on all tasks — first time!  🌟';
+    startFW(true);
+    // Reveal the stretch tab
+    document.getElementById('tab-btn-4').classList.add('unlocked');
+  } else {
+    body.classList.add('complete-green');
+    banner.classList.add('green-banner');
+    banner.textContent='🎉  Well done — all tasks complete!  🎉';
+  }
   banner.style.display='block';setTimeout(()=>banner.classList.add('show'),10);
 }
 function cancelCompletion(){
@@ -549,6 +568,9 @@ function cancelCompletion(){
   const banner=document.getElementById('completionBanner');
   banner.classList.remove('show');
   document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('done-green','done-gold'));
+  document.getElementById('tab-btn-4').classList.remove('unlocked');
+  // Switch back to tab 1 if currently on stretch tab
+  if(document.getElementById('panel-4')?.classList.contains('active')) switchTab(1);
   task1Done=false;task1Perfect=false;task2Done=false;task2Perfect=false;task3Done=false;task3Perfect=false;
   try{ localStorage.removeItem(SAVE_KEY); } catch(e){}
 }
@@ -1307,6 +1329,7 @@ function restoreUI(){
   if(task1Done && task2Done && task3Done){
     const perfect = task1Perfect && task2Perfect && task3Perfect;
     triggerCompletion(perfect);
+    if(perfect) document.getElementById('tab-btn-4').classList.add('unlocked');
   }
 }
 
