@@ -61,13 +61,13 @@
   },
   {
     "path": "Y9/HardwareNetworks/ram_rom_exercise.html",
-    "title": "RAM vs ROM Sorting",
+    "title": "ram rom exercise",
     "year": "Year 9",
     "topic": "Hardwarenetworks",
-    "type": "Practice",
-    "stars": 2,
-    "desc": "3 drag-and-sort tasks covering RAM vs ROM, types of memory, and why secondary storage is needed",
-    "color": "blue"
+    "type": "Activity",
+    "stars": 0,
+    "desc": "",
+    "color": "teal"
   },
   {
     "path": "Y9/HardwareNetworks/secondary_storage_characteristics.html",
