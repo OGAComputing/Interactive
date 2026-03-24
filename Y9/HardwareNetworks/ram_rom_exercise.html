@@ -1,12 +1,4 @@
 <!DOCTYPE html>
-<!-- ACTIVITY
-title:  RAM vs ROM Sorting
-lesson: Year 9 — Hardware & Networks
-type:   Practice
-stars:  2
-desc:   3 drag-and-sort tasks covering RAM vs ROM, types of memory, and why secondary storage is needed
-color:  blue
--->
 <html lang="en">
 <head>
 <meta charset="UTF-8">
@@ -454,6 +446,7 @@ function cancelCompletion(){
   banner.classList.remove('show');
   document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('done-green','done-gold'));
   task1Done=false;task1Perfect=false;task2Done=false;task2Perfect=false;task3Done=false;task3Perfect=false;
+  try{ localStorage.removeItem(SAVE_KEY); } catch(e){}
 }
 function setTabTick(num,perfect){
   const tick=document.getElementById('tick-'+num);
@@ -1018,11 +1011,244 @@ function resetTask3(){
 }
 
 
+// ════════════════════════════════════════
+// SAVE / LOAD PROGRESS (localStorage)
+// ════════════════════════════════════════
+const SAVE_KEY = 'ramrom_progress_v1';
+
+function saveProgress(){
+  try {
+    const data = {
+      // Task 1
+      cardState: Object.fromEntries(Object.entries(cardState).map(([k,v])=>[k,{placed:v.placed,locked:v.locked}])),
+      t1EverWrong, task1Done, task1Perfect,
+      // Task 2A
+      devState: Object.fromEntries(Object.entries(devState).map(([k,v])=>[k,{placed:v.placed,locked:v.locked}])),
+      partADone, partAEverWrong,
+      // Task 2B
+      factState: Object.fromEntries(Object.entries(factState).map(([k,v])=>[k,{placed:v.placed,locked:v.locked}])),
+      partBDone, partBEverWrong,
+      // Task 2 overall
+      task2Done, task2Perfect,
+      // Task 3
+      stmState: Object.fromEntries(Object.entries(stmState).map(([k,v])=>[k,{selected:v.selected,locked:v.locked}])),
+      t3EverWrong, task3Done, task3Perfect,
+    };
+    localStorage.setItem(SAVE_KEY, JSON.stringify(data));
+  } catch(e) { /* storage unavailable */ }
+}
+
+function loadProgress(){
+  try {
+    const raw = localStorage.getItem(SAVE_KEY);
+    if(!raw) return false;
+    const d = JSON.parse(raw);
+
+    // Task 1
+    if(d.cardState){
+      Object.entries(d.cardState).forEach(([k,v])=>{
+        if(cardState[k]) { cardState[k].placed=v.placed; cardState[k].locked=v.locked; }
+      });
+    }
+    t1EverWrong  = d.t1EverWrong  || false;
+    task1Done    = d.task1Done    || false;
+    task1Perfect = d.task1Perfect || false;
+
+    // Task 2A
+    if(d.devState){
+      Object.entries(d.devState).forEach(([k,v])=>{
+        if(devState[k]) { devState[k].placed=v.placed; devState[k].locked=v.locked; }
+      });
+    }
+    partADone      = d.partADone      || false;
+    partAEverWrong = d.partAEverWrong || false;
+
+    // Task 2B
+    if(d.factState){
+      Object.entries(d.factState).forEach(([k,v])=>{
+        if(factState[k]) { factState[k].placed=v.placed; factState[k].locked=v.locked; }
+      });
+    }
+    partBDone      = d.partBDone      || false;
+    partBEverWrong = d.partBEverWrong || false;
+
+    task2Done    = d.task2Done    || false;
+    task2Perfect = d.task2Perfect || false;
+
+    // Task 3
+    if(d.stmState){
+      Object.entries(d.stmState).forEach(([k,v])=>{
+        if(stmState[k]) { stmState[k].selected=v.selected; stmState[k].locked=v.locked; }
+      });
+    }
+    t3EverWrong  = d.t3EverWrong  || false;
+    task3Done    = d.task3Done    || false;
+    task3Perfect = d.task3Perfect || false;
+
+    return true;
+  } catch(e) { return false; }
+}
+
+// Rebuild UI to reflect restored state (placed/locked cards, ticks, completion)
+function restoreUI(){
+  // ── Task 1 ──
+  const pool    = document.getElementById('cardPool');
+  const colRam  = document.getElementById('col-ram');
+  const colRom  = document.getElementById('col-rom');
+
+  statements.forEach(s => {
+    const st  = cardState[s.id];
+    const el  = document.getElementById('card-'+s.id);
+    if(!el) return;
+    if(st.locked){
+      // Move to correct column, style as locked correct
+      el.classList.remove('placed-ram','placed-rom');
+      el.classList.add('correct-card');
+      el.draggable = false;
+      el.querySelector('.card-badge').textContent = '✓';
+      const col = document.getElementById('col-'+s.answer);
+      col.querySelector('.col-empty-hint')?.remove();
+      col.appendChild(el);
+    } else if(st.placed){
+      el.classList.add(st.placed==='ram'?'placed-ram':'placed-rom');
+      const col = document.getElementById('col-'+st.placed);
+      col.querySelector('.col-empty-hint')?.remove();
+      col.appendChild(el);
+    }
+    // else stays in pool — already there from buildCards
+  });
+
+  // Remove empty hints from columns that have cards
+  [colRam,colRom].forEach(col=>{
+    if(col.querySelector('.stmt-card')) col.querySelector('.col-empty-hint')?.remove();
+  });
+
+  updateProgress();
+  if(task1Done) setTabTick(1, task1Perfect);
+
+  // ── Task 2A ──
+  devices.forEach(d => {
+    const st = devState[d.id];
+    const el = document.getElementById('dev-'+d.id);
+    if(!el) return;
+    if(st.locked){
+      el.classList.remove('dev-primary','dev-secondary');
+      el.classList.add('dev-correct');
+      el.querySelector('.device-badge').textContent='✓';
+    } else if(st.placed){
+      el.classList.add(st.placed==='primary'?'dev-primary':'dev-secondary');
+    }
+  });
+  if(partADone){
+    const res=document.getElementById('partAResult');
+    res.classList.add('show', !partAEverWrong?'all-gold':'all-correct');
+    res.textContent = !partAEverWrong?'🌟 Part A perfect!':'✅ Part A complete!';
+  }
+
+  // ── Task 2B ──
+  facts.forEach(f => {
+    const st = factState[f.id];
+    const el = document.getElementById('fact-'+f.id);
+    if(!el) return;
+    if(st.locked){
+      el.classList.remove('fact-ram','fact-rom','fact-cache');
+      el.classList.add('fact-correct');
+      el.querySelector('.fact-badge').textContent='✓';
+      const drop = document.getElementById('drop-'+f.answer);
+      drop.querySelector('.col-empty-hint')?.remove();
+      drop.appendChild(el);
+    } else if(st.placed){
+      el.classList.add('fact-'+st.placed);
+      const drop = document.getElementById('drop-'+st.placed);
+      drop.querySelector('.col-empty-hint')?.remove();
+      drop.appendChild(el);
+    }
+  });
+  // Re-add empty hints to empty drops
+  ['ram','rom','cache'].forEach(t=>{
+    const drop=document.getElementById('drop-'+t);
+    if(!drop.querySelector('.fact-card')){
+      const h=document.createElement('span');h.className='col-empty-hint';
+      h.style.cssText='margin:auto;display:block;padding:8px 0;';
+      h.textContent=(t==='cache'?'Cache':t.toUpperCase())+' facts here';
+      drop.appendChild(h);
+    }
+  });
+  if(partBDone){
+    const res=document.getElementById('t3Result');
+    res.classList.add('show', !partBEverWrong?'gold':'ok');
+    res.textContent=!partBEverWrong?'🌟 Part B perfect!':'✅ Part B complete!';
+  }
+
+  if(task2Done) setTabTick(2, task2Perfect);
+
+  // ── Task 3 ──
+  stmItems.forEach(q => {
+    const st   = stmState[q.id];
+    const card = document.getElementById('stm-'+q.id);
+    if(!card) return;
+    const opts = card.querySelectorAll('.stm-opt');
+    if(st.locked){
+      const badge    = document.getElementById('badge-'+q.id);
+      const errSpan  = document.getElementById('err-'+q.id);
+      // Was it correct or wrong?
+      const wasCorrect = st.selected === q.correct;
+      if(wasCorrect){
+        card.classList.add('stm-correct');
+        badge.textContent='✓'; badge.style.display='inline';
+        errSpan.textContent=q.correct;
+        errSpan.style.color='var(--green-l)';
+        errSpan.style.borderBottomColor='var(--green)';
+      } else {
+        badge.textContent='✗'; badge.style.display='inline';
+      }
+      opts.forEach(b=>{
+        b.classList.add('stm-opt-disabled');
+        if(b.dataset.value===q.correct)   b.classList.add('stm-opt-correct');
+        if(!wasCorrect && b.dataset.value===st.selected) b.classList.add('stm-opt-wrong');
+      });
+    } else if(st.selected){
+      opts.forEach(b=>{ if(b.dataset.value===st.selected) b.classList.add('stm-selected'); });
+    }
+  });
+  if(task3Done) setTabTick(3, task3Perfect);
+
+  // ── Overall completion ──
+  if(task1Done && task2Done && task3Done){
+    const perfect = task1Perfect && task2Perfect && task3Perfect;
+    triggerCompletion(perfect);
+  }
+}
+
+// Wrap all state-changing functions to auto-save after each action
+function wrapWithSave(...fns){ fns.forEach(name => { const orig=window[name]; window[name]=function(){ const r=orig.apply(this,arguments); saveProgress(); return r; }; }); }
+
 // Init
 initState();    buildCards();
 initDevState(); buildDevices();
 initFactState();buildFacts();
 initWhyState(); buildTask3();
+
+// Restore saved progress (or start fresh)
+const hadSaved = loadProgress();
+if(hadSaved) restoreUI();
+
+// Auto-save on every placement/check/reset
+// Patch key functions to call saveProgress after running
+(function(){
+  const toWrap = [
+    'placeCard','returnToPool','checkAnswers','resetAll',
+    'assignDevice','checkPartA','resetPartA',
+    'assignFact','returnFactToPool','checkPartB','resetPartB',
+    'checkTask3','resetTask3','selectOption'
+  ];
+  toWrap.forEach(name => {
+    const orig = window[name];
+    if(typeof orig === 'function'){
+      window[name] = function(){ const r=orig.apply(this,arguments); saveProgress(); return r; };
+    }
+  });
+})();
 </script>
 </body>
 </html>
