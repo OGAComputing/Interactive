@@ -1116,18 +1116,44 @@ function checkTab(ti) {
     FB('fb1_1',c1,
       c1?'<strong>✓ Correct!</strong> Marcus\'s laptop is the client — it sends a request to the gaming platform\'s computer asking to download the game.':
          '<strong>✗</strong> The <em>client</em> is the device that makes a request. Marcus\'s laptop requests the game from the platform — the platform\'s computer is the server.');
-    const c2=q(kw('t1_2',['request','download','send','laptop','marcus','initiat','does not store','no files','ask'])); markIn('t1_2',c2); setCard('cq1_2',c2);
-    FB('fb1_2',c2,
-      c2?'<strong>✓ Good!</strong> Suitable justifications: Marcus\'s laptop sends a request to the platform; it initiates the download; it does not store game files for others to access; it receives the game data in response.':
-         '<strong>✗</strong> Justifications for the client: Marcus\'s laptop <em>sends a request</em> to the platform\'s computer; it <em>initiates</em> the download; it does not store or provide game files for others.');
+
+    // Q2: needs TWO distinct reasons. Define separate reason groups; count how many groups match.
+    const clientReasonGroups = [
+      ['request','ask','initiat'],           // sends/initiates a request
+      ['download','receive','receiv'],        // receives/downloads the data
+      ['does not store','no files','not store','doesn\'t store','not provid'], // doesn't store for others
+      ['marcus','laptop','it','computer'],    // referring to the device as actor (only valid alongside another group)
+    ];
+    const t1_2val = ($('t1_2')?.value||'').toLowerCase();
+    // Count how many distinct groups are evidenced — but group 3 (just "it"/"computer") doesn't count alone
+    const c2groups = clientReasonGroups.slice(0,3).filter(g => g.some(kw => t1_2val.includes(kw)));
+    const c2 = q(c2groups.length >= 2);
+    markIn('t1_2', c2); setCard('cq1_2', c2);
+    FB('fb1_2', c2,
+      c2 ? '<strong>✓ Good!</strong> Two distinct reasons identified.' :
+           `<strong>✗</strong> Only ${c2groups.length} distinct reason(s) found — two are needed. Justifications for the client include: it <em>sends a request</em> to the platform; it <em>initiates the download</em>; it does <em>not store</em> game files for others to access. Each must be a separate, distinct point.`);
+
     const c3=q(R('q1_3')==='d'); markMC('q1_3','d'); setCard('cq1_3',c3);
     FB('fb1_3',c3,
       c3?'<strong>✓ Correct!</strong> The gaming platform\'s computer is the server — it stores the game files and responds to download requests.':
          '<strong>✗</strong> The <em>server</em> is the computer that provides a service. The gaming platform\'s computer stores the game files and sends them when requested.');
-    const c4=q(kw('t1_4',['store','game','file','respond','request','receive','provide','send','platform','host','data','execut'])); markIn('t1_4',c4); setCard('cq1_4',c4);
-    FB('fb1_4',c4,
-      c4?'<strong>✓ Good!</strong> Suitable justifications: the platform\'s computer stores/hosts the game files; it receives and responds to the download request; it sends the game data to the client; it manages Marcus\'s account.':
-         '<strong>✗</strong> Justifications for the server: the platform\'s computer <em>stores</em> the game files; it <em>receives</em> the download request; it <em>responds</em> by sending the game data to Marcus\'s laptop.');
+
+    // Q4: needs TWO distinct reasons about the server
+    const serverReasonGroups = [
+      ['store','host','contain','hold'],        // stores/hosts the files
+      ['respond','response','execut','process'], // responds to/processes requests
+      ['send','provid','transmit','deliver'],    // sends the data to client
+      ['receiv','accept','get'],                 // receives the request
+      ['manag','account','user'],               // manages accounts
+    ];
+    const t1_4val = ($('t1_4')?.value||'').toLowerCase();
+    const c4groups = serverReasonGroups.filter(g => g.some(kw => t1_4val.includes(kw)));
+    const c4 = q(c4groups.length >= 2);
+    markIn('t1_4', c4); setCard('cq1_4', c4);
+    FB('fb1_4', c4,
+      c4 ? '<strong>✓ Good!</strong> Two distinct reasons identified.' :
+           `<strong>✗</strong> Only ${c4groups.length} distinct reason(s) found — two are needed. Justifications for the server include: it <em>stores/hosts</em> the game files; it <em>receives and responds</em> to the download request; it <em>sends</em> the game data to the client. Each must be a separate, distinct point.`);
+
     const c5=q(R('q1_5')==='b'); markMC('q1_5','b'); setCard('cq1_5',c5);
     FB('fb1_5',c5,
       c5?'<strong>✓ Correct!</strong> Priya\'s laptop is also a client — it sends a request to the same platform\'s computer asking to download her game.':
@@ -1145,13 +1171,51 @@ function checkTab(ti) {
     FB('fb2_2',c2, c2?'<strong>✓ Correct!</strong> Central management of software and security is the key advantage at scale.':'<strong>✗</strong> With 200 computers, the major benefit is <em>central management</em> — updates and security deployed from one place.');
     const c3=q(R('q2_3')==='b'); markMC('q2_3','b'); setCard('cq2_3',c3);
     FB('fb2_3',c3, c3?'<strong>✓ Correct!</strong> No server + equal computers = peer-to-peer.':'<strong>✗</strong> With no dedicated server and computers sharing directly, this is <em>peer-to-peer</em>.');
-    const CA=['central','file','store','security','backup','monitor','software','update'];
-    const CB=['access','any','computer','all','individ','each','central','one place'];
-    const ca=kw('t2_4a',CA),cb=kw('t2_4b',CB),cc=kw('t2_4c',CA),cd=kw('t2_4d',CB);
-    markIn('t2_4a',ca); markIn('t2_4b',cb); markIn('t2_4c',cc); markIn('t2_4d',cd);
-    q(ca); q(cb); q(cc); q(cd);
-    setCard('cq2_4',ca&&cb&&cc&&cd);
-    FB('fb2_4',ca&&cb&&cc&&cd,(ca&&cb&&cc&&cd)?'<strong>✓ Good!</strong> Mark scheme: benefit + reason, 2 marks each. E.g. Central file storage → workers can access from any computer.':'<strong>✗</strong> Each benefit needs a reason. Examples:<ul><li>Central file storage → access from any computer; P2P files spread across machines.</li><li>Central backups → all data backed up; P2P needs individual backups.</li><li>Central software updates → update once; P2P needs each machine updated.</li><li>Central security → one antivirus/firewall; P2P needs security on each device.</li></ul>');
+
+    // Q4: benefit+reason pairs must be thematically linked.
+    // Define topic clusters — each cluster has benefit keywords AND reason keywords.
+    // A pair passes only if benefit AND reason both hit the SAME cluster (or an adjacent one).
+    const clusters = [
+      { b: ['file','storage','store'],          r: ['access','any computer','any machine','from any','anywhere','different computer'] },
+      { b: ['backup','back up','back-up'],       r: ['automatically','all data','protect','loss','recover','one place'] },
+      { b: ['software','update','install'],      r: ['central','once','all computer','individual','each machine','without visiting'] },
+      { b: ['security','antivirus','firewall','virus'], r: ['all','protect','every','central','install','each computer','device'] },
+      { b: ['monitor','monitor client','performance'], r: ['working','check','status','perform'] },
+    ];
+
+    function pairOk(benefitField, reasonField) {
+      const bv = ($( benefitField)?.value||'').toLowerCase();
+      const rv = ($(reasonField)?.value||'').toLowerCase();
+      if (!bv.trim() || !rv.trim()) return false;
+      // Passes if there exists ANY cluster whose benefit keywords appear in bv AND reason keywords appear in rv
+      return clusters.some(cl =>
+        cl.b.some(kw => bv.includes(kw)) &&
+        cl.r.some(kw => rv.includes(kw))
+      );
+    }
+
+    const pair1ok = pairOk('t2_4a','t2_4b');
+    const pair2ok = pairOk('t2_4c','t2_4d');
+
+    // Also check the pairs aren't identical topics (both files, both security etc)
+    const pair1topic = clusters.findIndex(cl => cl.b.some(kw=>($('t2_4a')?.value||'').toLowerCase().includes(kw)));
+    const pair2topic = clusters.findIndex(cl => cl.b.some(kw=>($('t2_4c')?.value||'').toLowerCase().includes(kw)));
+    const differentTopics = pair1topic === -1 || pair2topic === -1 || pair1topic !== pair2topic;
+
+    markIn('t2_4a', pair1ok); markIn('t2_4b', pair1ok);
+    markIn('t2_4c', pair2ok); markIn('t2_4d', pair2ok);
+
+    const allPairsOk = pair1ok && pair2ok && differentTopics;
+    q(pair1ok); q(pair2ok);
+    setCard('cq2_4', allPairsOk);
+    const pairFB = allPairsOk
+      ? '<strong>✓ Good!</strong> Both benefit+reason pairs are correctly linked.'
+      : '<strong>✗</strong> Each benefit must be paired with a matching reason <em>in the same box pair</em>. '
+        + (!pair1ok ? 'Benefit 1 and Reason 1 don\'t match up. ' : '')
+        + (!pair2ok ? 'Benefit 2 and Reason 2 don\'t match up. ' : '')
+        + (!differentTopics ? 'Both benefits are about the same topic — choose two different benefits. ' : '')
+        + 'Examples: <em>Central file storage</em> → workers can access files from any computer. <em>Central backups</em> → all data is backed up automatically. <em>Central security</em> → antivirus only needs installing once.';
+    FB('fb2_4', allPairsOk, pairFB);
 
   } else if (ti===3) {
     // Q3.1 — classify drag
