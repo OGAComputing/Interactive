@@ -122,6 +122,82 @@ color:  teal
   .completion-banner p { color: var(--teal-light); font-size: 0.9rem; }
 
   #fw { position: fixed; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 9999; }
+
+  /* ── Extension panel ── */
+  #ext-panel { display: none; padding: 24px 28px 48px; max-width: 960px; margin: 0 auto; }
+  #ext-panel.visible { display: block; }
+
+  .ext-intro {
+    background: linear-gradient(135deg, rgba(255,209,102,0.08), rgba(244,162,97,0.06));
+    border: 2px solid rgba(255,209,102,0.35);
+    border-radius: 10px; padding: 20px 22px 16px; margin-bottom: 24px;
+  }
+  .ext-intro-header { display: flex; align-items: center; gap: 12px; margin-bottom: 10px; flex-wrap: wrap; }
+  .ext-badge {
+    padding: 3px 12px; border-radius: 20px;
+    background: rgba(255,209,102,0.18); border: 1px solid var(--gold);
+    font-size: 0.72rem; font-weight: 700; color: var(--gold);
+    text-transform: uppercase; letter-spacing: 0.1em;
+  }
+  .ext-intro h2 { font-size: 1.2rem; color: var(--gold); font-family: 'Trebuchet MS', sans-serif; }
+  .ext-intro p  { font-size: 0.88rem; color: var(--muted); line-height: 1.6; }
+
+  .ext-challenge-grid {
+    display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 16px; margin-bottom: 24px;
+  }
+  .ext-card { background: var(--navy-mid); border: 2px solid var(--navy-light); border-radius: 10px; overflow: hidden; transition: border-color 0.3s; }
+  .ext-card.done { border-color: var(--green); }
+  .ext-card-header { padding: 10px 14px; background: rgba(255,255,255,0.04); border-bottom: 1px solid var(--navy-light); display: flex; align-items: center; gap: 10px; }
+  .ext-card-num { width: 28px; height: 28px; border-radius: 50%; background: var(--gold); color: var(--navy); display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 0.8rem; flex-shrink: 0; }
+  .ext-card-title { font-size: 0.9rem; font-weight: 700; color: var(--white); flex: 1; }
+  .ext-card-stars { color: var(--gold); font-size: 0.78rem; }
+  .ext-card-body { padding: 14px; }
+  .ext-card-body p { font-size: 0.83rem; color: var(--muted); line-height: 1.55; margin-bottom: 12px; }
+
+  .ext-code {
+    background: var(--code-bg); border-radius: 7px;
+    border: 1px solid rgba(255,255,255,0.07);
+    font-family: 'Courier New', monospace; font-size: 0.8rem;
+    line-height: 1.7; color: var(--code-text);
+    padding: 10px 14px; white-space: pre; overflow-x: auto; margin-bottom: 12px;
+  }
+
+  .ext-controls { display: flex; gap: 8px; flex-wrap: wrap; }
+  .ext-reveal-btn {
+    padding: 6px 16px; border-radius: 6px;
+    border: 1px solid rgba(255,209,102,0.4); background: rgba(255,209,102,0.08);
+    color: var(--gold); font-family: inherit; font-size: 0.8rem; font-weight: 600;
+    cursor: pointer; transition: background 0.2s;
+  }
+  .ext-reveal-btn:hover { background: rgba(255,209,102,0.18); }
+  .ext-done-btn {
+    padding: 6px 16px; border-radius: 6px;
+    border: 2px solid var(--teal); background: none; color: var(--teal);
+    font-family: inherit; font-size: 0.8rem; font-weight: 700;
+    cursor: pointer; transition: background 0.2s, color 0.2s;
+  }
+  .ext-done-btn:hover  { background: var(--teal); color: var(--navy); }
+  .ext-done-btn.done   { background: var(--green); border-color: var(--green); color: #fff; cursor: default; }
+
+  .ext-reveal-content {
+    display: none; margin-top: 10px; padding: 10px 13px;
+    background: rgba(0,0,0,0.25); border-radius: 6px;
+    border: 1px solid rgba(255,209,102,0.15);
+    font-size: 0.8rem; color: #c8d8f0; line-height: 1.6;
+  }
+  .ext-reveal-content.visible { display: block; }
+  .ext-reveal-content code { font-family: 'Courier New', monospace; color: var(--code-err); background: rgba(255,255,255,0.06); padding: 1px 5px; border-radius: 3px; }
+
+  .ext-rw-callout {
+    margin-top: 24px; padding: 16px 20px;
+    background: rgba(0,180,216,0.07); border-left: 3px solid var(--teal);
+    border-radius: 0 8px 8px 0; font-size: 0.87rem; color: #c8d8f0; line-height: 1.65;
+  }
+  .ext-rw-callout strong { color: var(--teal); }
+
+  /* Extension tab gold active state */
+  .tab.ext-tab.active { border-bottom-color: var(--gold); color: var(--gold); }
 </style>
 </head>
 <body>
@@ -150,6 +226,7 @@ color:  teal
   <button class="tab amber" data-idx="4">5 — School Score <span class="star">★★★</span></button>
   <button class="tab amber" data-idx="5">6 — Birthday Calc <span class="star">★★★★</span></button>
   <button class="tab amber" data-idx="6">7 — Score Grader <span class="star">★★★★</span></button>
+  <button class="tab ext-tab" data-idx="ext">Extension <span class="star">★★★★★</span></button>
 </nav>
 
 <div id="done-banner" class="completion-banner">
@@ -480,6 +557,116 @@ color:  teal
   <div class="ext-note">⭐ <strong>Extension:</strong> Once it works, add another <code>elif</code> branch for a grade "E" with its own message.</div>
 </div>
 
+<!-- ══ EXTENSION PANEL ══════════════════════════════════════════════ -->
+<div id="ext-panel">
+
+  <div class="ext-intro">
+    <div class="ext-intro-header">
+      <div class="ext-badge">⭐ Extension · 5–10 min</div>
+      <h2>Introduce-a-Bug Challenge</h2>
+    </div>
+    <p>You've been finding and fixing other people's bugs. Now it's your turn to <strong>introduce</strong> bugs deliberately — then swap with a partner to fix. This is how real programmers do code review.</p>
+  </div>
+
+  <div class="ext-challenge-grid">
+
+    <!-- Challenge 1 -->
+    <div class="ext-card" id="ext-card-1">
+      <div class="ext-card-header">
+        <div class="ext-card-num">1</div>
+        <div class="ext-card-title">Read &amp; Run</div>
+        <div class="ext-card-stars">★★</div>
+      </div>
+      <div class="ext-card-body">
+        <p>Copy this <strong>working program</strong> into Thonny and run it to confirm it works. Read each line carefully — what does each one do?</p>
+        <div class="ext-code">celsius = int(input("Enter temp in °C: "))
+fahrenheit = celsius * 9 / 5 + 32
+print("In Fahrenheit: " + str(fahrenheit))</div>
+        <div class="ext-controls">
+          <button class="ext-done-btn" onclick="extDone(this,1)">✓ Done</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Challenge 2 -->
+    <div class="ext-card" id="ext-card-2">
+      <div class="ext-card-header">
+        <div class="ext-card-num">2</div>
+        <div class="ext-card-title">Introduce 3 Bugs</div>
+        <div class="ext-card-stars">★★★</div>
+      </div>
+      <div class="ext-card-body">
+        <p>Introduce <strong>exactly 3 bugs</strong> into the temperature program. Use at least <strong>two different error types</strong> (e.g. missing colon, missing quote, misspelled variable). Keep a mental note of what you changed.</p>
+        <p>Do <strong>not</strong> tell your partner what you broke.</p>
+        <div class="ext-controls">
+          <button class="ext-done-btn" onclick="extDone(this,2)">✓ Done</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Challenge 3 -->
+    <div class="ext-card" id="ext-card-3">
+      <div class="ext-card-header">
+        <div class="ext-card-num">3</div>
+        <div class="ext-card-title">Swap &amp; Fix</div>
+        <div class="ext-card-stars">★★★</div>
+      </div>
+      <div class="ext-card-body">
+        <p>Swap your broken version with a partner. Before running it, try to <strong>spot the bugs by reading</strong>. Can you name the error type for each one?</p>
+        <p>Then run it in Thonny and fix all the bugs.</p>
+        <div class="ext-controls">
+          <button class="ext-done-btn" onclick="extDone(this,3)">✓ Fixed partner's code</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Challenge 4 -->
+    <div class="ext-card" id="ext-card-4">
+      <div class="ext-card-header">
+        <div class="ext-card-num">4</div>
+        <div class="ext-card-title">Silent Bug</div>
+        <div class="ext-card-stars">★★★★</div>
+      </div>
+      <div class="ext-card-body">
+        <p>Can you introduce a bug that gives a <strong>wrong answer</strong> but <strong>no error message</strong>? These are the hardest bugs to find.</p>
+        <p>Hint: try changing a number or an operator in the formula. The program still runs — but the output is wrong.</p>
+        <div class="ext-controls">
+          <button class="ext-reveal-btn" onclick="toggleReveal(this,'rev-4')">💡 Show example</button>
+          <button class="ext-done-btn" onclick="extDone(this,4)">✓ Done</button>
+        </div>
+        <div class="ext-reveal-content" id="rev-4">
+          Example: change <code>* 9 / 5 + 32</code> to <code>* 9 / 5 - 32</code>. The program runs without errors, but every answer is wrong. Your partner needs to check the <em>logic</em>, not just the syntax.
+        </div>
+      </div>
+    </div>
+
+    <!-- Challenge 5 -->
+    <div class="ext-card" id="ext-card-5">
+      <div class="ext-card-header">
+        <div class="ext-card-num">5</div>
+        <div class="ext-card-title">Write Your Own</div>
+        <div class="ext-card-stars">★★★★★</div>
+      </div>
+      <div class="ext-card-body">
+        <p>Write a <strong>brand new program</strong> from scratch. It must use <code>input()</code>, at least one <code>if / else</code>, and print different messages. Then break it in <strong>2 places</strong> and swap again.</p>
+        <div class="ext-controls">
+          <button class="ext-reveal-btn" onclick="toggleReveal(this,'rev-5')">💡 Stuck? Show an idea</button>
+          <button class="ext-done-btn" onclick="extDone(this,5)">✓ Done</button>
+        </div>
+        <div class="ext-reveal-content" id="rev-5">
+          Idea: ask a user for their favourite colour, then print a message saying whether it matches yours. Use <code>input()</code> to get the colour and <code>if colour == "blue":</code> to decide the message.
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <div class="ext-rw-callout">
+    💡 <strong>Real-world link:</strong> Professional programmers review each other's code every day — it's called <em>code review</em>. Being able to read unfamiliar code and spot bugs is one of the most valued skills in the industry.
+  </div>
+
+</div>
+
 <script>
 const tasks = [
   // Task 1: close quote on Alice, add opening quote to Hello
@@ -615,11 +802,17 @@ function markDone(idx) {
 
 document.getElementById('tab-bar').addEventListener('click', e => {
   const b = e.target.closest('.tab'); if (!b) return;
-  const i = +b.dataset.idx;
   document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
-  document.querySelectorAll('.panel').forEach(p=>p.classList.remove('active'));
   b.classList.add('active');
-  document.getElementById('panel-'+i).classList.add('active');
+  if (b.dataset.idx === 'ext') {
+    document.querySelectorAll('.panel').forEach(p=>p.classList.remove('active'));
+    document.getElementById('ext-panel').classList.add('visible');
+  } else {
+    const i = +b.dataset.idx;
+    document.querySelectorAll('.panel').forEach(p=>p.classList.remove('active'));
+    document.getElementById('ext-panel').classList.remove('visible');
+    document.getElementById('panel-'+i).classList.add('active');
+  }
 });
 
 function toggleHint(idx) {
@@ -674,6 +867,38 @@ function draw() {
   ctx.globalAlpha=1;
   if (pts.length>0) requestAnimationFrame(draw); else anim=false;
 }
+
+// ── Extension panel ──────────────────────────────────────────────────
+(function() {
+  window.toggleReveal = function(btn, id) {
+    const el = document.getElementById(id);
+    el.classList.toggle('visible');
+    btn.textContent = el.classList.contains('visible') ? '🙈 Hide' : '💡 Show example';
+  };
+
+  window.extDone = function(btn, n) {
+    if (btn.classList.contains('done')) return;
+    btn.classList.add('done');
+    btn.textContent = '✓ Done!';
+    document.getElementById('ext-card-'+n).classList.add('done');
+    try {
+      const saved = JSON.parse(localStorage.getItem('bugfix_ext') || '[]');
+      saved[n] = true;
+      localStorage.setItem('bugfix_ext', JSON.stringify(saved));
+    } catch(e) {}
+  };
+
+  try {
+    const saved = JSON.parse(localStorage.getItem('bugfix_ext') || '[]');
+    saved.forEach((v, n) => {
+      if (!v || !n) return;
+      const btn = document.querySelector('#ext-card-'+n+' .ext-done-btn');
+      if (btn) { btn.classList.add('done'); btn.textContent = '✓ Done!'; }
+      const card = document.getElementById('ext-card-'+n);
+      if (card) card.classList.add('done');
+    });
+  } catch(e) {}
+})();
 </script>
 </body>
 </html>
