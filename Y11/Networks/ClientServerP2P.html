@@ -137,7 +137,38 @@ color:  orange
   .completion-banner.green-banner{background:#d1fae5;border:2px solid var(--teal);color:#065f46;display:block;}
   .completion-banner.gold-banner{background:var(--gold-bg);border:2px solid var(--gold-border);color:#7a5c00;display:block;}
 
-  /* TRUE/FALSE TABLE */
+  /* FILL-IN-THE-BLANKS */
+  .fitb-bank {
+    display: flex; flex-wrap: wrap; gap: 7px; padding: 12px 14px;
+    background: #1e2d3d; border-radius: 8px; margin-bottom: 14px;
+    min-height: 48px; border: 2px dashed #3d5166;
+  }
+  .fitb-word {
+    padding: 5px 13px; background: var(--navy); color: #fff;
+    border-radius: 16px; cursor: grab; font-size: .83rem; font-weight: 600;
+    user-select: none; transition: transform .15s, opacity .2s, box-shadow .15s;
+    box-shadow: 0 1px 4px rgba(0,0,0,.3); white-space: nowrap;
+  }
+  .fitb-word:hover { transform: scale(1.06); box-shadow: 0 3px 8px rgba(0,0,0,.35); }
+  .fitb-word:active { opacity: .6; cursor: grabbing; }
+  .fitb-para {
+    background: #f8fafc; border: 1px solid var(--border); border-radius: 8px;
+    padding: 16px 20px; line-height: 2.4; font-size: .93rem; color: var(--navy);
+  }
+  .fitb-slot {
+    display: inline-flex; align-items: center; justify-content: center;
+    min-width: 90px; height: 30px; border-bottom: 2px solid var(--orange);
+    border-radius: 4px; padding: 0 6px; vertical-align: middle;
+    background: #fff8f0; transition: background .2s, border-color .2s;
+    font-size: .83rem; font-weight: 700; color: var(--navy);
+    cursor: default; position: relative;
+  }
+  .fitb-slot.drag-over-slot {
+    background: #fff3e0; border-color: var(--orange-dark); border-bottom-width: 3px;
+  }
+  .fitb-slot.slot-correct { background: #ecfdf5; border-color: var(--teal); color: #065f46; }
+  .fitb-slot.slot-wrong   { background: #fef2f2; border-color: #e74c3c; color: #991b1b; }
+  .fitb-slot:empty::before { content: '…'; color: #aaa; font-weight: 400; }
   .tf-table{width:100%;border-collapse:collapse;margin-top:10px;font-size:.9rem;}
   .tf-table thead th{text-align:left;padding:8px 12px;background:#f1f5f9;border-bottom:2px solid var(--border);}
   .tf-table thead th:not(:first-child){text-align:center;width:70px;}
@@ -692,8 +723,20 @@ color:  orange
 
   <div class="card" id="cq5_2">
     <span class="q-marks">[4 marks]</span>
-    <h3>Q2. Hope's home network has three computers directly connected to each other with no dedicated server. Explain why Hope's network uses a <strong>peer-to-peer</strong> model and not a client-server model. Give <strong>four</strong> distinct points.</h3>
-    <textarea class="text-input" id="t5_2" placeholder="1.&#10;2.&#10;3.&#10;4." style="min-height:120px;"></textarea>
+    <h3>Q2. Complete the paragraph about Hope's network by dragging the correct words into the gaps.</h3>
+    <p style="font-size:.82rem;color:var(--muted);margin-bottom:10px;">Word bank — drag each word into a gap (some words are distractors and will not be used):</p>
+    <div class="fitb-bank" id="fitb2-bank"></div>
+    <div class="fitb-para" id="fitb2-para">
+      Hope's network is <span class="fitb-slot" data-ans="peer-to-peer" id="fs2_1"></span> because there is no
+      <span class="fitb-slot" data-ans="dedicated" id="fs2_2"></span> server. Each computer is
+      <span class="fitb-slot" data-ans="equal" id="fs2_3"></span> and
+      <span class="fitb-slot" data-ans="independent" id="fs2_4"></span>, managing its own
+      <span class="fitb-slot" data-ans="security" id="fs2_5"></span> and storing its own
+      <span class="fitb-slot" data-ans="files" id="fs2_6"></span>. If one computer fails, the
+      <span class="fitb-slot" data-ans="rest" id="fs2_7"></span> of the network can continue to work. This is different from a client-server network, which requires a
+      <span class="fitb-slot" data-ans="specialist" id="fs2_8"></span> to set up and has a
+      <span class="fitb-slot" data-ans="single" id="fs2_9"></span> point of failure.
+    </div>
     <div class="feedback" id="fb5_2"></div>
   </div>
 
@@ -711,9 +754,24 @@ color:  orange
 
   <div class="card" id="cq5_4">
     <span class="q-marks">[2 marks]</span>
-    <h3>Q4. Give <strong>two disadvantages</strong> of a client-server network compared to peer-to-peer.</h3>
-    <input type="text" class="text-input" id="t5_4a" placeholder="Disadvantage 1...">
-    <input type="text" class="text-input" id="t5_4b" placeholder="Disadvantage 2..." style="margin-top:8px;">
+    <h3>Q4. Complete the two sentences about disadvantages of a client-server network compared to peer-to-peer.</h3>
+    <p style="font-size:.82rem;color:var(--muted);margin-bottom:10px;">Word bank — drag the correct word into each gap:</p>
+    <div class="fitb-bank" id="fitb4-bank"></div>
+    <div class="fitb-para" id="fitb4-para">
+      <strong>Disadvantage 1:</strong> A client-server network is more
+      <span class="fitb-slot" data-ans="expensive" id="fs4_1"></span>
+      to set up because it requires a dedicated
+      <span class="fitb-slot" data-ans="server" id="fs4_2"></span>
+      and a trained IT
+      <span class="fitb-slot" data-ans="specialist" id="fs4_3"></span>.<br><br>
+      <strong>Disadvantage 2:</strong> If the
+      <span class="fitb-slot" data-ans="server" id="fs4_4"></span>
+      fails, all
+      <span class="fitb-slot" data-ans="clients" id="fs4_5"></span>
+      lose access to the network — it is a
+      <span class="fitb-slot" data-ans="single" id="fs4_6"></span>
+      point of failure.
+    </div>
     <div class="feedback" id="fb5_4"></div>
   </div>
 
@@ -731,8 +789,31 @@ color:  orange
 
   <div class="card" id="cq5_6">
     <span class="q-marks">[6 marks]</span>
-    <h3>Q6. A small graphic design studio (6 employees) is setting up a new network. Evaluate both client-server and peer-to-peer options, recommending the most suitable. Consider: file sharing, security, cost, and ease of management.</h3>
-    <textarea class="text-input" id="t5_6" placeholder="Write your evaluation here..." style="min-height:150px;"></textarea>
+    <h3>Q6. Complete the evaluation paragraph about a small graphic design studio (6 employees) choosing a network type.</h3>
+    <p style="font-size:.82rem;color:var(--muted);margin-bottom:10px;">Word bank — drag the correct word into each gap (some are distractors):</p>
+    <div class="fitb-bank" id="fitb6-bank"></div>
+    <div class="fitb-para" id="fitb6-para">
+      A <strong>peer-to-peer</strong> network would be
+      <span class="fitb-slot" data-ans="cheaper" id="fs6_1"></span>
+      to set up as no dedicated
+      <span class="fitb-slot" data-ans="server" id="fs6_2"></span>
+      is required and no IT
+      <span class="fitb-slot" data-ans="specialist" id="fs6_3"></span>
+      is needed. Each computer manages its own
+      <span class="fitb-slot" data-ans="security" id="fs6_4"></span>,
+      which could be a risk for a professional studio.<br><br>
+      A <strong>client-server</strong> network would allow
+      <span class="fitb-slot" data-ans="central" id="fs6_5"></span>
+      file storage so all designers can access project files from any computer. Security and software updates could also be managed
+      <span class="fitb-slot" data-ans="centrally" id="fs6_6"></span>,
+      but the setup
+      <span class="fitb-slot" data-ans="cost" id="fs6_7"></span>
+      is higher.<br><br>
+      For a studio with only
+      <span class="fitb-slot" data-ans="6" id="fs6_8"></span>
+      employees, peer-to-peer may be sufficient, but if sharing large design files is important, client-server would be more
+      <span class="fitb-slot" data-ans="suitable" id="fs6_9"></span>.
+    </div>
     <div class="feedback" id="fb5_6"></div>
   </div>
 
@@ -752,14 +833,143 @@ const state = {
   scores: new Array(N).fill(0),
   totals: new Array(N).fill(0),
   done:   new Array(N).fill(false),
-  gold:   new Array(N).fill(true), // first-time perfect per tab
+  gold:   new Array(N).fill(true),
 };
 
-// ═══════════════════ DRAG & DROP ═══════════════════
+// ═══════════════════ FILL-IN-THE-BLANKS DATA ═══════════════════
+// For each FITB question: correct words + plausible distractors
+const FITB_DATA = {
+  fitb2: {
+    correct:    ['peer-to-peer','dedicated','equal','independent','security','files','rest','specialist','single'],
+    distractors:['client-server','shared','central','connected','passwords','folders','all','manager','multiple','server']
+  },
+  fitb4: {
+    correct:    ['expensive','server','specialist','server','clients','single'],
+    distractors:['cheaper','router','manager','switch','users','double','technician']
+  },
+  fitb6: {
+    correct:    ['cheaper','server','specialist','security','central','centrally','cost','6','suitable'],
+    distractors:['slower','client','manager','privacy','local','manually','price','10','recommended','faster']
+  }
+};
+
+// ═══════════════════ SHUFFLE ═══════════════════
+function shuffle(arr) {
+  for (let i = arr.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [arr[i], arr[j]] = [arr[j], arr[i]];
+  }
+  return arr;
+}
+
+// ═══════════════════ BUILD FITB BANKS ═══════════════════
+function buildFITB(bankId, dataKey) {
+  const bank = document.getElementById(bankId);
+  if (!bank) return;
+  const data = FITB_DATA[dataKey];
+  // Pool: all correct answers (deduped) + distractors, shuffled
+  const pool = shuffle([...new Set([...data.correct, ...data.distractors])]);
+  pool.forEach((word, i) => {
+    const el = document.createElement('div');
+    el.className = 'fitb-word';
+    el.draggable = true;
+    el.textContent = word;
+    el.dataset.word = word;
+    el.id = `fw_${bankId}_${i}`;
+    bank.appendChild(el);
+  });
+}
+
+// ═══════════════════ FITB DRAG SETUP ═══════════════════
+function setupFITBDrag() {
+  // Re-attach to all fitb-word elements (called after building banks)
+  document.querySelectorAll('.fitb-word').forEach(el => {
+    el.addEventListener('dragstart', e => {
+      dragging = el;
+      e.dataTransfer.effectAllowed = 'move';
+      setTimeout(() => { el.style.opacity = '.4'; }, 0);
+    });
+    el.addEventListener('dragend', () => {
+      if (dragging) dragging.style.opacity = '1';
+      dragging = null;
+    });
+  });
+
+  document.querySelectorAll('.fitb-slot').forEach(slot => {
+    slot.addEventListener('dragover', e => { e.preventDefault(); slot.classList.add('drag-over-slot'); });
+    slot.addEventListener('dragleave', () => slot.classList.remove('drag-over-slot'));
+    slot.addEventListener('drop', e => {
+      e.preventDefault();
+      slot.classList.remove('drag-over-slot');
+      if (!dragging || !dragging.classList.contains('fitb-word')) return;
+      // If slot already has a word, send it back to the bank
+      if (slot.dataset.current) {
+        const oldWord = slot.dataset.current;
+        returnWordToBank(oldWord, slot.closest('.card'));
+      }
+      // Remove word from wherever it currently is
+      const word = dragging.dataset.word;
+      dragging.remove();
+      // Place word text into slot
+      slot.textContent = word;
+      slot.dataset.current = word;
+      slot.classList.remove('slot-correct','slot-wrong');
+    });
+    // Allow dropping back to bank by clicking the slot
+    slot.addEventListener('click', () => {
+      if (slot.dataset.current) {
+        returnWordToBank(slot.dataset.current, slot.closest('.card'));
+        slot.textContent = '';
+        delete slot.dataset.current;
+        slot.classList.remove('slot-correct','slot-wrong');
+      }
+    });
+  });
+}
+
+function returnWordToBank(word, card) {
+  const bank = card.querySelector('.fitb-bank');
+  if (!bank) return;
+  const el = document.createElement('div');
+  el.className = 'fitb-word';
+  el.draggable = true;
+  el.textContent = word;
+  el.dataset.word = word;
+  bank.appendChild(el);
+  // Re-attach drag events to the new element
+  el.addEventListener('dragstart', e => {
+    dragging = el;
+    e.dataTransfer.effectAllowed = 'move';
+    setTimeout(() => { el.style.opacity = '.4'; }, 0);
+  });
+  el.addEventListener('dragend', () => {
+    if (dragging) dragging.style.opacity = '1';
+    dragging = null;
+  });
+}
+
+// ═══════════════════ RANDOMISE MCQ OPTIONS ═══════════════════
+function shuffleMCOptions() {
+  document.querySelectorAll('.mc-options').forEach(container => {
+    const labels = Array.from(container.querySelectorAll('label.mc-option'));
+    shuffle(labels);
+    labels.forEach(l => container.appendChild(l));
+  });
+}
+
+// ═══════════════════ RANDOMISE T/F ROWS ═══════════════════
+function shuffleTFRows() {
+  const tbody = document.querySelector('#tp3 .tf-table tbody');
+  if (!tbody) return;
+  const rows = Array.from(tbody.querySelectorAll('tr.tf-row'));
+  shuffle(rows);
+  rows.forEach(r => tbody.appendChild(r));
+}
+
+// ═══════════════════ DRAG & DROP (general) ═══════════════════
 let dragging = null;
 
 function setupDrag() {
-  // Draggable items (both .drag-item and .stmt-pill)
   document.querySelectorAll('.drag-item, .stmt-pill').forEach(el => {
     el.addEventListener('dragstart', e => {
       dragging = el;
@@ -771,14 +981,16 @@ function setupDrag() {
       dragging = null;
     });
   });
-  // Drop zones (both .drag-area and .classify-drop)
   document.querySelectorAll('.drag-area, .classify-drop').forEach(zone => {
     zone.addEventListener('dragover', e => { e.preventDefault(); zone.classList.add('drag-over'); });
     zone.addEventListener('dragleave', () => zone.classList.remove('drag-over'));
     zone.addEventListener('drop', e => {
       e.preventDefault();
       zone.classList.remove('drag-over');
-      if (dragging) { zone.appendChild(dragging); dragging.style.opacity = '1'; }
+      if (dragging && !dragging.classList.contains('fitb-word')) {
+        zone.appendChild(dragging);
+        dragging.style.opacity = '1';
+      }
     });
   });
 }
@@ -794,9 +1006,7 @@ const $  = id => document.getElementById(id);
 const R  = name => { const el = document.querySelector(`input[name="${name}"]:checked`); return el ? el.value : null; };
 
 function setCard(id, ok) { $(id).classList.remove('correct','incorrect'); $(id).classList.add(ok?'correct':'incorrect'); }
-
 function FB(id, ok, msg) { const el=$(id); el.className='feedback show '+(ok?'correct':'incorrect'); el.innerHTML=msg; }
-
 function markMC(name, ans) {
   document.querySelectorAll(`input[name="${name}"]`).forEach(r => {
     const o = r.closest('.mc-option');
@@ -807,16 +1017,25 @@ function markMC(name, ans) {
 }
 function markSel(id, ok) { const e=$(id); if(!e) return; e.classList.remove('correct-sel','wrong-sel'); e.classList.add(ok?'correct-sel':'wrong-sel'); }
 function markIn(id, ok)  { const e=$(id); if(!e) return; e.classList.remove('correct-input','wrong-input'); e.classList.add(ok?'correct-input':'wrong-input'); }
-
-function kw(id, words) {
-  const v=($(id)?.value||'').toLowerCase().trim();
-  return v && words.some(w=>v.includes(w));
-}
-
-function dragVals(zoneId) {
-  return Array.from($(zoneId).querySelectorAll('.drag-item')).map(e=>e.dataset.value);
-}
+function kw(id, words) { const v=($(id)?.value||'').toLowerCase().trim(); return v && words.some(w=>v.includes(w)); }
+function dragVals(zoneId) { return Array.from($(zoneId).querySelectorAll('.drag-item')).map(e=>e.dataset.value); }
 function arrMatch(a,b){ return a.length===b.length && a.every(v=>b.includes(v)) && b.every(v=>a.includes(v)); }
+
+// Check a FITB card — returns {score, total, allCorrect}
+function checkFITB(slotIds) {
+  let score = 0, total = slotIds.length, allCorrect = true;
+  slotIds.forEach(id => {
+    const slot = $(id);
+    if (!slot) return;
+    const got = (slot.dataset.current || '').toLowerCase().trim();
+    const expected = slot.dataset.ans.toLowerCase().trim();
+    const ok = got === expected;
+    slot.classList.remove('slot-correct','slot-wrong');
+    slot.classList.add(ok ? 'slot-correct' : 'slot-wrong');
+    if (ok) score++; else allCorrect = false;
+  });
+  return { score, total, allCorrect };
+}
 
 // ═══════════════════ PROGRESS ═══════════════════
 function updateProgress() {
@@ -849,8 +1068,7 @@ function finishTab(ti, score, total, allOk) {
   const done = score === total && total > 0;
   if (!allOk) state.gold[ti] = false;
   state.done[ti] = done;
-  const btn = $(`tb${ti}`);
-  btn.classList.toggle('done', done);
+  $(`tb${ti}`).classList.toggle('done', done);
   const banner = $(`cb${ti}`);
   if (done) {
     banner.className = 'completion-banner '+(state.gold[ti]?'gold-banner':'green-banner');
@@ -879,44 +1097,37 @@ function launchConfetti(gold) {
 function checkTab(ti) {
   let score=0, total=0, allOk=true;
   function q(ok){ total++; if(ok) score++; else allOk=false; return ok; }
+  function qN(n, ok){ total+=n; if(ok) score+=n; else allOk=false; return ok; }
 
   if (ti===0) {
     const c1=q(R('q0_1')==='b'); markMC('q0_1','b'); setCard('cq0_1',c1);
     FB('fb0_1',c1, c1?'<strong>✓ Correct!</strong> The server provides services, data or resources to clients.':'<strong>✗</strong> The <em>server</em> provides resources; the <em>client</em> requests them.');
-
     const c2=q(R('q0_2')==='c'); markMC('q0_2','c'); setCard('cq0_2',c2);
     FB('fb0_2',c2, c2?'<strong>✓ Correct!</strong> In P2P, all computers are equal peers — no dedicated server.':'<strong>✗</strong> In peer-to-peer, all computers are equal with no dedicated server.');
-
     const ma=$('m0_1').value==='b', mb=$('m0_2').value==='a', mc=$('m0_3').value==='d', md=$('m0_4').value==='c';
     [['m0_1',ma],['m0_2',mb],['m0_3',mc],['m0_4',md]].forEach(([id,ok])=>markSel(id,ok));
     const c3=q(ma&&mb&&mc&&md); setCard('cq0_3',c3);
     FB('fb0_3',c3, c3?'<strong>✓ Correct!</strong> Client = requests (b); Server = dedicated/stores (a); P2P = no central, all equal (d); Star topology = all connect to one central switch (c).':'<strong>✗</strong> Client <em>requests</em> resources (b). Server is a <em>dedicated computer</em> that stores/manages (a). Peer-to-peer = no central point, all equal (d). Star topology = all devices connect to one central switch/hub (c).');
-
     const c4=q(R('q0_4')==='true'); markMC('q0_4','true'); setCard('cq0_4',c4);
     FB('fb0_4',c4, c4?'<strong>✓ Correct!</strong> P2P has no single point of failure — one device failing doesn\'t bring down the rest.':'<strong>✗</strong> True. In P2P each computer is independent, so one failing doesn\'t affect the others.');
 
   } else if (ti===1) {
-    // Q1 — correct answer is b (Marcus's laptop)
     const c1=q(R('q1_1')==='b'); markMC('q1_1','b'); setCard('cq1_1',c1);
     FB('fb1_1',c1,
       c1?'<strong>✓ Correct!</strong> Marcus\'s laptop is the client — it sends a request to the gaming platform\'s computer asking to download the game.':
          '<strong>✗</strong> The <em>client</em> is the device that makes a request. Marcus\'s laptop requests the game from the platform — the platform\'s computer is the server.');
-    // Q2 — justify client (Marcus's laptop)
     const c2=q(kw('t1_2',['request','download','send','laptop','marcus','initiat','does not store','no files','ask'])); markIn('t1_2',c2); setCard('cq1_2',c2);
     FB('fb1_2',c2,
       c2?'<strong>✓ Good!</strong> Suitable justifications: Marcus\'s laptop sends a request to the platform; it initiates the download; it does not store game files for others to access; it receives the game data in response.':
          '<strong>✗</strong> Justifications for the client: Marcus\'s laptop <em>sends a request</em> to the platform\'s computer; it <em>initiates</em> the download; it does not store or provide game files for others.');
-    // Q3 — correct answer is d (gaming platform's computer)
     const c3=q(R('q1_3')==='d'); markMC('q1_3','d'); setCard('cq1_3',c3);
     FB('fb1_3',c3,
       c3?'<strong>✓ Correct!</strong> The gaming platform\'s computer is the server — it stores the game files and responds to download requests.':
          '<strong>✗</strong> The <em>server</em> is the computer that provides a service. The gaming platform\'s computer stores the game files and sends them when requested.');
-    // Q4 — justify server (platform's computer)
     const c4=q(kw('t1_4',['store','game','file','respond','request','receive','provide','send','platform','host','data','execut'])); markIn('t1_4',c4); setCard('cq1_4',c4);
     FB('fb1_4',c4,
       c4?'<strong>✓ Good!</strong> Suitable justifications: the platform\'s computer stores/hosts the game files; it receives and responds to the download request; it sends the game data to the client; it manages Marcus\'s account.':
          '<strong>✗</strong> Justifications for the server: the platform\'s computer <em>stores</em> the game files; it <em>receives</em> the download request; it <em>responds</em> by sending the game data to Marcus\'s laptop.');
-    // Q5 — Priya's laptop is also a client
     const c5=q(R('q1_5')==='b'); markMC('q1_5','b'); setCard('cq1_5',c5);
     FB('fb1_5',c5,
       c5?'<strong>✓ Correct!</strong> Priya\'s laptop is also a client — it sends a request to the same platform\'s computer asking to download her game.':
@@ -930,17 +1141,15 @@ function checkTab(ti) {
     $('drop-p2p').classList.toggle('correct-zone',p2pOk); $('drop-p2p').classList.toggle('wrong-zone',!p2pOk);
     const c1=q(csOk&&p2pOk); setCard('cq2_1',c1);
     FB('fb2_1',c1, c1?'<strong>✓ Correct!</strong> CS: central files, backups, software updates. P2P: own security, no server needed, individual software installs.':'<strong>✗</strong> CS features: <em>central</em> file storage, backups, software updates. P2P features: own security/files/software; no dedicated server.');
-
     const c2=q(R('q2_2')==='c'); markMC('q2_2','c'); setCard('cq2_2',c2);
     FB('fb2_2',c2, c2?'<strong>✓ Correct!</strong> Central management of software and security is the key advantage at scale.':'<strong>✗</strong> With 200 computers, the major benefit is <em>central management</em> — updates and security deployed from one place.');
     const c3=q(R('q2_3')==='b'); markMC('q2_3','b'); setCard('cq2_3',c3);
     FB('fb2_3',c3, c3?'<strong>✓ Correct!</strong> No server + equal computers = peer-to-peer.':'<strong>✗</strong> With no dedicated server and computers sharing directly, this is <em>peer-to-peer</em>.');
-
     const CA=['central','file','store','security','backup','monitor','software','update'];
     const CB=['access','any','computer','all','individ','each','central','one place'];
     const ca=kw('t2_4a',CA),cb=kw('t2_4b',CB),cc=kw('t2_4c',CA),cd=kw('t2_4d',CB);
     markIn('t2_4a',ca); markIn('t2_4b',cb); markIn('t2_4c',cc); markIn('t2_4d',cd);
-    q(ca); q(cb); q(cc); q(cd); // 4 separate marks
+    q(ca); q(cb); q(cc); q(cd);
     setCard('cq2_4',ca&&cb&&cc&&cd);
     FB('fb2_4',ca&&cb&&cc&&cd,(ca&&cb&&cc&&cd)?'<strong>✓ Good!</strong> Mark scheme: benefit + reason, 2 marks each. E.g. Central file storage → workers can access from any computer.':'<strong>✗</strong> Each benefit needs a reason. Examples:<ul><li>Central file storage → access from any computer; P2P files spread across machines.</li><li>Central backups → all data backed up; P2P needs individual backups.</li><li>Central software updates → update once; P2P needs each machine updated.</li><li>Central security → one antivirus/firewall; P2P needs security on each device.</li></ul>');
 
@@ -961,21 +1170,19 @@ function checkTab(ti) {
     });
     const c1=q(classOk); setCard('cq3_1',c1);
     FB('fb3_1',c1, c1?'<strong>✓ Perfect!</strong> All 12 statements correctly classified.':'<strong>✗</strong> Some statements are in the wrong category:<ul><li><strong>Client-server:</strong> dedicated server, central updates, central security</li><li><strong>Peer-to-peer:</strong> own security/files, no server needed, independent failure</li><li><strong>Star topology:</strong> central switch, one cable per device, isolated faults</li><li><strong>Mesh topology:</strong> all devices connected, most cabling, alternative routes on failure</li></ul>');
-
-    // Q3.2 — T/F
-    const tfAnswers=['false','true','false','true','false'];
+    // Q3.2 — T/F (answers stored on each row as data-ans; order is randomised)
+    const tfRows = Array.from(document.querySelectorAll('#tp3 .tf-row'));
     let tfAll=true;
-    for(let i=1;i<=5;i++){
-      const got=R(`tf${i}`);
-      const ok=got===tfAnswers[i-1];
-      const row=$(`tfr${i}`);
+    tfRows.forEach(row => {
+      const name = row.querySelector('input[type=radio]').name;
+      const got = R(name);
+      const ok = got === row.dataset.ans;
       row.classList.remove('row-ok','row-err');
       row.classList.add(ok?'row-ok':'row-err');
       if(!ok) tfAll=false;
-    }
+    });
     const c2=q(tfAll); setCard('cq3_2',c2);
     FB('fb3_2',c2, c2?'<strong>✓ Correct!</strong> All true/false answers correct.':'<strong>✗</strong> Review: (1) False — star topology ≠ CS model; (2) True — mesh has alternative routes; (3) False — P2P and mesh are separate concepts; (4) True — CS server handles central backups; (5) False — if the switch fails in a star, all lose connection.');
-
     // Q3.3 — scenario classify
     const sa=$('sc1').value==='cs', sb=$('sc2').value==='star', sc=$('sc3').value==='p2p', sd=$('sc4').value==='mesh';
     markSel('sc1',sa); markSel('sc2',sb); markSel('sc3',sc); markSel('sc4',sd);
@@ -1001,18 +1208,43 @@ function checkTab(ti) {
   } else if (ti===5) {
     const c1=q(R('q5_1')==='c'); markMC('q5_1','c'); setCard('cq5_1',c1);
     FB('fb5_1',c1, c1?'<strong>✓ Correct!</strong> Topology (star/mesh) = physical layout. Network model (CS/P2P) = how resources are shared. Completely independent concepts.':'<strong>✗ Key distinction!</strong> Topology and network model are <em>completely separate</em>. A star topology does not mean client-server. A mesh topology does not mean peer-to-peer.');
-    const c2=q(kw('t5_2',['no server','no dedicated','equal','independent','decentrali','own security','own file','own software','own backup','directly'])); markIn('t5_2',c2); setCard('cq5_2',c2);
-    FB('fb5_2',c2, c2?'<strong>✓ Good!</strong> Valid points: no dedicated server; computers equal/independent; each manages own security; each stores own files; software installed individually; cheaper/no specialist; if one fails the rest continue.':'<strong>✗</strong> Four from:<ul><li>No dedicated server (required for CS)</li><li>Computers are equal/independent/decentralised</li><li>Each device manages its own security</li><li>Each device stores its own files</li><li>Software installed/updated individually</li><li>Cheaper — no specialist required</li><li>If one device fails, the rest continue</li></ul>');
+
+    // Q5.2 FITB — 9 slots
+    const fitb2slots = ['fs2_1','fs2_2','fs2_3','fs2_4','fs2_5','fs2_6','fs2_7','fs2_8','fs2_9'];
+    const f2 = checkFITB(fitb2slots);
+    // Count correct slots as individual marks, max 4 (we map 9 slots → 4 marks; award mark per 2+ correct)
+    const f2marks = Math.min(4, Math.floor(f2.score / 2) + (f2.score >= 9 ? 1 : 0));
+    total += 4; score += f2marks; if (f2.score < 9) allOk = false;
+    setCard('cq5_2', f2.allCorrect);
+    FB('fb5_2', f2.allCorrect,
+      f2.allCorrect ? '<strong>✓ Perfect!</strong> All gaps filled correctly. Hope\'s network is peer-to-peer: no dedicated server, equal/independent computers, own security and files, rest continues on failure, needs no specialist.' :
+      `<strong>✗</strong> ${9 - f2.score} gap(s) incorrect. Correct answers: peer-to-peer | dedicated | equal | independent | security | files | rest | specialist | single`);
+
     const c3=q(R('q5_3')==='b'); markMC('q5_3','b'); setCard('cq5_3',c3);
     FB('fb5_3',c3, c3?'<strong>✓ Correct!</strong> A hospital with centralised requirements needs client-server.':'<strong>✗</strong> A hospital with 500 computers and central records/security/backups needs <em>client-server</em>. Note — topology is a separate question!');
-    const ca=q(kw('t5_4a',['expensive','cost','specialist','technician','server','central point','failure','single point']));
-    const cb=q(kw('t5_4b',['expensive','cost','specialist','technician','server','central point','failure','single point']));
-    markIn('t5_4a',ca); markIn('t5_4b',cb); setCard('cq5_4',ca&&cb);
-    FB('fb5_4',ca&&cb,(ca&&cb)?'<strong>✓ Good!</strong> Valid disadvantages: more expensive (needs a dedicated server); requires specialist; single point of failure.':'<strong>✗</strong> CS disadvantages:<ul><li>Higher initial cost — needs a dedicated server</li><li>Requires an IT specialist to set up and maintain</li><li>Single point of failure — if the server fails, all clients lose access</li></ul>');
+
+    // Q5.4 FITB — 6 slots
+    const fitb4slots = ['fs4_1','fs4_2','fs4_3','fs4_4','fs4_5','fs4_6'];
+    const f4 = checkFITB(fitb4slots);
+    total += 2; score += (f4.score >= 6 ? 2 : f4.score >= 3 ? 1 : 0);
+    if (f4.score < 6) allOk = false;
+    setCard('cq5_4', f4.allCorrect);
+    FB('fb5_4', f4.allCorrect,
+      f4.allCorrect ? '<strong>✓ Correct!</strong> Both disadvantages correctly completed: higher cost (dedicated server + specialist), and single point of failure if server goes down.' :
+      `<strong>✗</strong> ${6 - f4.score} gap(s) incorrect. Correct answers: expensive | server | specialist | server | clients | single`);
+
     const c5=q(R('q5_5')==='c'); markMC('q5_5','c'); setCard('cq5_5',c5);
     FB('fb5_5',c5, c5?'<strong>✓ Excellent!</strong> Changing topology has no effect on the network model — client-server stays client-server.':'<strong>✗ Critical point!</strong> Switching from mesh to star only changes the <em>physical layout</em>. The model is determined by whether there\'s a dedicated server — not by cable arrangement.');
-    const c6=q(kw('t5_6',['client-server','peer-to-peer','central','security','cost','recommend','small','6','manage','file'])); markIn('t5_6',c6); setCard('cq5_6',c6);
-    FB('fb5_6',c6, c6?'<strong>✓ Good attempt!</strong> A strong answer discusses P2P advantages (low cost, no specialist), CS advantages (central files, security, backups), weighs against 6 employees, and gives a reasoned recommendation.':'<strong>✗</strong> A good evaluation: (1) P2P pros — cheap, no specialist, no server; (2) CS pros — central files, security, backups; (3) weigh against 6 employees; (4) give a reasoned recommendation.');
+
+    // Q5.6 FITB — 9 slots
+    const fitb6slots = ['fs6_1','fs6_2','fs6_3','fs6_4','fs6_5','fs6_6','fs6_7','fs6_8','fs6_9'];
+    const f6 = checkFITB(fitb6slots);
+    total += 6; score += Math.min(6, Math.floor(f6.score * 6 / 9));
+    if (f6.score < 9) allOk = false;
+    setCard('cq5_6', f6.allCorrect);
+    FB('fb5_6', f6.allCorrect,
+      f6.allCorrect ? '<strong>✓ Perfect evaluation!</strong> All gaps correct. You correctly identified P2P advantages (cheaper, no server, no specialist), CS advantages (central files, central security, centrally managed), and made a justified recommendation.' :
+      `<strong>✗</strong> ${9 - f6.score} gap(s) incorrect. Correct answers: cheaper | server | specialist | security | central | centrally | cost | 6 | suitable`);
   }
 
   finishTab(ti, score, total, allOk);
@@ -1034,6 +1266,16 @@ function resetTab(ti) {
   panel.querySelectorAll('.mc-option').forEach(o=>o.classList.remove('correct-ans','wrong-ans'));
   panel.querySelectorAll('.match-select').forEach(s=>s.classList.remove('correct-sel','wrong-sel'));
   panel.querySelectorAll('.tf-row').forEach(r=>r.classList.remove('row-ok','row-err'));
+
+  // Reset FITB slots — return words to bank, clear slot text
+  panel.querySelectorAll('.fitb-slot').forEach(slot => {
+    if (slot.dataset.current) {
+      returnWordToBank(slot.dataset.current, slot.closest('.card'));
+      slot.textContent = '';
+      delete slot.dataset.current;
+      slot.classList.remove('slot-correct','slot-wrong');
+    }
+  });
 
   if (ti===2) {
     const src=$('drag-src');
@@ -1060,7 +1302,20 @@ function resetTab(ti) {
 }
 
 // ═══════════════════ INIT ═══════════════════
-document.addEventListener('DOMContentLoaded', () => { setupDrag(); updateProgress(); });
+document.addEventListener('DOMContentLoaded', () => {
+  // Build FITB word banks
+  buildFITB('fitb2-bank', 'fitb2');
+  buildFITB('fitb4-bank', 'fitb4');
+  buildFITB('fitb6-bank', 'fitb6');
+  // Set up all drag interactions
+  setupDrag();
+  setupFITBDrag();
+  // Randomise MCQ option order on every page load
+  shuffleMCOptions();
+  // Randomise T/F row order
+  shuffleTFRows();
+  updateProgress();
+});
 </script>
 </body>
 </html>
