@@ -30,6 +30,16 @@
     "color": "red"
   },
   {
+    "path": "Y11/Networks/ClientServerP2P.html",
+    "title": "Client-Server & Peer-to-Peer Networks",
+    "year": "Year 11",
+    "topic": "Networks",
+    "type": "Practice",
+    "stars": 3,
+    "desc": "Multi-tab interactive activity covering client-server, peer-to-peer, star and mesh topologies with escalating difficulty",
+    "color": "orange"
+  },
+  {
     "path": "Y11/Networks/network_topology_builder.html",
     "title": "Network Topology Builder",
     "year": "Year 11",
