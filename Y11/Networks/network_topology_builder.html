@@ -1,12 +1,4 @@
 <!DOCTYPE html>
-<!-- ACTIVITY
-title:  Network Topology Builder
-lesson: Year 11 — Networks
-type:   Challenge
-stars:  4
-desc:   Interactive canvas — build star and mesh topologies across 6 tasks covering peer-to-peer and client-server models
-color:  cyan
--->
 <html>
 <head>
 <meta charset="UTF-8">
@@ -34,7 +26,10 @@ color:  cyan
   .phase-tab.active { border-color: var(--accent); color: var(--accent); background: #091929; }
   .task-card { background: #0d1526; border: 1px solid var(--border); border-radius: 6px; padding: 8px 10px; margin-bottom: 6px; cursor: pointer; transition: all 0.2s; position: relative; }
   .task-card.active { border-color: var(--accent); background: #091929; }
-  .task-card.completed { border-color: var(--success); }
+  .task-card.completed-green { border-color: #00ff9d; background: #001a0d; }
+  .task-card.completed-gold  { border-color: #ffcc00; background: #1a1400; }
+  .task-card.completed-green .task-tick { display: block; color: #00ff9d; }
+  .task-card.completed-gold  .task-tick { display: block; color: #ffcc00; font-size: 0.85rem; }
   .task-card:hover { border-color: var(--accent); }
   .task-card h4 { font-size: 0.7rem; font-weight: 700; margin-bottom: 2px; }
   .task-card p { font-size: 0.58rem; color: var(--muted); line-height: 1.4; }
@@ -163,6 +158,7 @@ color:  cyan
 const TASKS = [
   {
     id:1, phase:1, key:'star-basic', cls:'tc-star-basic',
+    maxClients:7, maxServers:1, maxSwitches:1,
     icon:'⭐', label:'Task 1: Star Topology',
     short:'Switch + 5 clients, star wiring only',
     instruction:'<span class="c-star">Star Topology</span> — Place a switch, then connect at least 5 client PCs to it. No direct device-to-device links.',
@@ -170,13 +166,14 @@ const TASKS = [
   },
   {
     id:2, phase:1, key:'mesh-basic', cls:'tc-mesh-basic',
-    icon:'◈', label:'Task 2: Mesh Topology',
+    maxClients:6, maxServers:1, maxSwitches:1,
     short:'4 devices, every device directly linked',
     instruction:'<span class="c-mesh">Mesh Topology</span> — Add 4 devices and connect every device directly to every other (no switch needed)',
     hint:'<b>TASK 2 — MESH TOPOLOGY</b>No switch. Add 4 client PCs. Connect every PC to every other PC directly. 4 nodes = 6 required connections.',
   },
   {
     id:3, phase:2, key:'star-cs', cls:'tc-star-cs',
+    maxClients:6, maxServers:1, maxSwitches:1,
     icon:'⭐▣', label:'Task 3: Star + Client-Server',
     short:'Star wiring, one server, 4+ clients',
     instruction:'<span class="c-cs">Star — Client-Server</span> — Place a switch, add a server and at least 4 client PCs. Connect all to the switch.',
@@ -184,6 +181,7 @@ const TASKS = [
   },
   {
     id:4, phase:2, key:'star-p2p', cls:'tc-star-p2p',
+    maxClients:6, maxServers:1, maxSwitches:1,
     icon:'⭐⇌', label:'Task 4: Star + Peer-to-Peer',
     short:'Star wiring, 4+ clients, NO server',
     instruction:'<span class="c-star">Star — Peer-to-Peer</span> — Place a switch and at least 4 client PCs. Connect all to the switch. No server!',
@@ -191,6 +189,7 @@ const TASKS = [
   },
   {
     id:5, phase:2, key:'mesh-cs', cls:'tc-mesh-cs',
+    maxClients:5, maxServers:1, maxSwitches:1,
     icon:'◈▣', label:'Task 5: Mesh + Client-Server',
     short:'Full mesh, one server + 3+ clients',
     instruction:'<span class="c-mcs">Mesh — Client-Server</span> — Place a server and at least 3 client PCs. Connect every device directly to every other (no switch).',
@@ -198,7 +197,7 @@ const TASKS = [
   },
   {
     id:6, phase:2, key:'mesh-p2p', cls:'tc-mesh-p2p',
-    icon:'◈⇌', label:'Task 6: Mesh + Peer-to-Peer',
+    maxClients:6, maxServers:1, maxSwitches:1,
     short:'Full mesh, 4+ clients, NO server',
     instruction:'<span class="c-mesh">Mesh — Peer-to-Peer</span> — Place at least 4 client PCs and connect every device directly to every other. No switch, no server!',
     hint:'<b>TASK 6 — MESH PEER-TO-PEER</b>No switch, no server. Add at least 4 Client PCs. Connect every PC directly to every other PC. In P2P every device is an equal peer — no central authority or dedicated server.',
@@ -213,7 +212,8 @@ let nodes = [];
 let edges = [];
 let connectStart = null;
 let nodeIdCounter = 0;
-let taskCompleted = {};
+let taskCompleted = {};  // false | 'gold' | 'green'
+let taskFirstAttempt = {}; // true until first failed check
 let isDragging = false, dragNode = null, dragOffX = 0, dragOffY = 0;
 let pendingLabel = null;
 
@@ -222,7 +222,7 @@ const labelInput = document.getElementById('labelInput');
 
 // ── Boot ──────────────────────────────────────────────────────────────────────
 function init() {
-  TASKS.forEach(t => { taskCompleted[t.id] = false; });
+  TASKS.forEach(t => { taskCompleted[t.id] = false; taskFirstAttempt[t.id] = true; });
   renderTaskList();
   selectTask(1);
 }
@@ -241,13 +241,15 @@ function renderTaskList() {
   const list = document.getElementById('taskList');
   list.innerHTML = '';
   TASKS.filter(t => t.phase === currentPhase).forEach(t => {
+    const state = taskCompleted[t.id]; // false | 'gold' | 'green'
+    const completedCls = state === 'gold' ? ' completed-gold' : state === 'green' ? ' completed-green' : '';
     const div = document.createElement('div');
     div.className = 'task-card ' + t.cls +
-      (currentTaskId===t.id ? ' active' : '') +
-      (taskCompleted[t.id]  ? ' completed' : '');
+      (currentTaskId===t.id ? ' active' : '') + completedCls;
     div.id = 'taskcard'+t.id;
     div.onclick = () => selectTask(t.id);
-    div.innerHTML = '<div class="task-tick">✔</div><h4>'+t.icon+' '+t.label+'</h4><p>'+t.short+'</p>';
+    const tick = state ? '<div class="task-tick">'+(state==='gold'?'★':'✔')+'</div>' : '';
+    div.innerHTML = tick+'<h4>'+t.icon+' '+t.label+'</h4><p>'+t.short+'</p>';
     list.appendChild(div);
   });
 }
@@ -255,6 +257,8 @@ function renderTaskList() {
 // ── Task ──────────────────────────────────────────────────────────────────────
 function selectTask(id) {
   currentTaskId = id;
+  // Reset first-attempt status only if task not yet completed
+  if (!taskCompleted[id]) taskFirstAttempt[id] = true;
   resetCanvas();
   renderTaskList();
   const t = TASKS.find(x => x.id === id);
@@ -320,13 +324,40 @@ function onMouseUp() { isDragging=false; dragNode=null; }
 function placeNode(e, type) {
   const p2=pt(e);
   for (const n of nodes) if (Math.hypot(n.x-p2.x,n.y-p2.y)<50) return;
+
+  // Enforce per-task limits
+  const t = TASKS.find(x => x.id === currentTaskId);
+  if (t) {
+    const clientCount  = nodes.filter(n=>n.type==='device').length;
+    const serverCount  = nodes.filter(n=>n.type==='server').length;
+    const switchCount  = nodes.filter(n=>n.type==='hub').length;
+    if (type==='device' && clientCount  >= t.maxClients)  return showLimitMsg('client',  t.maxClients);
+    if (type==='server' && serverCount  >= t.maxServers)  return showLimitMsg('server',  t.maxServers);
+    if (type==='hub'    && switchCount  >= t.maxSwitches) return showLimitMsg('switch',  t.maxSwitches);
+  }
+
   const id=++nodeIdCounter;
   const dc=nodes.filter(n=>n.type==='device').length;
-  const sc=nodes.filter(n=>n.type==='server').length;
   const lbl = type==='hub' ? 'Switch'
+             : type==='server' ? 'Server'
              : 'PC'+(dc+1);
   nodes.push({id,x:p2.x,y:p2.y,type,label:lbl});
   render(); updateCounters(); showLabel(id,p2.x,p2.y);
+}
+
+function showLimitMsg(typeName, max) {
+  // brief flash message on canvas instead of full feedback overlay
+  const existing = document.getElementById('limitMsg');
+  if (existing) existing.remove();
+  const msg = document.createElement('div');
+  msg.id = 'limitMsg';
+  msg.style.cssText = 'position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);' +
+    'background:#1a0800;border:1.5px solid #ff6b35;border-radius:8px;padding:12px 20px;' +
+    'font-family:"Share Tech Mono",monospace;font-size:0.75rem;color:#ff6b35;text-align:center;' +
+    'z-index:90;pointer-events:none;';
+  msg.textContent = 'Limit reached: max ' + max + ' ' + typeName + (max===1?'':'s') + ' for this task.';
+  document.querySelector('.canvas-wrap').appendChild(msg);
+  setTimeout(()=>{ if(msg.parentNode) msg.parentNode.removeChild(msg); }, 1800);
 }
 
 function showLabel(id,x,y) {
@@ -638,14 +669,21 @@ function checkMeshP2P(){
 
 // ── Progress ──────────────────────────────────────────────────────────────────
 function markDone(id){
-  taskCompleted[id]=true;
+  const isGold = taskFirstAttempt[id];
+  taskCompleted[id] = isGold ? 'gold' : 'green';
   const done=Object.values(taskCompleted).filter(Boolean).length;
   document.getElementById('progressFill').style.width=(done/6*100)+'%';
   document.getElementById('progressPct').textContent=done+' / 6 tasks';
   renderTaskList();
 }
 
+function markFailed(id){
+  // Once a student gets a check wrong, first-attempt gold is no longer available
+  if (taskFirstAttempt[id]) taskFirstAttempt[id] = false;
+}
+
 function showFeedback(ok,title,msg){
+  if (!ok && currentTaskId) markFailed(currentTaskId);
   const el=document.getElementById('feedback');
   el.className='feedback-overlay'+(ok?'':' error');
   document.getElementById('feedbackTitle').textContent=title;
