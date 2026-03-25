@@ -282,54 +282,57 @@ color:  orange
 <!-- ═══ TAB 1 — IDENTIFY ═══ -->
 <div id="tp1" class="tab-panel">
   <div id="cb1" class="completion-banner"></div>
-  <div class="scenario"><strong>Scenario:</strong> An artist uploads images to be displayed on a website. Their computer connects to a web server to store and host the images online.</div>
+
+  <div class="scenario">
+    <strong>Scenario:</strong> Marcus wants to play a new game. He opens a gaming platform on his laptop and purchases the game. The platform's computer stores all the game files, manages his account, and sends the game data to his laptop when he clicks download. This is a client-server relationship.
+  </div>
 
   <div class="card" id="cq1_1">
     <span class="q-marks">[1 mark]</span>
-    <h3>Q1. Identify which computer is acting as the <strong>client</strong> in this scenario.</h3>
+    <h3>Q1. Which computer is acting as the <strong>client</strong> in this scenario?</h3>
     <div class="mc-options">
-      <label class="mc-option"><input type="radio" name="q1_1" value="a"> The web server</label>
-      <label class="mc-option"><input type="radio" name="q1_1" value="b"> The artist's computer</label>
-      <label class="mc-option"><input type="radio" name="q1_1" value="c"> The internet router</label>
-      <label class="mc-option"><input type="radio" name="q1_1" value="d"> Any computer that views the website</label>
+      <label class="mc-option"><input type="radio" name="q1_1" value="a"> The gaming platform's computer</label>
+      <label class="mc-option"><input type="radio" name="q1_1" value="b"> Marcus's laptop</label>
+      <label class="mc-option"><input type="radio" name="q1_1" value="c"> The internet router at Marcus's home</label>
+      <label class="mc-option"><input type="radio" name="q1_1" value="d"> Any computer that runs the same game</label>
     </div>
     <div class="feedback" id="fb1_1"></div>
   </div>
 
   <div class="card" id="cq1_2">
     <span class="q-marks">[2 marks]</span>
-    <h3>Q2. Give <strong>two</strong> reasons that justify why the artist's computer is the client.</h3>
+    <h3>Q2. Justify your answer to Q1. Give <strong>two</strong> reasons why that computer is the client.</h3>
     <textarea class="text-input" id="t1_2" placeholder="Reason 1:&#10;Reason 2:"></textarea>
     <div class="feedback" id="fb1_2"></div>
   </div>
 
   <div class="card" id="cq1_3">
     <span class="q-marks">[1 mark]</span>
-    <h3>Q3. Identify which computer is acting as the <strong>server</strong> in this scenario.</h3>
+    <h3>Q3. Which computer is acting as the <strong>server</strong> in this scenario?</h3>
     <div class="mc-options">
-      <label class="mc-option"><input type="radio" name="q1_3" value="a"> The artist's computer</label>
-      <label class="mc-option"><input type="radio" name="q1_3" value="b"> Any computer on the same network</label>
-      <label class="mc-option"><input type="radio" name="q1_3" value="c"> The web server</label>
-      <label class="mc-option"><input type="radio" name="q1_3" value="d"> The router</label>
+      <label class="mc-option"><input type="radio" name="q1_3" value="a"> Marcus's laptop</label>
+      <label class="mc-option"><input type="radio" name="q1_3" value="b"> The internet router</label>
+      <label class="mc-option"><input type="radio" name="q1_3" value="c"> Any computer connected to the same Wi-Fi</label>
+      <label class="mc-option"><input type="radio" name="q1_3" value="d"> The gaming platform's computer</label>
     </div>
     <div class="feedback" id="fb1_3"></div>
   </div>
 
   <div class="card" id="cq1_4">
     <span class="q-marks">[2 marks]</span>
-    <h3>Q4. Give <strong>two</strong> reasons that justify why the web server is the server.</h3>
+    <h3>Q4. Justify your answer to Q3. Give <strong>two</strong> reasons why that computer is the server.</h3>
     <textarea class="text-input" id="t1_4" placeholder="Reason 1:&#10;Reason 2:"></textarea>
     <div class="feedback" id="fb1_4"></div>
   </div>
 
   <div class="card" id="cq1_5">
     <span class="q-marks">[1 mark]</span>
-    <h3>Q5. A visitor opens the website in their browser. Are they now acting as a client or a server?</h3>
+    <h3>Q5. Marcus's friend Priya also uses the same gaming platform to buy a different game. Which role is Priya's laptop playing?</h3>
     <div class="mc-options">
-      <label class="mc-option"><input type="radio" name="q1_5" value="a"> Server — they are receiving data</label>
-      <label class="mc-option"><input type="radio" name="q1_5" value="b"> Client — their browser sends a request to the web server</label>
-      <label class="mc-option"><input type="radio" name="q1_5" value="c"> Neither — they are just a viewer</label>
-      <label class="mc-option"><input type="radio" name="q1_5" value="d"> Both — they send and receive data</label>
+      <label class="mc-option"><input type="radio" name="q1_5" value="a"> Server — it stores the game files for others to download</label>
+      <label class="mc-option"><input type="radio" name="q1_5" value="b"> Client — it sends a request to the platform's computer asking for the game</label>
+      <label class="mc-option"><input type="radio" name="q1_5" value="c"> Neither — it is only downloading, not communicating</label>
+      <label class="mc-option"><input type="radio" name="q1_5" value="d"> Both client and server simultaneously</label>
     </div>
     <div class="feedback" id="fb1_5"></div>
   </div>
@@ -893,16 +896,31 @@ function checkTab(ti) {
     FB('fb0_4',c4, c4?'<strong>✓ Correct!</strong> P2P has no single point of failure — one device failing doesn\'t bring down the rest.':'<strong>✗</strong> True. In P2P each computer is independent, so one failing doesn\'t affect the others.');
 
   } else if (ti===1) {
+    // Q1 — correct answer is b (Marcus's laptop)
     const c1=q(R('q1_1')==='b'); markMC('q1_1','b'); setCard('cq1_1',c1);
-    FB('fb1_1',c1, c1?'<strong>✓ Correct!</strong> The artist\'s computer makes the request — it is the client.':'<strong>✗</strong> The client is the device that <em>requests</em> a service — the artist\'s computer.');
-    const c2=q(kw('t1_2',['artist','request','upload','send','file','store','client','initiat'])); markIn('t1_2',c2); setCard('cq1_2',c2);
-    FB('fb1_2',c2, c2?'<strong>✓ Good!</strong> Suitable justifications: it sends the request/file to the server; it initiates the upload; it does not store data for others.':'<strong>✗</strong> Artist\'s computer sends a <em>request</em> to the web server; it sends files to be <em>stored</em>; it does not store data for others to access.');
-    const c3=q(R('q1_3')==='c'); markMC('q1_3','c'); setCard('cq1_3',c3);
-    FB('fb1_3',c3, c3?'<strong>✓ Correct!</strong> The web server stores and hosts the images.':'<strong>✗</strong> The <em>server</em> is the web server — it stores the images and responds to requests.');
-    const c4=q(kw('t1_4',['web server','store','upload','host','receive','request','respond','execut'])); markIn('t1_4',c4); setCard('cq1_4',c4);
-    FB('fb1_4',c4, c4?'<strong>✓ Good!</strong> Suitable justifications: images/data stored on it; it receives and responds to the upload request; it returns confirmation.':'<strong>✗</strong> Web server <em>stores/hosts</em> the images; it <em>receives</em> the upload request; it <em>responds</em> and returns confirmation.');
+    FB('fb1_1',c1,
+      c1?'<strong>✓ Correct!</strong> Marcus\'s laptop is the client — it sends a request to the gaming platform\'s computer asking to download the game.':
+         '<strong>✗</strong> The <em>client</em> is the device that makes a request. Marcus\'s laptop requests the game from the platform — the platform\'s computer is the server.');
+    // Q2 — justify client (Marcus's laptop)
+    const c2=q(kw('t1_2',['request','download','send','laptop','marcus','initiat','does not store','no files','ask'])); markIn('t1_2',c2); setCard('cq1_2',c2);
+    FB('fb1_2',c2,
+      c2?'<strong>✓ Good!</strong> Suitable justifications: Marcus\'s laptop sends a request to the platform; it initiates the download; it does not store game files for others to access; it receives the game data in response.':
+         '<strong>✗</strong> Justifications for the client: Marcus\'s laptop <em>sends a request</em> to the platform\'s computer; it <em>initiates</em> the download; it does not store or provide game files for others.');
+    // Q3 — correct answer is d (gaming platform's computer)
+    const c3=q(R('q1_3')==='d'); markMC('q1_3','d'); setCard('cq1_3',c3);
+    FB('fb1_3',c3,
+      c3?'<strong>✓ Correct!</strong> The gaming platform\'s computer is the server — it stores the game files and responds to download requests.':
+         '<strong>✗</strong> The <em>server</em> is the computer that provides a service. The gaming platform\'s computer stores the game files and sends them when requested.');
+    // Q4 — justify server (platform's computer)
+    const c4=q(kw('t1_4',['store','game','file','respond','request','receive','provide','send','platform','host','data','execut'])); markIn('t1_4',c4); setCard('cq1_4',c4);
+    FB('fb1_4',c4,
+      c4?'<strong>✓ Good!</strong> Suitable justifications: the platform\'s computer stores/hosts the game files; it receives and responds to the download request; it sends the game data to the client; it manages Marcus\'s account.':
+         '<strong>✗</strong> Justifications for the server: the platform\'s computer <em>stores</em> the game files; it <em>receives</em> the download request; it <em>responds</em> by sending the game data to Marcus\'s laptop.');
+    // Q5 — Priya's laptop is also a client
     const c5=q(R('q1_5')==='b'); markMC('q1_5','b'); setCard('cq1_5',c5);
-    FB('fb1_5',c5, c5?'<strong>✓ Correct!</strong> The visitor\'s browser sends a request to the web server — making them the client.':'<strong>✗</strong> The visitor is the <em>client</em> — their browser sends a request to the server for the web page.');
+    FB('fb1_5',c5,
+      c5?'<strong>✓ Correct!</strong> Priya\'s laptop is also a client — it sends a request to the same platform\'s computer asking to download her game.':
+         '<strong>✗</strong> Priya\'s laptop is also a <em>client</em> — it sends its own request to the server. The platform\'s computer is still the server for both of them.');
 
   } else if (ti===2) {
     const csZ=dragVals('drop-cs'), p2pZ=dragVals('drop-p2p');
