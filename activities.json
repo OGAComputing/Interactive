@@ -41,13 +41,13 @@
   },
   {
     "path": "Y11/Networks/network_topology_builder.html",
-    "title": "Network Topology Builder",
+    "title": "network topology builder",
     "year": "Year 11",
     "topic": "Networks",
-    "type": "Challenge",
-    "stars": 4,
-    "desc": "Interactive canvas \u2014 build star and mesh topologies across 6 tasks covering peer-to-peer and client-server models",
-    "color": "cyan"
+    "type": "Activity",
+    "stars": 0,
+    "desc": "",
+    "color": "teal"
   },
   {
     "path": "Y8/Python/Casting.html",
