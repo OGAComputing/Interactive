@@ -56,7 +56,7 @@
     "topic": "Python",
     "type": "Practice",
     "stars": 4,
-    "desc": "5 escalating bug-fix tasks \u2014 spot and fix Python errors",
+    "desc": "7 escalating bug-fix tasks \u2014 SyntaxError, NameError, IndentationError",
     "color": "teal"
   },
   {
