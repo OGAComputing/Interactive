@@ -1,12 +1,4 @@
 <!DOCTYPE html>
-<!-- ACTIVITY
-title:  Casting Exercises
-lesson: Year 8 — Python
-type:   Practice
-stars:  3
-desc:   3 tabbed exercises on writing type-cast fixes, deciding when to cast, and mixed casting in Python
-color:  teal
--->
 <html lang="en">
 <head>
 <meta charset="UTF-8">
@@ -48,17 +40,17 @@ body.bg-green{background:#c8f5d8}
 .chip-wrap{padding:12px 28px 0}
 .section-chip{display:inline-block;background:var(--green);color:#fff;font-size:10px;font-weight:bold;letter-spacing:.1em;padding:4px 12px;border-radius:3px;text-transform:uppercase}
 .page-title{font-size:26px;font-weight:bold;color:var(--navy);padding:4px 28px 8px}
-.inst{margin:0 28px 8px;padding:7px 14px;background:#1E2D40;border-left:4px solid var(--amber);border-radius:0 4px 4px 0;font-size:12.5px;color:#c8dce8;line-height:1.6}
+.inst{margin:6px 28px 8px;padding:7px 14px;background:#1E2D40;border-left:4px solid var(--amber);border-radius:0 4px 4px 0;font-size:12.5px;color:#c8dce8;line-height:1.6}
 .inst .hl{color:var(--amber);font-weight:bold}
 
 /* ── TAB 1 cast reference boxes ── */
-.cast-ref{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin:0 28px 10px}
-.cast-box{background:var(--codeBg);border-radius:5px;padding:12px 16px;display:flex;flex-direction:column;gap:5px}
+.cast-ref{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin:0 28px 8px}
+.cast-box{background:var(--codeBg);border-radius:5px;padding:9px 14px;display:flex;flex-direction:column;gap:4px}
 .cast-box-label{font-size:11px;font-weight:bold;text-transform:uppercase;letter-spacing:.08em;opacity:.7;color:#c8dce8}
-.cast-example{font-family:'Courier New',monospace;font-size:15px;line-height:1.75;color:var(--codeText)}
+.cast-example{font-family:'Courier New',monospace;font-size:14px;line-height:1.6;color:var(--codeText)}
 .cx-int{color:#FFB347;font-weight:bold}
 .cx-str{color:#C792EA;font-weight:bold}
-.cast-box-note{font-size:11.5px;color:#8fb8cc;font-style:italic;margin-top:1px}
+.cast-box-note{font-size:11px;color:#8fb8cc;font-style:italic}
 
 /* ── TAB 1 table ── */
 .tw{padding:0 28px;flex:1}
@@ -190,22 +182,18 @@ body.bg-green{background:#c8f5d8}
 
 <!-- ═══════════════════ TAB 1 ═══════════════════ -->
 <div class="tab-panel active" id="tab1">
-  <div class="chip-wrap"><span class="section-chip">MATCH-UP EXERCISE</span></div>
-  <div class="page-title">Match: Code &#8594; Error &#8594; Fix</div>
-  <div class="inst">&#128221;&nbsp; For each row, type the <span class="hl">fixed version of the orange line only</span> &#8212; not the whole program</div>
+  <div class="inst">&#128221;&nbsp; Type the <span class="hl">fixed version of the orange line</span> in column C — not the whole program</div>
 
   <div class="cast-ref">
     <div class="cast-box">
-      <div class="cast-box-label">Converting to a number &#8212; use int()</div>
+      <div class="cast-box-label">To convert to a number &#8212; wrap in <span class="cx-int">int( )</span></div>
       <div class="cast-example"><span class="cx-neutral">age = </span><span class="cx-int">int(</span><span class="cx-neutral">input("How old are you? ")</span><span class="cx-int">)</span></div>
-      <div class="cast-example"><span class="cx-neutral">year = </span><span class="cx-int">int(</span><span class="cx-neutral">input("Birth year: ")</span><span class="cx-int">)</span></div>
-      <div class="cast-box-note">Wrap <span class="cx-int">int( )</span> around input() when you need to do maths with the value</div>
+      <div class="cast-box-note">Use when you need to do maths with the value</div>
     </div>
     <div class="cast-box">
-      <div class="cast-box-label">Converting to text &#8212; use str()</div>
+      <div class="cast-box-label">To convert to text &#8212; wrap in <span class="cx-str">str( )</span></div>
       <div class="cast-example"><span class="cx-neutral">print("You are " + </span><span class="cx-str">str(</span><span class="cx-neutral">age</span><span class="cx-str">)</span><span class="cx-neutral"> + " years old")</span></div>
-      <div class="cast-example"><span class="cx-neutral">print("Score: " + </span><span class="cx-str">str(</span><span class="cx-neutral">points</span><span class="cx-str">)</span><span class="cx-neutral">)</span></div>
-      <div class="cast-box-note">Wrap <span class="cx-str">str( )</span> around a variable when you need to join it to a string with +</div>
+      <div class="cast-box-note">Use when joining a number to a string with +</div>
     </div>
   </div>
 
