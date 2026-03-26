@@ -111,12 +111,12 @@
   },
   {
     "path": "Y9/HardwareNetworks/secondary_storage_types.html",
-    "title": "Secondary Storage Types",
+    "title": "Secondary Storage \u2013 Types & Sorting",
     "year": "Year 9",
     "topic": "Hardwarenetworks",
     "type": "Practice",
     "stars": 3,
-    "desc": "MCQs, matching, gap fills, and drag-and-sort classifying magnetic, optical, and solid-state storage devices",
-    "color": "indigo"
+    "desc": "What is secondary storage, how each type works (with gap fill), and sorting devices",
+    "color": "purple"
   }
 ]
