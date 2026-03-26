@@ -1,15 +1,5 @@
 [
   {
-    "path": "Demo/Spanish/spanish_speaking_exercises.html",
-    "title": "Spanish Speaking Skills",
-    "year": "Demo",
-    "topic": "Spanish",
-    "type": "Practice",
-    "stars": 4,
-    "desc": "5 exercises covering question words, sentence types, gap fills, tense recognition, and developed responses",
-    "color": "purple"
-  },
-  {
     "path": "Y11/Legislation/FillInBlanks.html",
     "title": "Legislation Activities",
     "year": "Year 11",
