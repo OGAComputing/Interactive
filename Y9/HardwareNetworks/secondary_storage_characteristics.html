@@ -1,17 +1,17 @@
 <!DOCTYPE html>
-<!-- ACTIVITY
-title:  Secondary Storage Characteristics
-lesson: Year 9 — Hardware & Networks
-type:   Practice
-stars:  3
-desc:   MCQs, matching, gap fills, and scenario questions comparing speed, cost, capacity, and portability across storage types
-color:  indigo
--->
 <html lang="en">
 <head>
+<!-- ACTIVITY
+title:  Secondary Storage – Characteristics & Scenarios
+lesson: Secondary Storage
+type:   Practice
+stars:  4
+desc:   Characteristics of storage devices and applying knowledge to real-world scenarios
+color:  purple
+-->
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Secondary Storage – Exercise 1</title>
+<title>Secondary Storage – Exercise 2</title>
 <link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=DM+Sans:wght@400;500;700&display=swap" rel="stylesheet">
 <style>
   :root {
@@ -37,1033 +37,565 @@ color:  indigo
     color: var(--text);
     min-height: 100vh;
     padding: 24px 16px 48px;
+    transition: background 1.2s ease;
+  }
+  body.all-gold {
+    background: radial-gradient(ellipse at 50% 30%, #3a2800 0%, #1a1000 60%, #0d0d1a 100%);
   }
 
   h1 {
     font-family: 'Space Mono', monospace;
-    font-size: 1.3rem;
-    color: var(--accent);
-    text-align: center;
-    margin-bottom: 6px;
-    letter-spacing: 1px;
+    font-size: 1.3rem; color: var(--accent);
+    text-align: center; margin-bottom: 6px; letter-spacing: 1px;
   }
   .subtitle {
-    text-align: center;
-    color: var(--muted);
-    font-size: 0.85rem;
-    margin-bottom: 24px;
+    text-align: center; color: var(--muted);
+    font-size: 0.85rem; margin-bottom: 24px;
     font-family: 'Space Mono', monospace;
   }
 
+  /* ── TAB BAR ── */
   .tab-bar {
-    display: flex;
-    gap: 6px;
-    flex-wrap: wrap;
-    justify-content: center;
-    margin-bottom: 24px;
+    display: flex; gap: 6px; flex-wrap: wrap;
+    justify-content: center; margin-bottom: 24px;
   }
   .tab-btn {
-    font-family: 'Space Mono', monospace;
-    font-size: 0.72rem;
-    padding: 8px 14px;
-    border-radius: 6px;
-    border: 2px solid var(--border);
-    background: var(--surface);
-    color: var(--muted);
-    cursor: pointer;
-    transition: all .2s;
-    white-space: nowrap;
+    font-family: 'Space Mono', monospace; font-size: 0.72rem;
+    padding: 8px 14px; border-radius: 6px; border: 2px solid var(--border);
+    background: var(--surface); color: var(--muted); cursor: pointer;
+    transition: all .2s; white-space: nowrap;
   }
-  .tab-btn.active { border-color: var(--accent); color: var(--text); background: var(--surface2); }
-  .tab-btn.done-gold  { background: var(--gold);  border-color: var(--gold);  color: #000; }
-  .tab-btn.done-green { background: var(--green); border-color: var(--green); color: #000; }
+  .tab-btn.active    { border-color: var(--accent); color: var(--text); background: var(--surface2); }
+  .tab-btn.done-gold { background: var(--gold); border-color: var(--gold); color: #000; font-weight:700; }
+  .tab-btn.done-green{ background: var(--green); border-color: var(--green); color: #000; font-weight:700; }
 
   .panel { display: none; }
   .panel.active { display: block; }
 
   .card {
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: var(--radius);
-    padding: 22px 20px;
-    max-width: 780px;
-    margin: 0 auto 20px;
+    background: var(--surface); border: 1px solid var(--border);
+    border-radius: var(--radius); padding: 22px 20px;
+    max-width: 780px; margin: 0 auto 20px;
   }
-  .card h2 {
-    font-family: 'Space Mono', monospace;
-    font-size: 0.95rem;
-    color: var(--accent);
-    margin-bottom: 14px;
-  }
-  .card p { color: var(--muted); font-size: 0.88rem; margin-bottom: 14px; line-height: 1.5; }
-
-  .section-divider {
-    font-family: 'Space Mono', monospace;
-    font-size: 0.7rem;
-    color: var(--accent2);
-    text-transform: uppercase;
-    letter-spacing: 2px;
-    margin: 28px 0 16px;
-    display: flex;
-    align-items: center;
-    gap: 10px;
-  }
-  .section-divider::after {
-    content: '';
-    flex: 1;
-    height: 1px;
-    background: var(--border);
-  }
+  .card h2 { font-family:'Space Mono',monospace; font-size:0.95rem; color:var(--accent); margin-bottom:14px; }
+  .card p  { color:var(--muted); font-size:0.88rem; margin-bottom:14px; line-height:1.5; }
 
   /* ── MCQ ── */
   .question-block { margin-bottom: 22px; }
-  .question-block .q-text { font-size: 0.92rem; margin-bottom: 10px; line-height: 1.5; color: var(--text); }
-  .options { display: flex; flex-direction: column; gap: 7px; }
+  .q-text { font-size:0.92rem; margin-bottom:10px; line-height:1.5; color:var(--text); }
+  .options { display:flex; flex-direction:column; gap:7px; }
   .opt-btn {
-    font-family: 'DM Sans', sans-serif;
-    font-size: 0.88rem;
-    padding: 10px 14px;
-    border-radius: 8px;
-    border: 1.5px solid var(--border);
-    background: var(--surface2);
-    color: var(--text);
-    text-align: left;
-    cursor: pointer;
-    transition: all .15s;
+    font-family:'DM Sans',sans-serif; font-size:0.88rem;
+    padding:10px 14px; border-radius:8px; border:1.5px solid var(--border);
+    background:var(--surface2); color:var(--text); text-align:left;
+    cursor:pointer; transition:all .15s;
   }
   .opt-btn:hover:not(:disabled) { border-color: var(--accent2); }
-  .opt-btn.correct      { border-color: var(--gold);  background: rgba(245,158,11,0.12); color: var(--gold); }
-  .opt-btn.wrong        { border-color: var(--red);   background: rgba(239,68,68,0.1);   color: var(--red);  opacity:.7; }
-  .opt-btn.correct-late { border-color: var(--green); background: rgba(34,197,94,0.1);   color: var(--green); }
+  .opt-btn.correct      { border-color:var(--green); background:rgba(34,197,94,0.12);  color:var(--green); }
+  .opt-btn.wrong        { border-color:var(--red);   background:rgba(239,68,68,0.1);   color:var(--red);   opacity:.7; }
+  .opt-btn.correct-late { border-color:var(--green); background:rgba(34,197,94,0.07);  color:var(--green); opacity:.8; }
 
-  /* ── MATCH ── */
-  .match-pairs { display: grid; grid-template-columns: 1fr 1fr; gap: 10px 40px; margin-bottom: 14px; }
-  .match-item {
-    font-size: 0.85rem;
-    padding: 9px 12px;
-    border-radius: 8px;
-    border: 1.5px solid var(--border);
-    background: var(--surface2);
-    cursor: pointer;
-    transition: all .15s;
-    text-align: center;
-    user-select: none;
+  /* ── SCENARIO ── */
+  .scenario-label {
+    font-family:'Space Mono',monospace; font-size:0.72rem; color:var(--muted);
+    text-transform:uppercase; letter-spacing:1px; margin-bottom:6px; margin-top:22px;
   }
-  .match-item:hover:not(.matched-gold):not(.matched-green) { border-color: var(--accent2); }
-  .match-item.selected      { border-color: var(--accent);  background: rgba(168,85,247,0.1); }
-  .match-item.matched-gold  { border-color: var(--gold);    background: rgba(245,158,11,0.12); color: var(--gold);  cursor: default; }
-  .match-item.matched-green { border-color: var(--green);   background: rgba(34,197,94,0.12);  color: var(--green); cursor: default; }
-  .match-item.wrong-flash   { border-color: var(--red);     background: rgba(239,68,68,0.1); }
-  .col-label {
-    font-family: 'Space Mono', monospace;
-    font-size: 0.7rem;
-    color: var(--muted);
-    margin-bottom: 6px;
-    letter-spacing: 1px;
-    text-transform: uppercase;
+  .scenario-box {
+    background:var(--bg); border-left:3px solid var(--accent2);
+    padding:12px 14px; border-radius:0 8px 8px 0; margin-bottom:12px;
+    font-size:0.88rem; line-height:1.55; color:var(--text);
   }
+  .scenario-select {
+    font-family:'DM Sans',sans-serif; font-size:0.88rem;
+    padding:9px 12px; border-radius:8px; border:1.5px solid var(--border);
+    background:var(--surface2); color:var(--text);
+    width:100%; margin-bottom:8px; cursor:pointer;
+  }
+  .scenario-select:disabled { opacity:.6; cursor:default; }
+  .justify-input {
+    font-family:'DM Sans',sans-serif; font-size:0.85rem;
+    padding:10px 12px; border-radius:8px; border:1.5px solid var(--border);
+    background:var(--surface2); color:var(--text);
+    width:100%; resize:vertical; min-height:64px; margin-bottom:8px;
+  }
+  .justify-input:focus { outline:none; border-color:var(--accent2); }
+  .justify-input::placeholder { color:var(--muted); }
 
-  /* ── GAP FILL ── */
-  .gap-word-bank {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 8px;
-    min-height: 44px;
-    padding: 10px;
-    border-radius: 8px;
-    border: 2px dashed var(--border);
-    background: var(--bg);
-    margin-bottom: 18px;
+  /* ── REFERENCE TABLE ── */
+  details {
+    margin-bottom:16px; border:1px solid var(--border); border-radius:8px; overflow:hidden;
   }
-  .gap-word-bank.over { border-color: var(--accent); }
-
-  .word-chip {
-    font-family: 'Space Mono', monospace;
-    font-size: 0.75rem;
-    padding: 6px 12px;
-    border-radius: 20px;
-    background: var(--surface2);
-    border: 1.5px solid var(--accent2);
-    color: var(--text);
-    cursor: grab;
-    user-select: none;
-    transition: transform .15s, opacity .2s;
+  summary {
+    font-family:'Space Mono',monospace; font-size:0.75rem; color:var(--muted);
+    padding:10px 14px; cursor:pointer; background:var(--surface2);
+    list-style:none; display:flex; align-items:center; gap:8px;
   }
-  .word-chip:active { cursor: grabbing; transform: scale(1.06); }
-  .word-chip.used-correct { border-color: var(--gold);  background: rgba(245,158,11,0.15); cursor: default; }
-  .word-chip.used-green   { border-color: var(--green); background: rgba(34,197,94,0.12);  cursor: default; }
-
-  .gap-sentence {
-    font-size: 0.9rem;
-    line-height: 2.2;
-    color: var(--text);
-    margin-bottom: 10px;
-    display: flex;
-    align-items: center;
-    flex-wrap: wrap;
-    gap: 6px;
+  summary::before { content:'▶'; font-size:0.6rem; transition:transform .2s; }
+  details[open] summary::before { transform:rotate(90deg); }
+  details[open] summary { color:var(--text); }
+  .details-body { padding:12px 14px; }
+  .ref-table { width:100%; border-collapse:collapse; font-size:0.8rem; }
+  .ref-table th {
+    font-family:'Space Mono',monospace; font-size:0.68rem; text-transform:uppercase;
+    letter-spacing:1px; color:var(--accent2); border-bottom:1px solid var(--border);
+    padding:7px 8px; text-align:left;
   }
-  .gap-sentence .label {
-    font-family: 'Space Mono', monospace;
-    font-size: 0.7rem;
-    color: var(--accent2);
-    background: var(--surface2);
-    border-radius: 4px;
-    padding: 2px 7px;
-    margin-right: 4px;
-    white-space: nowrap;
-  }
-
-  .gap-slot {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    min-width: 120px;
-    height: 34px;
-    border-radius: 6px;
-    border: 2px dashed var(--border);
-    background: var(--bg);
-    padding: 0 8px;
-    transition: border-color .2s, background .2s;
-    position: relative;
-    cursor: default;
-  }
-  .gap-slot.over         { border-color: var(--accent); background: rgba(168,85,247,0.07); }
-  .gap-slot.filled-gold  { border-color: var(--gold);   background: rgba(245,158,11,0.1);  border-style: solid; }
-  .gap-slot.filled-green { border-color: var(--green);  background: rgba(34,197,94,0.08);  border-style: solid; }
-  .gap-slot.filled-wrong { border-color: var(--red);    background: rgba(239,68,68,0.08);  border-style: solid; }
-
-  .slot-text {
-    font-family: 'Space Mono', monospace;
-    font-size: 0.75rem;
-    color: var(--text);
-    pointer-events: none;
-  }
-  .slot-clear {
-    font-size: 0.65rem;
-    color: var(--muted);
-    cursor: pointer;
-    margin-left: 6px;
-    padding: 2px 4px;
-    border-radius: 3px;
-    transition: color .15s;
-    pointer-events: all;
-  }
-  .slot-clear:hover { color: var(--red); }
-
-  /* ── DEVICE SORT (DRAG & DROP) ── */
-  .drag-area {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 8px;
-    min-height: 44px;
-    padding: 10px;
-    border-radius: 8px;
-    border: 2px dashed var(--border);
-    background: var(--bg);
-    transition: border-color .2s;
-    margin-bottom: 8px;
-  }
-  .drag-area.over { border-color: var(--accent); }
-
-  .chip {
-    font-family: 'Space Mono', monospace;
-    font-size: 0.75rem;
-    padding: 6px 12px;
-    border-radius: 20px;
-    background: var(--surface2);
-    border: 1.5px solid var(--accent2);
-    color: var(--text);
-    cursor: grab;
-    user-select: none;
-    transition: opacity .2s, transform .15s;
-  }
-  .chip:active { cursor: grabbing; transform: scale(1.05); }
-  .chip.locked-correct { border-color: var(--gold);  background: rgba(245,158,11,0.15); cursor: default; }
-  .chip.locked-green   { border-color: var(--green); background: rgba(34,197,94,0.12);  cursor: default; }
-
-  .drop-row { display: grid; gap: 10px; margin-bottom: 12px; }
-  .drop-col {
-    background: var(--surface2);
-    border-radius: 8px;
-    padding: 10px;
-    border: 2px solid var(--border);
-    transition: border-color .2s;
-  }
-  .drop-col.over { border-color: var(--accent); }
-  .drop-col h3 {
-    font-family: 'Space Mono', monospace;
-    font-size: 0.72rem;
-    color: var(--accent2);
-    margin-bottom: 8px;
-    text-transform: uppercase;
-    letter-spacing: 1px;
-  }
-  .drop-zone { min-height: 38px; display: flex; flex-wrap: wrap; gap: 6px; }
+  .ref-table td { padding:7px 8px; border-bottom:1px solid var(--border); color:var(--text); vertical-align:top; line-height:1.4; }
+  .ref-table tr:last-child td { border-bottom:none; }
+  .ref-table tr:hover td { background:var(--surface2); }
 
   /* ── BUTTONS ── */
   .check-btn {
-    font-family: 'Space Mono', monospace;
-    font-size: 0.78rem;
-    padding: 9px 20px;
-    border-radius: 7px;
-    border: none;
-    background: var(--accent2);
-    color: #fff;
-    cursor: pointer;
-    transition: background .2s;
-    margin-top: 6px;
+    font-family:'Space Mono',monospace; font-size:0.78rem;
+    padding:9px 20px; border-radius:7px; border:none;
+    background:var(--accent2); color:#fff; cursor:pointer;
+    transition:background .2s; margin-top:6px;
   }
-  .check-btn:hover { background: var(--accent); }
+  .check-btn:hover { background:var(--accent); }
   .reset-btn {
-    font-family: 'Space Mono', monospace;
-    font-size: 0.72rem;
-    padding: 7px 16px;
-    border-radius: 7px;
-    border: 1.5px solid var(--border);
-    background: transparent;
-    color: var(--muted);
-    cursor: pointer;
-    transition: all .2s;
-    margin-left: 8px;
+    font-family:'Space Mono',monospace; font-size:0.72rem;
+    padding:7px 16px; border-radius:7px; border:1.5px solid var(--border);
+    background:transparent; color:var(--muted); cursor:pointer;
+    transition:all .2s; margin-left:8px;
   }
-  .reset-btn:hover { border-color: var(--red); color: var(--red); }
+  .reset-btn:hover { border-color:var(--red); color:var(--red); }
 
   .feedback {
-    font-family: 'Space Mono', monospace;
-    font-size: 0.78rem;
-    margin-top: 10px;
-    padding: 8px 12px;
-    border-radius: 6px;
-    display: none;
+    font-family:'Space Mono',monospace; font-size:0.78rem;
+    margin-top:10px; padding:8px 12px; border-radius:6px; display:none;
   }
-  .feedback.show { display: block; }
-  .feedback.ok   { background: rgba(245,158,11,0.1);  color: var(--gold);  border: 1px solid var(--gold); }
-  .feedback.redo { background: rgba(239,68,68,0.08);  color: #f87171;      border: 1px solid #f87171; }
-  .feedback.good { background: rgba(34,197,94,0.1);   color: var(--green); border: 1px solid var(--green); }
+  .feedback.show { display:block; }
+  .feedback.ok   { background:rgba(245,158,11,0.1);  color:var(--gold);  border:1px solid var(--gold); }
+  .feedback.redo { background:rgba(239,68,68,0.08);  color:#f87171;      border:1px solid #f87171; }
+  .feedback.good { background:rgba(34,197,94,0.1);   color:var(--green); border:1px solid var(--green); }
 
   .banner {
-    display: none;
-    font-family: 'Space Mono', monospace;
-    font-size: 20px;
-    font-weight: 700;
-    text-align: center;
-    padding: 18px;
-    border-radius: 10px;
-    margin-top: 16px;
-    max-width: 780px;
-    margin-left: auto;
-    margin-right: auto;
+    display:none; font-family:'Space Mono',monospace; font-size:20px; font-weight:700;
+    text-align:center; padding:18px; border-radius:10px; margin-top:16px;
+    max-width:780px; margin-left:auto; margin-right:auto;
   }
-  .banner.gold-banner  { background: rgba(245,158,11,0.15); color: var(--gold);  border: 2px solid var(--gold); }
-  .banner.green-banner { background: rgba(34,197,94,0.1);   color: var(--green); border: 2px solid var(--green); }
+  .banner.gold-banner  { background:rgba(245,158,11,0.15); color:var(--gold);  border:2px solid var(--gold); }
+  .banner.green-banner { background:rgba(34,197,94,0.1);   color:var(--green); border:2px solid var(--green); }
 
-  /* ── FX ── */
-  .firework { position: fixed; pointer-events: none; z-index: 999; }
-  .spark {
-    position: absolute;
-    width: 6px; height: 6px;
-    border-radius: 50%;
-    animation: spark-fly 0.9s ease-out forwards;
-  }
-  @keyframes spark-fly {
-    0%   { transform: translate(0,0) scale(1); opacity:1; }
-    100% { transform: translate(var(--dx),var(--dy)) scale(0); opacity:0; }
-  }
+  /* ── PULSE ── */
   @keyframes pulse-gold  { 0%,100%{box-shadow:0 0 0 0 rgba(245,158,11,0)}  50%{box-shadow:0 0 30px 12px rgba(245,158,11,0.18)} }
   @keyframes pulse-green { 0%,100%{box-shadow:0 0 0 0 rgba(34,197,94,0)}   50%{box-shadow:0 0 30px 12px rgba(34,197,94,0.15)} }
-  .pulse-gold  { animation: pulse-gold  1.6s ease-in-out; }
-  .pulse-green { animation: pulse-green 1.6s ease-in-out; }
+  .pulse-gold  { animation:pulse-gold  1.6s ease-in-out; }
+  .pulse-green { animation:pulse-green 1.6s ease-in-out; }
+
+  /* ── ALL-GOLD OVERLAY ── */
+  #goldOverlay {
+    display:none; position:fixed; inset:0; z-index:1000;
+    background:rgba(0,0,0,0.82);
+    align-items:center; justify-content:center; flex-direction:column; gap:0;
+  }
+  #goldOverlay.show { display:flex; }
+  .overlay-star { font-size:5rem; animation:star-pulse 1.4s ease-in-out infinite; }
+  @keyframes star-pulse {
+    0%,100%{ transform:scale(1);    filter:drop-shadow(0 0 10px #f59e0b); }
+    50%     { transform:scale(1.18); filter:drop-shadow(0 0 30px #fde68a); }
+  }
+  .overlay-ring {
+    width:220px; height:220px; border-radius:50%;
+    border:4px solid transparent; position:absolute;
+    animation:ring-spin 3s linear infinite;
+  }
+  .overlay-ring.r1 { border-top-color:#f59e0b; border-right-color:#f59e0b; width:220px; height:220px; animation-duration:2.8s; }
+  .overlay-ring.r2 { border-bottom-color:#fde68a; border-left-color:#fde68a; width:180px; height:180px; animation-duration:2.1s; animation-direction:reverse; }
+  .overlay-ring.r3 { border-top-color:#a78bfa; width:260px; height:260px; animation-duration:4s; }
+  @keyframes ring-spin { from{transform:rotate(0deg)} to{transform:rotate(360deg)} }
+  .overlay-inner {
+    position:relative; display:flex; align-items:center; justify-content:center;
+    width:280px; height:280px; margin-bottom:32px;
+  }
+  .overlay-title {
+    font-family:'Space Mono',monospace; font-size:1.8rem; font-weight:700;
+    color:var(--gold); text-align:center;
+    text-shadow:0 0 30px rgba(245,158,11,0.6);
+    margin-bottom:8px; animation:glow-pulse 2s ease-in-out infinite;
+  }
+  @keyframes glow-pulse {
+    0%,100%{ text-shadow:0 0 20px rgba(245,158,11,0.5); }
+    50%     { text-shadow:0 0 50px rgba(245,158,11,0.9), 0 0 80px rgba(253,230,138,0.4); }
+  }
+  .overlay-sub {
+    font-family:'DM Sans',sans-serif; font-size:1rem;
+    color:#fde68a; text-align:center; opacity:.85; margin-bottom:32px;
+  }
+  .overlay-close {
+    font-family:'Space Mono',monospace; font-size:0.8rem;
+    padding:10px 28px; border-radius:8px;
+    border:2px solid var(--gold); background:transparent;
+    color:var(--gold); cursor:pointer; transition:all .2s;
+  }
+  .overlay-close:hover { background:var(--gold); color:#000; }
+  .overlay-scan {
+    position:absolute; top:0; left:0; right:0; height:2px;
+    background:linear-gradient(90deg,transparent,#f59e0b,transparent);
+    animation:scan-down 2.5s linear infinite; opacity:0.5;
+  }
+  @keyframes scan-down { 0%{top:0%} 100%{top:100%} }
 </style>
 </head>
 <body>
 
+<!-- ALL-GOLD OVERLAY -->
+<div id="goldOverlay">
+  <div class="overlay-scan"></div>
+  <div class="overlay-inner">
+    <div class="overlay-ring r3"></div>
+    <div class="overlay-ring r1"></div>
+    <div class="overlay-ring r2"></div>
+    <div class="overlay-star">★</div>
+  </div>
+  <div class="overlay-title">PERFECT SCORE</div>
+  <div class="overlay-sub">All tabs completed first attempt.<br>Outstanding work!</div>
+  <button class="overlay-close" onclick="closeOverlay()">Continue →</button>
+</div>
+
 <h1>// secondary_storage</h1>
-<p class="subtitle">Exercise 1 of 2 · Y9 Computer Science</p>
+<p class="subtitle">Exercise 2 of 2 · Y9 Computer Science</p>
 
 <div class="tab-bar" id="tabBar">
-  <button class="tab-btn active" onclick="switchTab(0)" id="tabBtn0">1 · What is it?</button>
-  <button class="tab-btn"        onclick="switchTab(1)" id="tabBtn1">2 · Storage Types</button>
-  <button class="tab-btn"        onclick="switchTab(2)" id="tabBtn2">3 · Sort Devices</button>
+  <button class="tab-btn active" onclick="switchTab(0)" id="tabBtn0">1 · Characteristics</button>
+  <button class="tab-btn"        onclick="switchTab(1)" id="tabBtn1">2 · Scenarios</button>
 </div>
 
-<!-- ═══════════════════════════════════════════════════
-     PANEL 0 — WHAT IS SECONDARY STORAGE?
-════════════════════════════════════════════════════ -->
+<!-- ═══════ PANEL 0 — CHARACTERISTICS ═══════ -->
 <div class="panel active" id="panel0">
   <div class="card">
-    <h2>What is Secondary Storage?</h2>
-    <p>Answer each question by choosing the correct option.</p>
-
-    <div class="question-block" id="p0q1">
-      <div class="q-text">1. Secondary storage is used to store data…</div>
-      <div class="options">
-        <button class="opt-btn" onclick="mcq(this,'p0q1',false)">Temporarily, while the computer is on</button>
-        <button class="opt-btn" onclick="mcq(this,'p0q1',true)">Permanently, even when the power is off</button>
-        <button class="opt-btn" onclick="mcq(this,'p0q1',false)">Only while programs are running</button>
-      </div>
-    </div>
-
-    <div class="question-block" id="p0q2">
-      <div class="q-text">2. Secondary storage is described as <em>non-volatile</em>. What does non-volatile mean?</div>
-      <div class="options">
-        <button class="opt-btn" onclick="mcq(this,'p0q2',false)">It runs very fast</button>
-        <button class="opt-btn" onclick="mcq(this,'p0q2',false)">It loses data when power is removed</button>
-        <button class="opt-btn" onclick="mcq(this,'p0q2',true)">It keeps data when power is removed</button>
-      </div>
-    </div>
-
-    <div class="question-block" id="p0q3">
-      <div class="q-text">3. Which of the following is an example of PRIMARY memory (not secondary storage)?</div>
-      <div class="options">
-        <button class="opt-btn" onclick="mcq(this,'p0q3',false)">Hard Disk Drive (HDD)</button>
-        <button class="opt-btn" onclick="mcq(this,'p0q3',true)">RAM</button>
-        <button class="opt-btn" onclick="mcq(this,'p0q3',false)">USB Pen Drive</button>
-        <button class="opt-btn" onclick="mcq(this,'p0q3',false)">SSD</button>
-      </div>
-    </div>
-
-    <div class="question-block" id="p0q4">
-      <div class="q-text">4. Why do we need secondary storage if we already have RAM?</div>
-      <div class="options">
-        <button class="opt-btn" onclick="mcq(this,'p0q4',false)">RAM is too slow to be useful</button>
-        <button class="opt-btn" onclick="mcq(this,'p0q4',true)">RAM is volatile — data is lost when the computer turns off</button>
-        <button class="opt-btn" onclick="mcq(this,'p0q4',false)">RAM cannot store programs</button>
-      </div>
-    </div>
-
-    <div class="section-divider">Apply your knowledge</div>
-
-    <div class="question-block" id="p0q5">
-      <div class="q-text">5. A student saves their essay to RAM and then turns off the computer. What will happen to the essay?</div>
-      <div class="options">
-        <button class="opt-btn" onclick="mcq(this,'p0q5',false)">It will be saved safely and available next time they turn on the computer</button>
-        <button class="opt-btn" onclick="mcq(this,'p0q5',true)">It will be lost because RAM is volatile</button>
-        <button class="opt-btn" onclick="mcq(this,'p0q5',false)">It will be compressed and stored on the hard drive automatically</button>
-      </div>
-    </div>
-
-    <div class="question-block" id="p0q6">
-      <div class="q-text">6. ROM (Read-Only Memory) is also non-volatile. How is secondary storage <strong>different</strong> from ROM?</div>
-      <div class="options">
-        <button class="opt-btn" onclick="mcq(this,'p0q6',false)">Secondary storage loses data when the power is off; ROM does not</button>
-        <button class="opt-btn" onclick="mcq(this,'p0q6',false)">Secondary storage is inside the CPU; ROM is outside</button>
-        <button class="opt-btn" onclick="mcq(this,'p0q6',true)">Secondary storage can be written to and changed by the user; ROM cannot normally be changed</button>
-      </div>
-    </div>
-
-    <div class="question-block" id="p0q7">
-      <div class="q-text">7. Which statement about secondary storage is <strong>false</strong>?</div>
-      <div class="options">
-        <button class="opt-btn" onclick="mcq(this,'p0q7',false)">Secondary storage is non-volatile</button>
-        <button class="opt-btn" onclick="mcq(this,'p0q7',true)">Secondary storage is directly accessed by the CPU during processing</button>
-        <button class="opt-btn" onclick="mcq(this,'p0q7',false)">Secondary storage holds data permanently</button>
-        <button class="opt-btn" onclick="mcq(this,'p0q7',false)">Secondary storage includes devices like SSDs and HDDs</button>
-      </div>
-    </div>
-
-    <button class="check-btn" onclick="checkMCQPanel(0,7,'p0')">Check answers</button>
-    <button class="reset-btn" onclick="resetMCQPanel(0,7,'p0')">Reset</button>
+    <h2>Characteristics of Secondary Storage</h2>
+    <p>Choose the correct answer for each question.</p>
+    <div id="p0-questions"></div>
+    <button class="check-btn" onclick="checkMCQPanel(0,'p0')">Check answers</button>
+    <button class="reset-btn" onclick="resetMCQPanel(0,'p0')">Reset</button>
     <div class="feedback" id="feedback-p0"></div>
-    <div class="banner" id="banner0"></div>
+    <div class="banner"   id="banner0"></div>
   </div>
 </div>
 
-<!-- ═══════════════════════════════════════════════════
-     PANEL 1 — STORAGE TYPES
-════════════════════════════════════════════════════ -->
+<!-- ═══════ PANEL 1 — SCENARIOS ═══════ -->
 <div class="panel" id="panel1">
   <div class="card">
-    <h2>How Does Each Type Work?</h2>
+    <h2>Storage Scenarios</h2>
+    <p>Read each scenario. Choose the best storage device and justify your choice using at least one characteristic from the lesson (capacity, portability, access speed, durability, cost).</p>
 
-    <!-- PART A: Match -->
-    <p>Part A — Match each description to the correct storage type. Click a description, then click its match.</p>
-
-    <div class="col-label">Descriptions &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Types</div>
-    <div class="match-pairs">
-      <div>
-        <div class="match-item" id="m1_d1" data-id="d1" data-col="left" onclick="matchClick(this,'m1')">Magnetises tiny areas on a spinning disc or tape to store data</div>
-        <div class="match-item" id="m1_d2" data-id="d2" data-col="left" onclick="matchClick(this,'m1')" style="margin-top:10px;">Shines a laser to read bumps and pits on a reflective disc</div>
-        <div class="match-item" id="m1_d3" data-id="d3" data-col="left" onclick="matchClick(this,'m1')" style="margin-top:10px;">Stores data on microchips with no moving parts at all</div>
+    <details>
+      <summary>📋 Reference: storage device characteristics</summary>
+      <div class="details-body">
+        <table class="ref-table">
+          <tr><th>Device</th><th>Type</th><th>Capacity</th><th>Speed</th><th>Portability</th><th>Cost</th></tr>
+          <tr><td>HDD</td><td>Magnetic</td><td>Up to several TB</td><td>Moderate</td><td>Low — bulky, spinning parts</td><td>Low per GB</td></tr>
+          <tr><td>SSD</td><td>Solid State</td><td>Up to ~4TB</td><td>Very fast</td><td>Good — no moving parts</td><td>Higher per GB</td></tr>
+          <tr><td>USB Pen Drive</td><td>Solid State</td><td>Up to ~256GB</td><td>Fast</td><td>Very high — tiny &amp; light</td><td>Cheap for the size</td></tr>
+          <tr><td>SD Card</td><td>Solid State</td><td>Up to ~256GB</td><td>Fast</td><td>Very high — tiny</td><td>Cheap for the size</td></tr>
+          <tr><td>DVD</td><td>Optical</td><td>~4.5GB</td><td>Slow</td><td>Portable but fragile</td><td>Very cheap per disc</td></tr>
+          <tr><td>Blu-ray</td><td>Optical</td><td>Up to 128GB</td><td>Slow</td><td>Portable but fragile</td><td>Moderate</td></tr>
+          <tr><td>Magnetic Tape</td><td>Magnetic</td><td>100TB+</td><td>Very slow (sequential)</td><td>Low</td><td>Very cheap per GB</td></tr>
+        </table>
       </div>
-      <div>
-        <div class="match-item" id="m1_t1" data-id="t_optical"  data-col="right" onclick="matchClick(this,'m1')">Optical</div>
-        <div class="match-item" id="m1_t2" data-id="t_magnetic" data-col="right" onclick="matchClick(this,'m1')" style="margin-top:10px;">Magnetic</div>
-        <div class="match-item" id="m1_t3" data-id="t_solid"    data-col="right" onclick="matchClick(this,'m1')" style="margin-top:10px;">Solid State</div>
-      </div>
-    </div>
+    </details>
 
-    <!-- PART B: Gap fill -->
-    <div class="section-divider">Part B — Gap fill</div>
-    <p>Drag the correct word or phrase into each gap to complete the sentences.</p>
+    <div class="scenario-label">Scenario A</div>
+    <div class="scenario-box">A university student moves between home, the library, and university every day. They need to carry their coursework documents (around 500MB total) between locations and access them on different computers.</div>
+    <select class="scenario-select" id="sc1-device">
+      <option value="">-- Select the best device --</option>
+      <option value="cd">CD</option>
+      <option value="hdd">Hard Disk Drive (HDD)</option>
+      <option value="ssd">SSD</option>
+      <option value="usb">USB Pen Drive</option>
+      <option value="tape">Magnetic Tape</option>
+    </select>
+    <textarea class="justify-input" id="sc1-justify" placeholder="Justify your choice — mention at least one characteristic (e.g. portability, capacity, cost…)"></textarea>
 
-    <!-- word bank -->
-    <div class="gap-word-bank" id="gapBank"
-         ondragover="event.preventDefault();this.classList.add('over')"
-         ondragleave="this.classList.remove('over')"
-         ondrop="dropOnBank(event)">
-      <div class="word-chip" draggable="true" data-word="laser"        ondragstart="gapDragStart(event)">laser</div>
-      <div class="word-chip" draggable="true" data-word="magnetised"   ondragstart="gapDragStart(event)">magnetised</div>
-      <div class="word-chip" draggable="true" data-word="microchips"   ondragstart="gapDragStart(event)">microchips</div>
-      <div class="word-chip" draggable="true" data-word="moving parts" ondragstart="gapDragStart(event)">moving parts</div>
-      <div class="word-chip" draggable="true" data-word="pits and bumps" ondragstart="gapDragStart(event)">pits and bumps</div>
-      <div class="word-chip" draggable="true" data-word="spinning disc" ondragstart="gapDragStart(event)">spinning disc</div>
-    </div>
+    <div class="scenario-label">Scenario B</div>
+    <div class="scenario-box">A large company needs to back up 80TB of data. The backups only need to be accessed very rarely — perhaps once a year in an emergency. Cost per GB is the most important factor.</div>
+    <select class="scenario-select" id="sc2-device">
+      <option value="">-- Select the best device --</option>
+      <option value="cd">CD</option>
+      <option value="hdd">Hard Disk Drive (HDD)</option>
+      <option value="ssd">SSD</option>
+      <option value="usb">USB Pen Drive</option>
+      <option value="tape">Magnetic Tape</option>
+    </select>
+    <textarea class="justify-input" id="sc2-justify" placeholder="Justify your choice…"></textarea>
 
-    <!-- sentences -->
-    <div class="gap-sentence">
-      <span class="label">MAGNETIC</span>
-      Data is stored by
-      <span class="gap-slot" id="slot-mag1" data-answer="magnetised"
-            ondragover="event.preventDefault();this.classList.add('over')"
-            ondragleave="this.classList.remove('over')"
-            ondrop="dropOnSlot(event,'slot-mag1')">
-        <span class="slot-text" id="slottext-mag1"></span>
-      </span>
-      areas on a
-      <span class="gap-slot" id="slot-mag2" data-answer="spinning disc"
-            ondragover="event.preventDefault();this.classList.add('over')"
-            ondragleave="this.classList.remove('over')"
-            ondrop="dropOnSlot(event,'slot-mag2')">
-        <span class="slot-text" id="slottext-mag2"></span>
-      </span>
-      or tape.
-    </div>
+    <div class="scenario-label">Scenario C</div>
+    <div class="scenario-box">A graphic designer needs a storage device built into their laptop. They work with very large video files and need the laptop to boot quickly and open files instantly. Budget is less of a concern.</div>
+    <select class="scenario-select" id="sc3-device">
+      <option value="">-- Select the best device --</option>
+      <option value="cd">CD</option>
+      <option value="hdd">Hard Disk Drive (HDD)</option>
+      <option value="ssd">SSD</option>
+      <option value="usb">USB Pen Drive</option>
+      <option value="tape">Magnetic Tape</option>
+    </select>
+    <textarea class="justify-input" id="sc3-justify" placeholder="Justify your choice…"></textarea>
 
-    <div class="gap-sentence">
-      <span class="label">OPTICAL</span>
-      A
-      <span class="gap-slot" id="slot-opt1" data-answer="laser"
-            ondragover="event.preventDefault();this.classList.add('over')"
-            ondragleave="this.classList.remove('over')"
-            ondrop="dropOnSlot(event,'slot-opt1')">
-        <span class="slot-text" id="slottext-opt1"></span>
-      </span>
-      reads
-      <span class="gap-slot" id="slot-opt2" data-answer="pits and bumps"
-            ondragover="event.preventDefault();this.classList.add('over')"
-            ondragleave="this.classList.remove('over')"
-            ondrop="dropOnSlot(event,'slot-opt2')">
-        <span class="slot-text" id="slottext-opt2"></span>
-      </span>
-      on the surface of a disc.
-    </div>
+    <div class="scenario-label">Scenario D</div>
+    <div class="scenario-box">A wedding videographer wants to give each client a physical copy of their wedding video (around 4GB). The client just needs to watch it — not edit it. Cost per unit should be kept low.</div>
+    <select class="scenario-select" id="sc4-device">
+      <option value="">-- Select the best device --</option>
+      <option value="dvd">DVD</option>
+      <option value="hdd">Hard Disk Drive (HDD)</option>
+      <option value="ssd">SSD</option>
+      <option value="usb">USB Pen Drive</option>
+      <option value="tape">Magnetic Tape</option>
+    </select>
+    <textarea class="justify-input" id="sc4-justify" placeholder="Justify your choice…"></textarea>
 
-    <div class="gap-sentence">
-      <span class="label">SOLID STATE</span>
-      Data is stored on
-      <span class="gap-slot" id="slot-ss1" data-answer="microchips"
-            ondragover="event.preventDefault();this.classList.add('over')"
-            ondragleave="this.classList.remove('over')"
-            ondrop="dropOnSlot(event,'slot-ss1')">
-        <span class="slot-text" id="slottext-ss1"></span>
-      </span>
-      — it has no
-      <span class="gap-slot" id="slot-ss2" data-answer="moving parts"
-            ondragover="event.preventDefault();this.classList.add('over')"
-            ondragleave="this.classList.remove('over')"
-            ondrop="dropOnSlot(event,'slot-ss2')">
-        <span class="slot-text" id="slottext-ss2"></span>
-      </span>
-      at all.
-    </div>
-
-    <!-- PART C: MCQs -->
-    <div class="section-divider">Part C — Questions</div>
-
-    <div class="question-block" id="p1q1">
-      <div class="q-text">Q1. Which type of secondary storage has no moving parts?</div>
-      <div class="options">
-        <button class="opt-btn" onclick="mcq(this,'p1q1',false)">Magnetic</button>
-        <button class="opt-btn" onclick="mcq(this,'p1q1',false)">Optical</button>
-        <button class="opt-btn" onclick="mcq(this,'p1q1',true)">Solid State</button>
-      </div>
-    </div>
-
-    <div class="question-block" id="p1q2">
-      <div class="q-text">Q2. A Blu-ray disc uses which type of storage?</div>
-      <div class="options">
-        <button class="opt-btn" onclick="mcq(this,'p1q2',false)">Magnetic</button>
-        <button class="opt-btn" onclick="mcq(this,'p1q2',true)">Optical</button>
-        <button class="opt-btn" onclick="mcq(this,'p1q2',false)">Solid State</button>
-      </div>
-    </div>
-
-    <div class="question-block" id="p1q3">
-      <div class="q-text">Q3. Why might a strong magnet damage a traditional hard disk drive (HDD) but <em>not</em> an SSD?</div>
-      <div class="options">
-        <button class="opt-btn" onclick="mcq(this,'p1q3',false)">SSDs are made of metal, which repels magnets</button>
-        <button class="opt-btn" onclick="mcq(this,'p1q3',true)">HDDs store data using magnetism, so a magnet can corrupt it; SSDs use electrical charges on microchips instead</button>
-        <button class="opt-btn" onclick="mcq(this,'p1q3',false)">SSDs spin faster so magnets cannot affect them</button>
-      </div>
-    </div>
-
-    <div class="question-block" id="p1q4">
-      <div class="q-text">Q4. An optical disc is scratched badly. What is the most likely consequence?</div>
-      <div class="options">
-        <button class="opt-btn" onclick="mcq(this,'p1q4',false)">The disc will spin faster to compensate</button>
-        <button class="opt-btn" onclick="mcq(this,'p1q4',false)">The data will be automatically backed up to the cloud</button>
-        <button class="opt-btn" onclick="mcq(this,'p1q4',true)">The laser cannot read the damaged pits and bumps, so data may be lost or corrupted</button>
-      </div>
-    </div>
-
-    <button class="check-btn" onclick="checkPanel1()">Check answers</button>
-    <button class="reset-btn" onclick="resetPanel1()">Reset</button>
+    <button class="check-btn" onclick="checkScenarios()">Check answers</button>
+    <button class="reset-btn" onclick="resetScenarios()">Reset</button>
     <div class="feedback" id="feedback-p1"></div>
-    <div class="banner" id="banner1"></div>
+    <div class="banner"   id="banner1"></div>
   </div>
 </div>
 
-<!-- ═══════════════════════════════════════════════════
-     PANEL 2 — SORT DEVICES
-════════════════════════════════════════════════════ -->
-<div class="panel" id="panel2">
-  <div class="card">
-    <h2>Sort the Storage Devices</h2>
-    <p>Drag each device into the correct column: Magnetic, Optical, or Solid State.</p>
-
-    <div class="drag-area" id="chipPool">
-      <div class="chip" draggable="true" data-device="HDD"    data-type="magnetic">Hard Disk Drive (HDD)</div>
-      <div class="chip" draggable="true" data-device="CD"     data-type="optical">CD</div>
-      <div class="chip" draggable="true" data-device="SSD"    data-type="solid">SSD</div>
-      <div class="chip" draggable="true" data-device="USB"    data-type="solid">USB Pen Drive</div>
-      <div class="chip" draggable="true" data-device="DVD"    data-type="optical">DVD</div>
-      <div class="chip" draggable="true" data-device="Tape"   data-type="magnetic">Magnetic Tape</div>
-      <div class="chip" draggable="true" data-device="SD"     data-type="solid">SD Card</div>
-      <div class="chip" draggable="true" data-device="BluRay" data-type="optical">Blu-ray Disc</div>
-    </div>
-
-    <div class="drop-row" style="grid-template-columns:1fr 1fr 1fr;">
-      <div class="drop-col" id="zone-magnetic" data-type="magnetic">
-        <h3>🔵 Magnetic</h3>
-        <div class="drop-zone" id="dz-magnetic"></div>
-      </div>
-      <div class="drop-col" id="zone-optical" data-type="optical">
-        <h3>🟡 Optical</h3>
-        <div class="drop-zone" id="dz-optical"></div>
-      </div>
-      <div class="drop-col" id="zone-solid" data-type="solid">
-        <h3>🟢 Solid State</h3>
-        <div class="drop-zone" id="dz-solid"></div>
-      </div>
-    </div>
-
-    <div class="section-divider">Now answer these</div>
-
-    <div class="question-block" id="p2q1">
-      <div class="q-text">Q1. Which storage type would most likely be damaged if dropped on the floor?</div>
-      <div class="options">
-        <button class="opt-btn" onclick="mcq(this,'p2q1',false)">Solid State — because microchips are fragile</button>
-        <button class="opt-btn" onclick="mcq(this,'p2q1',true)">Magnetic HDD — because the spinning platters and read/write head can be physically damaged</button>
-        <button class="opt-btn" onclick="mcq(this,'p2q1',false)">Both are equally likely to be damaged</button>
-      </div>
-    </div>
-
-    <div class="question-block" id="p2q2">
-      <div class="q-text">Q2. A data centre needs to store 100TB of archive data as cheaply as possible. It does not need fast access. Which type of storage is most suitable and why?</div>
-      <div class="options">
-        <button class="opt-btn" onclick="mcq(this,'p2q2',false)">Optical — because CDs are cheap and widely available</button>
-        <button class="opt-btn" onclick="mcq(this,'p2q2',false)">Solid State — because SSDs are reliable and have no moving parts</button>
-        <button class="opt-btn" onclick="mcq(this,'p2q2',true)">Magnetic tape — because it has an extremely large capacity at a very low cost per GB, suitable for archiving where speed is not needed</button>
-      </div>
-    </div>
-
-    <div class="question-block" id="p2q3">
-      <div class="q-text">Q3. All three types of secondary storage are non-volatile. What does this mean for all of them?</div>
-      <div class="options">
-        <button class="opt-btn" onclick="mcq(this,'p2q3',false)">They all run at the same speed</button>
-        <button class="opt-btn" onclick="mcq(this,'p2q3',true)">They all retain data even when the power is switched off</button>
-        <button class="opt-btn" onclick="mcq(this,'p2q3',false)">They are all directly accessed by the CPU</button>
-      </div>
-    </div>
-
-    <button class="check-btn" onclick="checkPanel2()">Check answers</button>
-    <button class="reset-btn" onclick="resetPanel2()">Reset</button>
-    <div class="feedback" id="feedback-p2"></div>
-    <div class="banner" id="banner2"></div>
-  </div>
-</div>
-
-<!-- ═══════════ JAVASCRIPT ═══════════ -->
 <script>
-let currentTab = 0;
-function switchTab(i) {
-  document.querySelectorAll('.panel').forEach((p,j)=>p.classList.toggle('active',j===i));
-  document.querySelectorAll('.tab-btn').forEach((b,j)=>b.classList.toggle('active',j===i));
-  currentTab = i;
+// ═══════════════════════════════════════════════
+//  QUESTION DATA
+// ═══════════════════════════════════════════════
+const QUESTIONS = {
+  p0: [
+    {
+      id:'p0q1', text:'1. <strong>Capacity</strong> refers to…',
+      options:[
+        {text:'How quickly data can be read or written', correct:false},
+        {text:'The maximum amount of data that can be stored on the device', correct:true},
+        {text:'How easy it is to carry the device around', correct:false},
+      ]
+    },
+    {
+      id:'p0q2', text:'2. <strong>Portability</strong> refers to…',
+      options:[
+        {text:'The price of the device', correct:false},
+        {text:'How quickly data can be accessed', correct:false},
+        {text:'How easy it is to carry the device around', correct:true},
+      ]
+    },
+    {
+      id:'p0q3', text:'3. <strong>Access speed</strong> refers to…',
+      options:[
+        {text:'How quickly data on the device can be read or edited', correct:true},
+        {text:'How durable the device is', correct:false},
+        {text:'The maximum amount of data the device holds', correct:false},
+      ]
+    },
+    {
+      id:'p0q4', text:'4. Which characteristic describes "the strength of the device — how long it lasts without breaking"?',
+      options:[
+        {text:'Portability', correct:false},
+        {text:'Durability', correct:true},
+        {text:'Capacity', correct:false},
+        {text:'Cost', correct:false},
+      ]
+    },
+    {
+      id:'p0q5', text:'5. Which storage device generally offers the <strong>highest capacity at the lowest cost per GB</strong>?',
+      options:[
+        {text:'USB Pen Drive', correct:false},
+        {text:'SSD', correct:false},
+        {text:'Hard Disk Drive (HDD)', correct:true},
+        {text:'CD', correct:false},
+      ]
+    },
+    {
+      id:'p0q6', text:'6. An SSD has faster access speed than an HDD. Why?',
+      options:[
+        {text:'SSDs use optical lasers to read data', correct:false},
+        {text:'SSDs have no moving parts, so there is no delay waiting for a disc to spin up', correct:true},
+        {text:'SSDs hold more data than HDDs', correct:false},
+      ]
+    },
+    {
+      id:'p0q7', text:'7. A USB pen drive is described as highly portable. What makes it portable?',
+      options:[
+        {text:'It has very high capacity and low cost', correct:false},
+        {text:'It is small and lightweight, so it can easily be carried between locations', correct:true},
+        {text:'It has fast access speed and uses no power when not plugged in', correct:false},
+      ]
+    },
+  ],
+};
+
+// ═══════════════════════════════════════════════
+//  SHUFFLE
+// ═══════════════════════════════════════════════
+function shuffle(arr) {
+  const a=[...arr];
+  for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}
+  return a;
 }
 
-/* ── MCQ ── */
-const mcqState = {};
-function mcq(btn, qId, isCorrect) {
-  if (mcqState[qId]?.answered) return;
-  const block = document.getElementById(qId);
-  block.querySelectorAll('.opt-btn').forEach(b => b.disabled = true);
-  if (isCorrect) {
+// ═══════════════════════════════════════════════
+//  RENDER MCQs
+// ═══════════════════════════════════════════════
+function renderQuestions(groupKey, containerId) {
+  const container = document.getElementById(containerId);
+  container.innerHTML='';
+  QUESTIONS[groupKey].forEach(q=>{
+    const shuffledOpts = shuffle(q.options);
+    const block = document.createElement('div');
+    block.className='question-block'; block.id=q.id;
+    const qtext = document.createElement('div');
+    qtext.className='q-text'; qtext.innerHTML=q.text;
+    block.appendChild(qtext);
+    const opts = document.createElement('div');
+    opts.className='options';
+    shuffledOpts.forEach(opt=>{
+      const btn=document.createElement('button');
+      btn.className='opt-btn';
+      btn.textContent=opt.text;
+      btn.dataset.correct=opt.correct?'1':'0';
+      btn.addEventListener('click',()=>mcqClick(btn,q.id));
+      opts.appendChild(btn);
+    });
+    block.appendChild(opts);
+    container.appendChild(block);
+  });
+}
+
+// ═══════════════════════════════════════════════
+//  MCQ LOGIC
+// ═══════════════════════════════════════════════
+const mcqState={};
+
+function mcqClick(btn,qId){
+  if(mcqState[qId]?.answered) return;
+  const block=document.getElementById(qId);
+  block.querySelectorAll('.opt-btn').forEach(b=>b.disabled=true);
+  const isCorrect=btn.dataset.correct==='1';
+  if(isCorrect){
     btn.classList.add('correct');
-    mcqState[qId] = {answered:true, correct:true};
+    mcqState[qId]={answered:true,correct:true};
   } else {
     btn.classList.add('wrong');
-    block.querySelectorAll('.opt-btn').forEach(b => {
-      if (b.onclick.toString().includes('true')) b.classList.add('correct-late');
-    });
-    mcqState[qId] = {answered:true, correct:false};
+    block.querySelectorAll('.opt-btn').forEach(b=>{if(b.dataset.correct==='1')b.classList.add('correct-late');});
+    mcqState[qId]={answered:true,correct:false};
   }
 }
 
-function checkMCQPanel(panelIdx, count, prefix) {
-  let answered=0, correct=0;
-  for (let i=1; i<=count; i++) {
-    const s = mcqState[`${prefix}q${i}`];
-    if (s?.answered) { answered++; if(s.correct) correct++; }
-  }
-  const fb = document.getElementById(`feedback-${prefix}`);
-  if (answered < count) {
-    fb.className='feedback show redo';
-    fb.textContent=`Answer all ${count} questions first! (${answered}/${count} done)`;
-    return;
-  }
-  if (correct === count) {
-    fb.className='feedback show ok';
-    fb.textContent=`★ Perfect! All ${count} correct!`;
-    completePanelGold(panelIdx);
-  } else {
-    fb.className='feedback show good';
-    fb.textContent=`✓ ${correct}/${count} correct — check the highlighted answers.`;
-    completePanelGreen(panelIdx);
-  }
+function checkMCQPanel(panelIdx,prefix){
+  const qs=QUESTIONS[prefix];
+  let answered=0,correct=0;
+  qs.forEach(q=>{const s=mcqState[q.id];if(s?.answered){answered++;if(s.correct)correct++;}});
+  const total=qs.length;
+  const fb=document.getElementById(`feedback-${prefix}`);
+  if(answered<total){fb.className='feedback show redo';fb.textContent=`Answer all ${total} questions first! (${answered}/${total} done)`;return;}
+  if(correct===total){fb.className='feedback show ok';fb.textContent=`★ Perfect! All ${total} correct!`;completePanelGold(panelIdx);}
+  else{fb.className='feedback show good';fb.textContent=`✓ ${correct}/${total} correct — check the highlighted answers.`;completePanelGreen(panelIdx);}
 }
 
-function resetMCQPanel(panelIdx, count, prefix) {
-  for (let i=1; i<=count; i++) {
-    delete mcqState[`${prefix}q${i}`];
-    const block = document.getElementById(`${prefix}q${i}`);
-    if (!block) continue;
-    block.querySelectorAll('.opt-btn').forEach(b => { b.disabled=false; b.className='opt-btn'; });
-  }
+function resetMCQPanel(panelIdx,prefix){
+  QUESTIONS[prefix].forEach(q=>delete mcqState[q.id]);
+  renderQuestions(prefix,`${prefix}-questions`);
   document.getElementById(`feedback-${prefix}`).className='feedback';
-  const banner = document.getElementById(`banner${panelIdx}`);
-  banner.style.display='none'; banner.className='banner';
+  const banner=document.getElementById(`banner${panelIdx}`);
+  banner.style.display='none';banner.className='banner';
   resetTabBtn(panelIdx);
 }
 
-/* ── MATCH ── */
-const matchState = {};
-function matchClick(el, prefix) {
-  if (el.classList.contains('matched-gold') || el.classList.contains('matched-green')) return;
-  if (!matchState[prefix]) matchState[prefix] = {selected:null, errors:0};
-  const ms = matchState[prefix];
-  if (el.dataset.col === 'left') {
-    document.querySelectorAll(`[id^="${prefix}_"]`).forEach(e=>e.classList.remove('selected'));
-    el.classList.add('selected');
-    ms.selected = el;
-    return;
-  }
-  if (!ms.selected) return;
-  const leftEl = ms.selected;
-  const correct = (leftEl.dataset.id==='d1' && el.dataset.id==='t_magnetic') ||
-                  (leftEl.dataset.id==='d2' && el.dataset.id==='t_optical')  ||
-                  (leftEl.dataset.id==='d3' && el.dataset.id==='t_solid');
-  if (correct) {
-    const cls = ms.errors === 0 ? 'matched-gold' : 'matched-green';
-    leftEl.classList.remove('selected'); leftEl.classList.add(cls);
-    el.classList.add(cls);
-    ms.selected = null;
-  } else {
-    ms.errors++;
-    el.classList.add('wrong-flash'); leftEl.classList.add('wrong-flash');
-    setTimeout(()=>{
-      el.classList.remove('wrong-flash');
-      leftEl.classList.remove('wrong-flash','selected');
-      ms.selected = null;
-    }, 700);
-  }
-}
+// ═══════════════════════════════════════════════
+//  SCENARIOS
+// ═══════════════════════════════════════════════
+const scCorrect={sc1:'usb',sc2:'tape',sc3:'ssd',sc4:'dvd'};
 
-/* ── GAP FILL ── */
-let draggedWord = null;
-
-// word bank words
-document.addEventListener('DOMContentLoaded', () => {
-  // chips (device sort)
-  document.querySelectorAll('.chip').forEach(c=>{
-    c.addEventListener('dragstart', e=>{ draggedChip=c; e.dataTransfer.effectAllowed='move'; });
-  });
-  // device sort drop zones
-  ['magnetic','optical','solid'].forEach(type=>{
-    const col = document.getElementById(`zone-${type}`);
-    const pool = document.getElementById('chipPool');
-    [col, pool].forEach(zone=>{
-      zone.addEventListener('dragover', e=>{ e.preventDefault(); zone.classList.add('over'); });
-      zone.addEventListener('dragleave', ()=>zone.classList.remove('over'));
-      zone.addEventListener('drop', e=>{
-        e.preventDefault(); zone.classList.remove('over');
-        if (!draggedChip||draggedChip.classList.contains('locked-correct')||draggedChip.classList.contains('locked-green')) return;
-        const target = zone.dataset.type ? document.getElementById(`dz-${zone.dataset.type}`) : zone;
-        target.appendChild(draggedChip);
-        draggedChip = null;
-      });
-    });
-  });
-});
-
-function gapDragStart(e) {
-  draggedWord = e.target;
-  e.dataTransfer.effectAllowed = 'move';
-}
-
-function dropOnSlot(e, slotId) {
-  e.preventDefault();
-  e.stopPropagation();
-  const slot = document.getElementById(slotId);
-  slot.classList.remove('over');
-  if (!draggedWord) return;
-  if (draggedWord.classList.contains('used-correct') || draggedWord.classList.contains('used-green')) return;
-
-  const word = draggedWord.dataset.word;
-  const answer = slot.dataset.answer;
-  const slotText = document.getElementById('slottext-' + slotId.replace('slot-',''));
-
-  // if slot already filled, return old word to bank
-  if (slot._filledWord) {
-    returnWordToBank(slot._filledWord);
-  }
-
-  slot._filledWord = word;
-  slotText.textContent = word;
-
-  if (word === answer) {
-    slot.className = 'gap-slot filled-gold';
-    draggedWord.classList.add('used-correct');
-    draggedWord.draggable = false;
-  } else {
-    slot.className = 'gap-slot filled-wrong';
-    // leave word available in bank, just show it in slot
-    draggedWord.classList.remove('used-correct','used-green');
-  }
-  draggedWord = null;
-}
-
-function dropOnBank(e) {
-  e.preventDefault();
-  document.getElementById('gapBank').classList.remove('over');
-  if (!draggedWord) return;
-  draggedWord = null;
-}
-
-function returnWordToBank(word) {
-  // find chip in bank or anywhere with that word and make it available
-  document.querySelectorAll('.word-chip').forEach(c=>{
-    if (c.dataset.word === word) {
-      c.classList.remove('used-correct','used-green');
-      c.draggable = true;
-    }
-  });
-}
-
-function clearSlot(slotId) {
-  const slot = document.getElementById(slotId);
-  if (!slot._filledWord) return;
-  returnWordToBank(slot._filledWord);
-  slot._filledWord = null;
-  const textId = 'slottext-' + slotId.replace('slot-','');
-  document.getElementById(textId).textContent = '';
-  slot.className = 'gap-slot';
-}
-
-/* ── PANEL 1 CHECK ── */
-function checkPanel1() {
-  // check matches
-  const leftItems = document.querySelectorAll('[id^="m1_d"]');
-  const allMatched = [...leftItems].every(el=>el.classList.contains('matched-gold')||el.classList.contains('matched-green'));
-
-  // check gaps
-  const slots = ['slot-mag1','slot-mag2','slot-opt1','slot-opt2','slot-ss1','slot-ss2'];
-  const allSlotsFilled = slots.every(id => document.getElementById(id)._filledWord);
-  const allSlotsCorrect = slots.every(id => {
-    const slot = document.getElementById(id);
-    return slot._filledWord === slot.dataset.answer;
-  });
-
-  // check MCQs
-  let mcqAnswered=0, mcqCorrect=0;
-  ['p1q1','p1q2','p1q3','p1q4'].forEach(q=>{
-    const s=mcqState[q];
-    if(s?.answered){mcqAnswered++;if(s.correct)mcqCorrect++;}
-  });
-
-  const fb = document.getElementById('feedback-p1');
-  if (!allMatched) { fb.className='feedback show redo'; fb.textContent='Complete all the matching pairs in Part A first!'; return; }
-  if (!allSlotsFilled) { fb.className='feedback show redo'; fb.textContent='Fill in all the gaps in Part B first!'; return; }
-  if (mcqAnswered<4) { fb.className='feedback show redo'; fb.textContent=`Answer all 4 questions in Part C! (${mcqAnswered}/4 done)`; return; }
-
-  // mark wrong gap slots
-  slots.forEach(id=>{
-    const slot = document.getElementById(id);
-    if (slot._filledWord && slot._filledWord !== slot.dataset.answer) {
-      slot.className = 'gap-slot filled-wrong';
-    } else if (slot._filledWord === slot.dataset.answer) {
-      slot.className = 'gap-slot filled-gold';
-    }
-  });
-
-  const matchErrors = [...leftItems].some(el=>el.classList.contains('matched-green'));
-  const allPerfect = !matchErrors && allSlotsCorrect && mcqCorrect===4;
-
-  if (allPerfect) {
+function checkScenarios(){
+  const justifyOk=['sc1','sc2','sc3','sc4'].every(sc=>document.getElementById(`${sc}-justify`).value.trim().length>10);
+  const fb=document.getElementById('feedback-p1');
+  if(!justifyOk){fb.className='feedback show redo';fb.textContent='Write a justification for every scenario first!';return;}
+  let correct=0;
+  ['sc1','sc2','sc3','sc4'].forEach(sc=>{if(document.getElementById(`${sc}-device`).value===scCorrect[sc])correct++;});
+  if(correct===4){
     fb.className='feedback show ok';
-    fb.textContent='★ Perfect! All matches, gap fill, and questions correct!';
+    fb.textContent='★ All 4 scenarios correct! Great reasoning!';
     completePanelGold(1);
   } else {
-    const gapScore = slots.filter(id=>{
-      const slot=document.getElementById(id);
-      return slot._filledWord===slot.dataset.answer;
-    }).length;
     fb.className='feedback show good';
-    fb.textContent=`✓ Done — Gaps: ${gapScore}/6, MCQ: ${mcqCorrect}/4. Check highlighted slots and answers.`;
+    fb.textContent=`✓ ${correct}/4 devices correct. Re-read the scenarios and focus on the key requirement in each one.`;
     completePanelGreen(1);
   }
 }
 
-function resetPanel1() {
-  // reset match
-  document.querySelectorAll('[id^="m1_"]').forEach(el=>el.className='match-item');
-  if (matchState['m1']) delete matchState['m1'];
-  // reset gap fill
-  ['slot-mag1','slot-mag2','slot-opt1','slot-opt2','slot-ss1','slot-ss2'].forEach(id=>{
-    const slot = document.getElementById(id);
-    slot._filledWord = null;
-    slot.className = 'gap-slot';
-    const textId = 'slottext-' + id.replace('slot-','');
-    document.getElementById(textId).textContent = '';
+function resetScenarios(){
+  ['sc1','sc2','sc3','sc4'].forEach(sc=>{
+    document.getElementById(`${sc}-device`).value='';
+    document.getElementById(`${sc}-device`).disabled=false;
+    document.getElementById(`${sc}-justify`).value='';
   });
-  document.querySelectorAll('.word-chip').forEach(c=>{
-    c.classList.remove('used-correct','used-green');
-    c.draggable = true;
-  });
-  // reset MCQs
-  ['p1q1','p1q2','p1q3','p1q4'].forEach(q=>delete mcqState[q]);
-  document.querySelectorAll('#panel1 .opt-btn').forEach(b=>{b.disabled=false;b.className='opt-btn';});
   document.getElementById('feedback-p1').className='feedback';
   document.getElementById('banner1').style.display='none';
   document.getElementById('banner1').className='banner';
   resetTabBtn(1);
 }
 
-/* ── PANEL 2 (DEVICE SORT + MCQs) ── */
-let draggedChip = null;
-
-function checkPanel2() {
-  // check drag drop
-  let correct=0, wrong=0;
-  ['magnetic','optical','solid'].forEach(type=>{
-    document.getElementById(`dz-${type}`).querySelectorAll('.chip').forEach(c=>{
-      if (c.dataset.type===type) { correct++; c.classList.add('locked-correct'); }
-      else { wrong++; document.getElementById('chipPool').appendChild(c); }
-    });
-  });
-  const total = 8;
-  const allSorted = correct === total;
-
-  // check MCQs
-  let mcqAnswered=0, mcqCorrect=0;
-  ['p2q1','p2q2','p2q3'].forEach(q=>{
-    const s=mcqState[q];
-    if(s?.answered){mcqAnswered++;if(s.correct)mcqCorrect++;}
-  });
-
-  const fb = document.getElementById('feedback-p2');
-  if (!allSorted && correct < total) {
-    fb.className='feedback show redo';
-    fb.textContent=`Sort all 8 devices first! (${correct}/${total} correct so far — wrong ones returned to pool)`;
-    return;
-  }
-  if (mcqAnswered<3) {
-    fb.className='feedback show redo';
-    fb.textContent=`Answer all 3 questions too! (${mcqAnswered}/3 done)`;
-    return;
-  }
-  if (correct===total && mcqCorrect===3) {
-    fb.className='feedback show ok';
-    fb.textContent=`★ Perfect! All ${total} devices sorted and all 3 questions correct!`;
-    completePanelGold(2);
-  } else {
-    fb.className='feedback show good';
-    fb.textContent=`✓ Devices: ${correct}/${total}, Questions: ${mcqCorrect}/3. Check highlighted answers.`;
-    completePanelGreen(2);
-  }
+// ═══════════════════════════════════════════════
+//  TAB SWITCHING
+// ═══════════════════════════════════════════════
+let currentTab=0;
+function switchTab(i){
+  document.querySelectorAll('.panel').forEach((p,j)=>p.classList.toggle('active',j===i));
+  document.querySelectorAll('.tab-btn').forEach((b,j)=>b.classList.toggle('active',j===i));
+  currentTab=i;
 }
 
-function resetPanel2() {
-  const pool = document.getElementById('chipPool');
-  ['magnetic','optical','solid'].forEach(type=>{
-    const dz=document.getElementById(`dz-${type}`);
-    [...dz.children].forEach(c=>pool.appendChild(c));
-  });
-  pool.querySelectorAll('.chip').forEach(c=>{ c.className='chip'; c.draggable=true; });
-  ['p2q1','p2q2','p2q3'].forEach(q=>delete mcqState[q]);
-  document.querySelectorAll('#panel2 .opt-btn').forEach(b=>{b.disabled=false;b.className='opt-btn';});
-  document.getElementById('feedback-p2').className='feedback';
-  document.getElementById('banner2').style.display='none';
-  document.getElementById('banner2').className='banner';
-  resetTabBtn(2);
+// ═══════════════════════════════════════════════
+//  COMPLETION
+// ═══════════════════════════════════════════════
+const tabStatus={0:null,1:null};
+
+function resetTabBtn(i){
+  const btn=document.getElementById(`tabBtn${i}`);
+  btn.className='tab-btn'+(currentTab===i?' active':'');
+  tabStatus[i]=null;
 }
 
-/* ── COMPLETION ── */
-function resetTabBtn(i) {
-  const btn = document.getElementById(`tabBtn${i}`);
-  btn.className = 'tab-btn' + (currentTab===i?' active':'');
-}
-
-function completePanelGold(panelIdx) {
-  const panel = document.getElementById(`panel${panelIdx}`);
+function completePanelGold(panelIdx){
+  const panel=document.getElementById(`panel${panelIdx}`);
   panel.classList.add('pulse-gold');
-  setTimeout(()=>panel.classList.remove('pulse-gold'), 1700);
-  const banner = document.getElementById(`banner${panelIdx}`);
+  setTimeout(()=>panel.classList.remove('pulse-gold'),1700);
+  const banner=document.getElementById(`banner${panelIdx}`);
   banner.className='banner gold-banner';
-  banner.textContent='★ Excellent work — first attempt correct!';
+  banner.textContent='★ Excellent — first attempt correct!';
   banner.style.display='block';
-  const btn = document.getElementById(`tabBtn${panelIdx}`);
+  const btn=document.getElementById(`tabBtn${panelIdx}`);
   btn.className='tab-btn done-gold'+(currentTab===panelIdx?' active':'');
   btn.textContent='★ '+btn.textContent.replace(/[★✓]/g,'').trim();
-  launchFireworks();
+  tabStatus[panelIdx]='gold';
+  checkAllGold();
 }
 
-function completePanelGreen(panelIdx) {
-  const panel = document.getElementById(`panel${panelIdx}`);
+function completePanelGreen(panelIdx){
+  const panel=document.getElementById(`panel${panelIdx}`);
   panel.classList.add('pulse-green');
-  setTimeout(()=>panel.classList.remove('pulse-green'), 1700);
-  const banner = document.getElementById(`banner${panelIdx}`);
+  setTimeout(()=>panel.classList.remove('pulse-green'),1700);
+  const banner=document.getElementById(`banner${panelIdx}`);
   banner.className='banner green-banner';
   banner.textContent='✓ Completed — well done!';
   banner.style.display='block';
-  const btn = document.getElementById(`tabBtn${panelIdx}`);
+  const btn=document.getElementById(`tabBtn${panelIdx}`);
   btn.className='tab-btn done-green'+(currentTab===panelIdx?' active':'');
   btn.textContent='✓ '+btn.textContent.replace(/[★✓]/g,'').trim();
+  tabStatus[panelIdx]='green';
 }
 
-function launchFireworks() {
-  const colours = ['#f59e0b','#fbbf24','#fde68a','#a78bfa','#818cf8'];
-  for (let f=0; f<5; f++) {
-    setTimeout(()=>{
-      const fw = document.createElement('div');
-      fw.className='firework';
-      fw.style.left=(15+Math.random()*70)+'vw';
-      fw.style.top=(15+Math.random()*50)+'vh';
-      document.body.appendChild(fw);
-      for (let s=0; s<18; s++) {
-        const spark = document.createElement('div');
-        spark.className='spark';
-        const angle=(s/18)*360, dist=50+Math.random()*60;
-        spark.style.setProperty('--dx',Math.cos(angle*Math.PI/180)*dist+'px');
-        spark.style.setProperty('--dy',Math.sin(angle*Math.PI/180)*dist+'px');
-        spark.style.background=colours[Math.floor(Math.random()*colours.length)];
-        fw.appendChild(spark);
-      }
-      setTimeout(()=>fw.remove(),1000);
-    }, f*200);
-  }
+function checkAllGold(){
+  if(Object.values(tabStatus).every(v=>v==='gold')) setTimeout(showGoldOverlay,700);
 }
+function showGoldOverlay(){
+  document.body.classList.add('all-gold');
+  document.getElementById('goldOverlay').classList.add('show');
+}
+function closeOverlay(){
+  document.getElementById('goldOverlay').classList.remove('show');
+}
+
+// ═══════════════════════════════════════════════
+//  INIT
+// ═══════════════════════════════════════════════
+document.addEventListener('DOMContentLoaded',()=>{
+  renderQuestions('p0','p0-questions');
+});
 </script>
 </body>
 </html>
