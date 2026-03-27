@@ -1,0 +1,582 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Task 2 — The Shema</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,500;0,700;1,500&family=Source+Serif+4:ital,wght@0,300;0,400;0,600;1,300;1,400&display=swap" rel="stylesheet">
+<style>
+:root{
+  --navy:#0f2235;--navy-mid:#1a3a5c;--gold:#c49a2a;--gold-lt:#e8c060;--gold-pale:#fdf6e3;
+  --cream:#faf7f0;--cream-d:#ede8da;--ink:#1c1208;--ink-mid:#4a3c22;--ink-lt:#7a6a4a;
+  --blue-bg:#eef3fa;--amber-bg:#fff8ee;--green:#1e5c38;--green-bg:#edf7f1;
+  --red:#7a1f1f;--red-bg:#fdf0f0;--r:12px;
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Source Serif 4',serif;background:var(--cream);color:var(--ink);min-height:100vh;font-size:16.5px;line-height:1.7}
+.topbar{background:var(--navy);padding:10px 28px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:100;box-shadow:0 2px 16px rgba(0,0,0,.35)}
+.topbar-left{display:flex;align-items:center;gap:12px}
+.topbar-star{color:var(--gold-lt);font-size:1.3rem;filter:drop-shadow(0 0 6px rgba(228,192,96,.5))}
+.topbar-title{font-family:'Playfair Display',serif;color:#fff;font-size:.95rem}
+.topbar-title span{color:var(--gold-lt)}
+.timer-badge{background:rgba(196,154,42,.18);border:1px solid rgba(196,154,42,.4);color:var(--gold-lt);padding:4px 12px;border-radius:20px;font-size:.8rem;letter-spacing:.5px}
+.hero{background:linear-gradient(150deg,#0d2040 0%,#1a3060 55%,#2a1a40 100%);padding:52px 28px 44px;text-align:center;position:relative;overflow:hidden}
+.hero::before{content:'שְׁמַע';position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);font-size:11rem;opacity:.04;color:#fff;letter-spacing:-4px}
+.hero-badge{display:inline-block;background:rgba(196,154,42,.18);border:1px solid rgba(196,154,42,.4);color:var(--gold-lt);font-size:.75rem;letter-spacing:2px;text-transform:uppercase;padding:5px 14px;border-radius:20px;margin-bottom:16px}
+.hero h1{font-family:'Playfair Display',serif;font-size:clamp(1.9rem,5vw,2.8rem);color:#fff;line-height:1.15;margin-bottom:10px}
+.hero h1 em{color:var(--gold-lt);font-style:italic}
+.hero-sub{color:rgba(255,255,255,.6);font-size:.88rem;letter-spacing:1.5px;text-transform:uppercase}
+main{max-width:800px;margin:0 auto;padding:40px 24px 80px}
+.sec-label{display:inline-flex;align-items:center;gap:6px;background:var(--navy-mid);color:var(--gold-lt);font-size:.72rem;font-weight:600;letter-spacing:2px;text-transform:uppercase;padding:4px 12px;border-radius:20px;margin-bottom:10px}
+.sec-title{font-family:'Playfair Display',serif;font-size:1.45rem;color:var(--ink);margin-bottom:8px;line-height:1.25}
+.sec-intro{color:var(--ink-mid);margin-bottom:24px;font-size:.95rem;padding-left:14px;border-left:3px solid var(--gold)}
+.activity-label{background:var(--gold);color:#fff;display:inline-flex;align-items:center;gap:6px;font-size:.75rem;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;padding:4px 12px;border-radius:6px;margin-bottom:14px}
+.divider-star{text-align:center;color:rgba(196,154,42,.5);letter-spacing:10px;font-size:1rem;margin:32px 0}
+.progress-strip{display:flex;align-items:center;gap:12px;margin-bottom:32px;background:#fff;border:1px solid var(--cream-d);border-radius:var(--r);padding:14px 18px;box-shadow:0 2px 10px rgba(0,0,0,.05)}
+.prog-step{display:flex;align-items:center;gap:6px;font-size:.8rem;color:var(--ink-lt)}
+.prog-step .dot{width:22px;height:22px;border-radius:50%;background:var(--cream-d);display:flex;align-items:center;justify-content:center;font-size:.7rem;font-weight:700;transition:all .3s}
+.prog-step.done .dot{background:var(--gold);color:#fff}
+.prog-sep{flex:1;height:2px;background:var(--cream-d);border-radius:2px}
+.info-box{background:#fff;border:1px solid var(--cream-d);border-radius:var(--r);padding:22px 26px;margin-bottom:20px;box-shadow:0 2px 12px rgba(0,0,0,.06)}
+.info-box h3{font-family:'Playfair Display',serif;font-size:1.05rem;color:var(--navy-mid);margin-bottom:8px}
+.info-box p{font-size:.93rem;color:var(--ink-mid);line-height:1.65}
+
+/* ── SHEMA SCROLL ── */
+.shema-scroll{background:linear-gradient(160deg,#0d1f38,#1a3560);border-radius:var(--r);padding:30px 34px;margin:24px 0;color:#fff;box-shadow:0 8px 32px rgba(0,0,0,.3);position:relative;overflow:hidden}
+.shema-scroll::after{content:'✡';position:absolute;right:20px;top:16px;font-size:3rem;opacity:.08}
+.shema-heb{font-family:'Playfair Display',serif;color:var(--gold-lt);font-size:.78rem;letter-spacing:3px;text-transform:uppercase;margin-bottom:16px;opacity:.8}
+.shema-line{padding:5px 0;font-size:.95rem;line-height:1.7;color:rgba(255,255,255,.88);border-bottom:1px solid rgba(255,255,255,.07)}
+.shema-line:last-child{border-bottom:none}
+.shema-line:first-of-type{color:#fff;font-weight:600;font-size:1.02rem;border-bottom:1px solid rgba(196,154,42,.3)}
+.shema-key{background:rgba(196,154,42,.2);border-left:3px solid var(--gold-lt);border-radius:0 4px 4px 0;padding:3px 8px;cursor:pointer;transition:background .2s;font-weight:600}
+.shema-key:hover{background:rgba(196,154,42,.35)}
+.shema-key.highlighted{background:rgba(196,154,42,.45);outline:1px solid var(--gold-lt)}
+.key-popup{display:none;position:fixed;z-index:200;background:var(--navy);color:#fff;border:1px solid var(--gold);border-radius:8px;padding:12px 16px;max-width:280px;font-size:.83rem;line-height:1.5;box-shadow:0 8px 28px rgba(0,0,0,.4)}
+.key-popup.show{display:block}
+.key-popup .kp-title{color:var(--gold-lt);font-weight:700;margin-bottom:5px}
+
+/* ── MC QUESTIONS ── */
+.mc-block{background:#fff;border:1px solid var(--cream-d);border-radius:var(--r);padding:20px 24px;margin-bottom:14px;box-shadow:0 2px 10px rgba(0,0,0,.05)}
+.mc-cat{font-size:.74rem;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;margin-bottom:6px;padding:3px 10px;border-radius:4px;display:inline-block}
+.mc-cat.belief{background:var(--blue-bg);color:#1a3a8a}
+.mc-cat.action{background:var(--amber-bg);color:#8a4800}
+.mc-cat.symbol{background:var(--green-bg);color:var(--green)}
+.mc-q{font-size:.95rem;color:var(--ink);margin:10px 0 14px;line-height:1.5;font-family:'Playfair Display',serif}
+.mc-opts{display:flex;flex-direction:column;gap:7px}
+.mc-opt{padding:10px 14px;border:2px solid var(--cream-d);border-radius:7px;cursor:pointer;font-size:.88rem;color:var(--ink-mid);background:var(--cream);transition:all .2s;display:flex;align-items:flex-start;gap:10px}
+.mc-opt:hover{border-color:var(--gold);background:var(--gold-pale)}
+.mc-opt.sel{border-color:var(--navy-mid);background:var(--blue-bg);color:var(--navy)}
+.mc-opt.correct{border-color:var(--green);background:var(--green-bg);color:var(--green);font-weight:600}
+.mc-opt.wrong{border-color:var(--red);background:var(--red-bg);color:var(--red)}
+.mc-fb{font-size:.85rem;margin-top:8px;padding:9px 13px;border-radius:6px;display:none;line-height:1.5}
+.mc-fb.show{display:block}
+.mc-fb.correct{background:var(--green-bg);color:var(--green)}
+.mc-fb.wrong{background:var(--red-bg);color:var(--red)}
+
+/* ── FILL BLANKS ── */
+.fill-para{background:#fff;border:1px solid var(--cream-d);border-radius:var(--r);padding:22px 26px;margin-bottom:16px;font-size:.93rem;color:var(--ink);line-height:1.9;box-shadow:0 2px 10px rgba(0,0,0,.05)}
+.blank{display:inline-block;border-bottom:2px solid var(--gold);min-width:100px;text-align:center;padding:0 4px;color:transparent;background:var(--gold-pale);border-radius:4px;font-weight:600;cursor:pointer;transition:all .3s}
+.blank.revealed{color:var(--navy);background:var(--blue-bg);border-color:var(--navy-mid)}
+.blank.wrong{background:var(--red-bg);border-color:var(--red);color:var(--red)}
+.fill-chips{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:16px}
+.fill-chip{padding:8px 16px;border:2px solid var(--cream-d);border-radius:20px;background:#fff;font-size:.88rem;color:var(--ink-mid);cursor:pointer;transition:all .2s;user-select:none}
+.fill-chip:hover{border-color:var(--gold);background:var(--gold-pale);color:var(--ink)}
+.fill-chip.used{opacity:.35;pointer-events:none;text-decoration:line-through}
+.fill-chip.sel{border-color:var(--navy);background:var(--navy);color:#fff}
+
+/* ── ORDER ACTIVITY ── */
+.order-container{margin:16px 0}
+.order-item{display:flex;align-items:center;gap:12px;background:#fff;border:2px solid var(--cream-d);border-radius:8px;padding:12px 16px;margin-bottom:8px;cursor:grab;transition:all .2s;box-shadow:0 2px 8px rgba(0,0,0,.04)}
+.order-item:hover{border-color:var(--gold);box-shadow:0 4px 14px rgba(0,0,0,.1)}
+.order-item:active{cursor:grabbing}
+.order-item.drag-over{border-color:var(--gold);background:var(--gold-pale)}
+.order-handle{color:var(--ink-lt);font-size:1.1rem;flex-shrink:0}
+.order-num{width:28px;height:28px;border-radius:50%;background:var(--navy);color:#fff;display:flex;align-items:center;justify-content:center;font-size:.8rem;font-weight:700;flex-shrink:0}
+.order-text{font-size:.88rem;color:var(--ink-mid);line-height:1.4;flex:1}
+.order-item.correct-order{border-color:var(--green);background:var(--green-bg)}
+.order-item.correct-order .order-num{background:var(--green)}
+.order-item.wrong-order{border-color:var(--red);background:var(--red-bg)}
+.order-item.wrong-order .order-num{background:var(--red)}
+
+/* ── TRUE/FALSE ── */
+.tf-block{background:#fff;border:1px solid var(--cream-d);border-radius:var(--r);padding:18px 22px;margin-bottom:12px;box-shadow:0 2px 10px rgba(0,0,0,.05)}
+.tf-stmt{font-size:.93rem;color:var(--ink);margin-bottom:12px;line-height:1.55}
+.tf-btns{display:flex;gap:10px}
+.tf-btn{flex:1;padding:9px;border:2px solid var(--cream-d);border-radius:7px;font-family:'Source Serif 4',serif;font-size:.9rem;font-weight:700;cursor:pointer;transition:all .2s;background:var(--cream)}
+.tf-btn.true-btn:hover{border-color:var(--green);background:var(--green-bg);color:var(--green)}
+.tf-btn.false-btn:hover{border-color:var(--red);background:var(--red-bg);color:var(--red)}
+.tf-btn.selected-true{border-color:var(--green);background:var(--green-bg);color:var(--green)}
+.tf-btn.selected-false{border-color:var(--red);background:var(--red-bg);color:var(--red)}
+.tf-btn.correct-ans{border-color:var(--green) !important;background:var(--green-bg) !important;color:var(--green) !important}
+.tf-btn.wrong-ans{border-color:var(--red) !important;background:var(--red-bg) !important;color:var(--red) !important}
+.tf-explain{font-size:.83rem;color:var(--ink-mid);margin-top:8px;padding:8px 12px;background:var(--gold-pale);border-radius:6px;display:none;line-height:1.5}
+.tf-explain.show{display:block}
+
+/* ── BUTTONS ── */
+.btn{padding:11px 24px;border:none;border-radius:8px;font-family:'Source Serif 4',serif;font-size:.93rem;font-weight:600;cursor:pointer;transition:all .2s}
+.btn-gold{background:linear-gradient(135deg,var(--gold),var(--gold-lt));color:var(--ink);box-shadow:0 3px 14px rgba(196,154,42,.35)}
+.btn-gold:hover{transform:translateY(-2px);box-shadow:0 7px 20px rgba(196,154,42,.45)}
+.btn-ghost{background:var(--cream-d);color:var(--ink-mid)}
+.btn-ghost:hover{background:#ddd5c0}
+.btn-row{display:flex;gap:10px;flex-wrap:wrap;margin-top:18px}
+.reveal-btn{background:none;border:1px solid var(--cream-d);color:var(--ink-lt);padding:7px 14px;border-radius:6px;font-size:.8rem;cursor:pointer;transition:all .2s;margin-top:10px;font-family:'Source Serif 4',serif}
+.reveal-btn:hover{border-color:var(--gold);color:var(--gold)}
+.reveal-box{display:none;background:var(--gold-pale);border:1px solid rgba(196,154,42,.35);border-radius:8px;padding:14px 18px;margin-top:10px;font-size:.87rem;color:var(--ink-mid);line-height:1.65}
+.reveal-box.open{display:block}
+.reveal-box ul{padding-left:16px}.reveal-box li{margin-bottom:4px}
+.finish-banner{display:none;background:linear-gradient(135deg,var(--navy) 0%,#1a3a5c 100%);border-radius:var(--r);padding:30px;text-align:center;margin-top:32px;box-shadow:0 8px 36px rgba(0,0,0,.2)}
+.finish-banner.show{display:block;animation:fadeIn .5s ease}
+.finish-banner .big{font-size:2.8rem;display:block;margin-bottom:12px;filter:drop-shadow(0 0 10px rgba(228,192,96,.6))}
+.finish-banner h2{font-family:'Playfair Display',serif;color:var(--gold-lt);font-size:1.5rem;margin-bottom:8px}
+.finish-banner p{color:rgba(255,255,255,.7);font-size:.9rem;margin-bottom:4px}
+.finish-banner a{display:inline-block;margin-top:16px;background:var(--gold);color:var(--ink);padding:11px 26px;border-radius:8px;text-decoration:none;font-weight:700;font-size:.92rem;transition:all .2s}
+.finish-banner a:hover{background:var(--gold-lt);transform:translateY(-2px)}
+.score-display{text-align:center;font-family:'Playfair Display',serif;color:var(--navy-mid);font-size:1rem;margin-top:14px;display:none}
+@keyframes fadeIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <div class="topbar-left">
+    <span class="topbar-star">✡</span>
+    <span class="topbar-title">Jewish Marks of Faith · <span>Task 2 of 4</span></span>
+  </div>
+  <span class="timer-badge">⏱ 5–10 min</span>
+</div>
+
+<div class="hero">
+  <div class="hero-badge">Year 8 · Unit 4 · Lesson 3</div>
+  <h1>The <em>Shema</em></h1>
+  <p class="hero-sub">The anchor of Jewish faith — Belief, Action &amp; Symbol</p>
+</div>
+
+<main>
+
+  <div class="progress-strip">
+    <div class="prog-step" id="ps1"><div class="dot" id="pd1">A</div><span>True/False</span></div>
+    <div class="prog-sep"></div>
+    <div class="prog-step" id="ps2"><div class="dot" id="pd2">B</div><span>Fill Blanks</span></div>
+    <div class="prog-sep"></div>
+    <div class="prog-step" id="ps3"><div class="dot" id="pd3">C</div><span>Questions</span></div>
+    <div class="prog-sep"></div>
+    <div class="prog-step" id="ps4"><div class="dot" id="pd4">D</div><span>Reorder</span></div>
+  </div>
+
+  <!-- INTRO -->
+  <div class="sec-label">📜 The Shema</div>
+  <h2 class="sec-title">The Anchor of Faith</h2>
+  <p class="sec-intro">The Shema is the most important prayer in Judaism. It is remarkable because it fits into ALL THREE marks of faith — belief, action, and symbol. Read the prayer carefully, then work through the activities.</p>
+
+  <div class="info-box">
+    <h3>📌 Key Facts</h3>
+    <p>The Shema is recited <strong>twice daily</strong> — morning and evening. It is often the first prayer a child learns and the last words said before death. When reciting the first line, many Jewish people cover their eyes to concentrate fully. The words appear inside the <strong>Tefillin</strong> (worn on the body) and the <strong>Mezuzah</strong> (on the doorpost).</p>
+  </div>
+
+  <!-- SHEMA TEXT with clickable highlights -->
+  <div class="shema-scroll">
+    <div class="shema-heb">שְׁמַע יִשְׂרָאֵל — The Shema</div>
+    <div class="shema-line">"Hear, Israel, the Lord is our G-d, <span class="shema-key" onclick="showPopup(event,'monotheism')">the Lord is One.</span>"</div>
+    <div class="shema-line">Blessed be the Name of His glorious kingdom forever and ever.</div>
+    <div class="shema-line">And you shall <span class="shema-key" onclick="showPopup(event,'love')">love the Lord your G-d with all your heart</span> and with all your soul and with all your might.</div>
+    <div class="shema-line">And these words that I command you today shall be in your <span class="shema-key" onclick="showPopup(event,'heart')">heart.</span></div>
+    <div class="shema-line">And you shall <span class="shema-key" onclick="showPopup(event,'teach')">teach them diligently to your children,</span> and you shall speak of them when you sit at home, and when you walk along the way, and when you <span class="shema-key" onclick="showPopup(event,'timing')">lie down and when you rise up.</span></div>
+    <div class="shema-line">And you shall <span class="shema-key" onclick="showPopup(event,'tefillin')">bind them as a sign on your hand,</span> and they shall be for frontlets between your eyes.</div>
+    <div class="shema-line">And you shall <span class="shema-key" onclick="showPopup(event,'mezuzah')">write them on the doorposts</span> of your house and on your gates.</div>
+  </div>
+  <p style="font-size:.8rem;color:var(--ink-lt);margin-bottom:24px;">💡 Click any highlighted phrase to learn what it means for Jewish life.</p>
+
+  <!-- popup -->
+  <div class="key-popup" id="keyPopup">
+    <div class="kp-title" id="kpTitle"></div>
+    <div id="kpBody"></div>
+  </div>
+
+  <div class="divider-star">✦ ✡ ✦</div>
+
+  <!-- ═══ ACTIVITY A: TRUE/FALSE ═══ -->
+  <div class="activity-label">✅ Activity A — True or False?</div>
+  <h2 class="sec-title">Check Your Understanding</h2>
+  <p class="sec-intro">Decide whether each statement about the Shema is true or false. Click your answer — feedback will appear immediately.</p>
+
+  <div class="tf-block" data-correct="true">
+    <div class="tf-stmt">1. The Shema begins with the words "Hear, O Israel: the Lord our G-d, the Lord is One."</div>
+    <div class="tf-btns">
+      <button class="tf-btn true-btn" onclick="answerTF(this,'true')">✓ True</button>
+      <button class="tf-btn false-btn" onclick="answerTF(this,'false')">✗ False</button>
+    </div>
+    <div class="tf-explain">✅ <strong>True.</strong> This opening declaration of monotheism — that G-d is One — is the heart of the prayer and one of the most important statements in all of Judaism.</div>
+  </div>
+
+  <div class="tf-block" data-correct="false">
+    <div class="tf-stmt">2. The Shema is only recited once a week, at the synagogue on Shabbat.</div>
+    <div class="tf-btns">
+      <button class="tf-btn true-btn" onclick="answerTF(this,'true')">✓ True</button>
+      <button class="tf-btn false-btn" onclick="answerTF(this,'false')">✗ False</button>
+    </div>
+    <div class="tf-explain">❌ <strong>False.</strong> The Shema is recited <strong>twice daily</strong> — morning and evening — and can be said anywhere, not just at the synagogue. The prayer says "when you lie down and when you rise up."</div>
+  </div>
+
+  <div class="tf-block" data-correct="true">
+    <div class="tf-stmt">3. The words of the Shema are written on a scroll inside the Mezuzah, which is placed on the doorpost of a Jewish home.</div>
+    <div class="tf-btns">
+      <button class="tf-btn true-btn" onclick="answerTF(this,'true')">✓ True</button>
+      <button class="tf-btn false-btn" onclick="answerTF(this,'false')">✗ False</button>
+    </div>
+    <div class="tf-explain">✅ <strong>True.</strong> The Shema directly commands "write them on the doorposts of your house." The Mezuzah fulfils this commandment — making it a Symbol as well as a Belief.</div>
+  </div>
+
+  <div class="tf-block" data-correct="false">
+    <div class="tf-stmt">4. The Shema teaches that Jewish children do not need to learn the prayer — it is only for adults.</div>
+    <div class="tf-btns">
+      <button class="tf-btn true-btn" onclick="answerTF(this,'true')">✓ True</button>
+      <button class="tf-btn false-btn" onclick="answerTF(this,'false')">✗ False</button>
+    </div>
+    <div class="tf-explain">❌ <strong>False.</strong> The Shema specifically says to "teach them diligently to your children." It is often one of the <em>first</em> prayers a Jewish child learns, and is passed down through generations.</div>
+  </div>
+
+  <div class="tf-block" data-correct="true">
+    <div class="tf-stmt">5. Tefillin are worn on the arm and forehead during prayer because the Shema says to "bind them as a sign on your hand."</div>
+    <div class="tf-btns">
+      <button class="tf-btn true-btn" onclick="answerTF(this,'true')">✓ True</button>
+      <button class="tf-btn false-btn" onclick="answerTF(this,'false')">✗ False</button>
+    </div>
+    <div class="tf-explain">✅ <strong>True.</strong> This is a direct fulfilment of the Shema's commandment. The Tefillin contain the Shema on a scroll — so wearing them is simultaneously a Belief (the words), an Action (wearing/praying), and a Symbol (visible on the body).</div>
+  </div>
+
+  <div class="tf-block" data-correct="false">
+    <div class="tf-stmt">6. The Shema is a symbol only — it does not count as a belief or an action.</div>
+    <div class="tf-btns">
+      <button class="tf-btn true-btn" onclick="answerTF(this,'true')">✓ True</button>
+      <button class="tf-btn false-btn" onclick="answerTF(this,'false')">✗ False</button>
+    </div>
+    <div class="tf-explain">❌ <strong>False.</strong> The Shema is unique precisely because it fits ALL THREE marks of faith: it expresses a Belief (G-d is One), requires an Action (recited twice daily), and is connected to Symbols (Mezuzah, Tefillin).</div>
+  </div>
+
+  <div class="btn-row">
+    <button class="btn btn-gold" onclick="checkTF()">✦ Check All Answers</button>
+  </div>
+  <div class="score-display" id="tfScore"></div>
+
+  <div class="divider-star">✦ ✡ ✦</div>
+
+  <!-- ═══ ACTIVITY B: FILL BLANKS ═══ -->
+  <div class="activity-label">✏️ Activity B — Fill in the Blanks</div>
+  <h2 class="sec-title">Complete the Summary</h2>
+  <p class="sec-intro">Select a word from the bank, then click a blank to place it. Each word is used once.</p>
+
+  <div class="fill-chips" id="fillBank2">
+    <div class="fill-chip" data-word="twice" onclick="selChip2(this)">twice</div>
+    <div class="fill-chip" data-word="One" onclick="selChip2(this)">One</div>
+    <div class="fill-chip" data-word="children" onclick="selChip2(this)">children</div>
+    <div class="fill-chip" data-word="Tefillin" onclick="selChip2(this)">Tefillin</div>
+    <div class="fill-chip" data-word="Mezuzah" onclick="selChip2(this)">Mezuzah</div>
+    <div class="fill-chip" data-word="doorpost" onclick="selChip2(this)">doorpost</div>
+    <div class="fill-chip" data-word="monotheism" onclick="selChip2(this)">monotheism</div>
+    <div class="fill-chip" data-word="three" onclick="selChip2(this)">three</div>
+  </div>
+
+  <div class="fill-para">
+    The Shema is the central prayer of Judaism. Its opening line declares that G-d is <span class="blank" data-answer="One" onclick="place2(this)">______</span> — this is the belief in <span class="blank" data-answer="monotheism" onclick="place2(this)">________</span>, which is fundamental to Jewish faith. Many Jewish people recite the Shema <span class="blank" data-answer="twice" onclick="place2(this)">_____</span> a day: morning and evening. The prayer also commands Jewish people to teach these words to their <span class="blank" data-answer="children" onclick="place2(this)">________</span>, showing it is passed between generations. The words of the Shema are physically written inside the <span class="blank" data-answer="Tefillin" onclick="place2(this)">_______</span> — leather boxes worn on the arm during prayer — and inside the <span class="blank" data-answer="Mezuzah" onclick="place2(this)">_______</span>, which is fixed to the <span class="blank" data-answer="doorpost" onclick="place2(this)">________</span> of a Jewish home. This is why the Shema fits into all <span class="blank" data-answer="three" onclick="place2(this)">_____</span> marks of faith: belief, action, and symbol.
+  </div>
+
+  <div class="btn-row">
+    <button class="btn btn-gold" onclick="checkFill2()">✦ Check Answers</button>
+    <button class="btn btn-ghost" onclick="resetFill2()">↺ Reset</button>
+  </div>
+  <div id="fillFb2" style="margin-top:12px;font-size:.88rem;display:none;padding:10px 14px;border-radius:8px;"></div>
+
+  <div class="divider-star">✦ ✡ ✦</div>
+
+  <!-- ═══ ACTIVITY C: MC QUESTIONS ═══ -->
+  <div class="activity-label">❓ Activity C — Multiple Choice</div>
+  <h2 class="sec-title">Analyse the Shema</h2>
+  <p class="sec-intro">Use the Shema text above to answer these questions. Each question is labelled with the mark of faith it tests.</p>
+
+  <div class="mc-block" data-correct="b">
+    <span class="mc-cat belief">💭 Belief</span>
+    <div class="mc-q">1. What does the phrase "the Lord is One" tell us about Jewish belief in G-d?</div>
+    <div class="mc-opts">
+      <div class="mc-opt" onclick="pickMC(this)">G-d is the most powerful of many gods</div>
+      <div class="mc-opt" onclick="pickMC(this)">Judaism is monotheistic — there is only one G-d, who is indivisible</div>
+      <div class="mc-opt" onclick="pickMC(this)">G-d only belongs to the Jewish people and no one else</div>
+      <div class="mc-opt" onclick="pickMC(this)">G-d is one person in a trinity of three</div>
+    </div>
+    <div class="mc-fb" id="mcfb1"></div>
+  </div>
+
+  <div class="mc-block" data-correct="c">
+    <span class="mc-cat action">🙌 Action</span>
+    <div class="mc-q">2. The Shema says "when you lie down and when you rise up." What does this tell us about how the prayer is used?</div>
+    <div class="mc-opts">
+      <div class="mc-opt" onclick="pickMC(this)">The prayer is only for bedtime</div>
+      <div class="mc-opt" onclick="pickMC(this)">The prayer should be recited while lying on the floor</div>
+      <div class="mc-opt" onclick="pickMC(this)">The prayer is said morning and evening — as part of daily life, not just in the synagogue</div>
+      <div class="mc-opt" onclick="pickMC(this)">The prayer must be whispered so only G-d can hear it</div>
+    </div>
+    <div class="mc-fb" id="mcfb2"></div>
+  </div>
+
+  <div class="mc-block" data-correct="a">
+    <span class="mc-cat symbol">👁️ Symbol</span>
+    <div class="mc-q">3. The Shema says "bind them as a sign on your hand." Which object fulfils this commandment?</div>
+    <div class="mc-opts">
+      <div class="mc-opt" onclick="pickMC(this)">Tefillin — small leather boxes with Torah scrolls strapped to the arm and forehead during prayer</div>
+      <div class="mc-opt" onclick="pickMC(this)">Kippah — the skullcap worn to show reverence</div>
+      <div class="mc-opt" onclick="pickMC(this)">Mezuzah — fixed to the doorpost of the home</div>
+      <div class="mc-opt" onclick="pickMC(this)">Tallit — the fringed prayer shawl</div>
+    </div>
+    <div class="mc-fb" id="mcfb3"></div>
+  </div>
+
+  <div class="mc-block" data-correct="d">
+    <span class="mc-cat action">🙌 Action</span>
+    <div class="mc-q">4. The Shema says to "teach them diligently to your children." Why is this significant as an Action mark of faith?</div>
+    <div class="mc-opts">
+      <div class="mc-opt" onclick="pickMC(this)">It means only rabbis are allowed to teach the prayer</div>
+      <div class="mc-opt" onclick="pickMC(this)">It shows the prayer changes meaning for different age groups</div>
+      <div class="mc-opt" onclick="pickMC(this)">It proves the prayer was originally written for children</div>
+      <div class="mc-opt" onclick="pickMC(this)">Jewish families actively pass the prayer to the next generation — faith is lived and shared, not just private</div>
+    </div>
+    <div class="mc-fb" id="mcfb4"></div>
+  </div>
+
+  <div class="mc-block" data-correct="b">
+    <span class="mc-cat belief">💭 Belief + 🙌 Action + 👁️ Symbol</span>
+    <div class="mc-q">5. Why do teachers describe the Shema as the "anchor" of Jewish marks of faith?</div>
+    <div class="mc-opts">
+      <div class="mc-opt" onclick="pickMC(this)">Because it is the heaviest and longest prayer in Judaism</div>
+      <div class="mc-opt" onclick="pickMC(this)">Because it connects all three marks — it is a belief (G-d is One), an action (recited daily), and a symbol (in the Tefillin and Mezuzah)</div>
+      <div class="mc-opt" onclick="pickMC(this)">Because it is the oldest prayer ever recorded in human history</div>
+      <div class="mc-opt" onclick="pickMC(this)">Because it is the only prayer that must be said in Hebrew</div>
+    </div>
+    <div class="mc-fb" id="mcfb5"></div>
+  </div>
+
+  <div class="btn-row">
+    <button class="btn btn-gold" onclick="checkMC()">✦ Check Answers</button>
+  </div>
+  <div class="score-display" id="mcScore"></div>
+
+  <div class="divider-star">✦ ✡ ✦</div>
+
+  <!-- ═══ ACTIVITY D: REORDER ═══ -->
+  <div class="activity-label">↕️ Activity D — Put it in Order</div>
+  <h2 class="sec-title">Sequence the Shema's Connection to Marks of Faith</h2>
+  <p class="sec-intro">The statements below describe how the Shema connects to the three marks of faith, but they are shuffled. Drag them into the correct logical order (1 = foundation, 4 = conclusion).</p>
+
+  <div class="order-container" id="orderList">
+    <div class="order-item" draggable="true" data-pos="3" ondragstart="ordStart(event)" ondragover="ordOver(event)" ondragleave="ordLeave(event)" ondrop="ordDrop(event)">
+      <span class="order-handle">⠿</span><div class="order-num" id="onum1">1</div>
+      <div class="order-text">The words of the Shema are physically written inside the Tefillin (worn on the body) and the Mezuzah (on the doorpost) — making faith <strong>visible as a Symbol</strong>.</div>
+    </div>
+    <div class="order-item" draggable="true" data-pos="1" ondragstart="ordStart(event)" ondragover="ordOver(event)" ondragleave="ordLeave(event)" ondrop="ordDrop(event)">
+      <span class="order-handle">⠿</span><div class="order-num" id="onum2">2</div>
+      <div class="order-text">The Shema opens with "the Lord is One" — this is the core <strong>Belief</strong> of Judaism: monotheism, the belief in one G-d.</div>
+    </div>
+    <div class="order-item" draggable="true" data-pos="4" ondragstart="ordStart(event)" ondragover="ordOver(event)" ondragleave="ordLeave(event)" ondrop="ordDrop(event)">
+      <span class="order-handle">⠿</span><div class="order-num" id="onum3">3</div>
+      <div class="order-text">This is why the Shema is the "anchor" — unlike most prayers, it is simultaneously a Belief, an Action, and a Symbol all at once.</div>
+    </div>
+    <div class="order-item" draggable="true" data-pos="2" ondragstart="ordStart(event)" ondragover="ordOver(event)" ondragleave="ordLeave(event)" ondrop="ordDrop(event)">
+      <span class="order-handle">⠿</span><div class="order-num" id="onum4">4</div>
+      <div class="order-text">Jewish people are commanded to recite the Shema morning and evening, and to teach it to their children — this makes it an <strong>Action</strong> lived out daily.</div>
+    </div>
+  </div>
+
+  <div class="btn-row">
+    <button class="btn btn-gold" onclick="checkOrder()">✦ Check Order</button>
+    <button class="btn btn-ghost" onclick="shuffleOrder()">↺ Shuffle Again</button>
+  </div>
+  <div id="orderFb" style="margin-top:12px;font-size:.88rem;display:none;padding:10px 14px;border-radius:8px;"></div>
+
+  <button class="reveal-btn" onclick="toggleReveal('orderKey')">🔑 Show correct order</button>
+  <div class="reveal-box" id="orderKey">
+    <p><strong>Correct order:</strong></p>
+    <ol style="padding-left:18px;margin-top:6px">
+      <li>The Shema opens with "the Lord is One" — core <strong>Belief</strong> (monotheism).</li>
+      <li>Jewish people recite it morning and evening, and teach it to children — <strong>Action</strong>.</li>
+      <li>The words appear in Tefillin and Mezuzah — <strong>Symbol</strong>.</li>
+      <li>This is why it is called the "anchor" — it bridges all three marks of faith.</li>
+    </ol>
+  </div>
+
+  <!-- FINISH -->
+  <div class="finish-banner" id="finishBanner">
+    <span class="big">📜</span>
+    <h2>Task 2 Complete!</h2>
+    <p>You've explored the Shema through true/false, fill-in-the-blanks, multiple choice, and sequencing.</p>
+    <p>Next: <strong>Task 3</strong> looks at the Tefillin and Mezuzah in depth.</p>
+    <a href="task3_symbols.html">Continue to Task 3 →</a>
+  </div>
+
+</main>
+
+<script>
+/* ── PROGRESS ── */
+const done={A:false,B:false,C:false,D:false};
+function markDone(k,did){
+  done[k]=true;
+  const d=document.getElementById(did);d.textContent='✓';d.style.background='var(--gold)';d.style.color='#fff';
+  if(Object.values(done).every(Boolean)) document.getElementById('finishBanner').classList.add('show');
+}
+function toggleReveal(id){document.getElementById(id).classList.toggle('open')}
+
+/* ── POPUP ── */
+const popups={
+  monotheism:{title:'Belief: Monotheism',body:'This is the single most important Jewish belief — that there is only ONE G-d. This is called monotheism, and it separates Judaism from ancient polytheistic religions.'},
+  love:{title:'Belief + Action: Loving G-d',body:'Loving G-d with all your heart, soul and might means this is total commitment — not just on special occasions, but all the time and in all aspects of life.'},
+  heart:{title:'Belief: Internal Faith',body:'"In your heart" shows that belief is the foundation — the Shema must first be internalised before it can be acted upon or shown through symbols.'},
+  teach:{title:'Action: Teaching Children',body:'Passing the Shema to the next generation is a commanded Action. It shows that Jewish identity is actively maintained through family and education, not just personal choice.'},
+  timing:{title:'Action: Daily Recitation',body:'"Lie down and rise up" means the Shema is said in the evening and morning — every single day, everywhere, not only at the synagogue.'},
+  tefillin:{title:'Symbol: Tefillin',body:'Tefillin are small black leather boxes containing Torah scrolls including the Shema. One is strapped to the arm, one to the forehead — literally "binding" the words of faith to the body.'},
+  mezuzah:{title:'Symbol: Mezuzah',body:'The Mezuzah on the doorpost contains a handwritten scroll with the Shema. It marks a Jewish home, reminds those entering of their faith, and fulfils this exact commandment from the prayer.'}
+};
+function showPopup(e,key){
+  const p=document.getElementById('keyPopup');
+  const d=popups[key];
+  document.getElementById('kpTitle').textContent=d.title;
+  document.getElementById('kpBody').textContent=d.body;
+  p.style.left=Math.min(e.pageX+10,window.innerWidth-300)+'px';
+  p.style.top=(e.pageY-80)+'px';
+  p.classList.add('show');
+  e.stopPropagation();
+}
+document.addEventListener('click',()=>document.getElementById('keyPopup').classList.remove('show'));
+
+/* ── TRUE/FALSE ── */
+let tfAnswers={};
+function answerTF(btn,ans){
+  const block=btn.closest('.tf-block');
+  if(block.dataset.answered)return;
+  block.dataset.answered='1';
+  block.dataset.chosen=ans;
+  const correct=block.dataset.correct;
+  const explain=block.querySelector('.tf-explain');
+  block.querySelectorAll('.tf-btn').forEach(b=>b.disabled=true);
+  if(ans===correct){
+    btn.classList.add('correct-ans');
+    explain.classList.add('show');
+    tfAnswers[block.dataset.correct+Math.random()]=true;
+  }else{
+    btn.classList.add('wrong-ans');
+    block.querySelectorAll('.tf-btn').forEach(b=>{if((ans==='true'&&b.classList.contains('false-btn'))||(ans==='false'&&b.classList.contains('true-btn')))b.classList.add('correct-ans');});
+    explain.classList.add('show');
+  }
+}
+function checkTF(){
+  const blocks=document.querySelectorAll('.tf-block');
+  let correct=0;
+  blocks.forEach(b=>{
+    const chosen=b.dataset.chosen;const right=b.dataset.correct;
+    if(chosen===right)correct++;
+    b.querySelector('.tf-explain').classList.add('show');
+  });
+  const s=document.getElementById('tfScore');s.style.display='block';
+  const pct=Math.round(correct/6*100);
+  let msg=correct===6?'🌟 Perfect!':correct>=4?'✦ Well done!':'📖 Review the explanations and try Task 3.';
+  s.innerHTML='Score: <strong>'+correct+'/6</strong> ('+pct+'%) — '+msg;
+  if(correct>=5)markDone('A','pd1');
+}
+
+/* ── FILL 2 ── */
+let sc2=null;
+function selChip2(el){
+  if(el.classList.contains('used'))return;
+  document.querySelectorAll('#fillBank2 .fill-chip').forEach(c=>c.classList.remove('sel'));
+  el.classList.add('sel');sc2=el;
+}
+function place2(blank){
+  if(!sc2||blank.classList.contains('revealed'))return;
+  blank.dataset.placed=sc2.dataset.word;blank.textContent=sc2.dataset.word;
+  blank.style.color='var(--navy)';blank.style.background='var(--blue-bg)';
+  sc2.classList.add('used');sc2.classList.remove('sel');sc2=null;
+}
+function checkFill2(){
+  const blanks=document.querySelectorAll('#panel-fill2 .blank, .fill-para .blank');
+  let correct=0,total=0;
+  document.querySelectorAll('.fill-para .blank').forEach(b=>{
+    total++;b.classList.remove('revealed','wrong');
+    if(b.dataset.placed===b.dataset.answer){b.classList.add('revealed');correct++;}
+    else if(b.dataset.placed)b.classList.add('wrong');
+  });
+  const fb=document.getElementById('fillFb2');fb.style.display='block';
+  if(correct===total){fb.style.background='var(--green-bg)';fb.style.color='var(--green)';fb.textContent='✅ All '+total+' correct!';markDone('B','pd2');}
+  else{fb.style.background='var(--red-bg)';fb.style.color='var(--red)';fb.textContent=correct+'/'+total+' correct. Red blanks are wrong.';}
+}
+function resetFill2(){
+  document.querySelectorAll('.fill-para .blank').forEach(b=>{b.dataset.placed='';b.textContent='______';b.style.color='transparent';b.style.background='var(--gold-pale)';b.classList.remove('revealed','wrong');});
+  document.querySelectorAll('#fillBank2 .fill-chip').forEach(c=>c.classList.remove('used','sel'));
+  sc2=null;document.getElementById('fillFb2').style.display='none';
+}
+
+/* ── MC ── */
+const mcCorrect=['b','c','a','d','b'];
+function pickMC(el){
+  const block=el.closest('.mc-block');
+  if(block.dataset.answered)return;
+  block.querySelectorAll('.mc-opt').forEach(o=>o.classList.remove('sel'));
+  el.classList.add('sel');
+}
+function checkMC(){
+  const blocks=document.querySelectorAll('.mc-block');
+  let score=0;
+  blocks.forEach((block,i)=>{
+    const sel=block.querySelector('.mc-opt.sel');
+    const opts=block.querySelectorAll('.mc-opt');
+    const fb=document.getElementById('mcfb'+(i+1));
+    const correctIdx=['a','b','c','d'].indexOf(block.dataset.correct);
+    opts.forEach(o=>o.classList.remove('sel','correct','wrong'));
+    if(!sel){if(fb)fb.className='mc-fb';return;}
+    const selIdx=Array.from(opts).indexOf(sel);
+    if(selIdx===correctIdx){opts[correctIdx].classList.add('correct');score++;if(fb){fb.className='mc-fb correct show';fb.textContent='✅ Correct!';}}
+    else{sel.classList.add('wrong');opts[correctIdx].classList.add('correct');if(fb){fb.className='mc-fb wrong show';fb.textContent='❌ Not quite — the highlighted option is correct. Re-read the Shema text above.';}}
+    block.dataset.answered='1';
+  });
+  const s=document.getElementById('mcScore');s.style.display='block';
+  s.innerHTML='Score: <strong>'+score+'/5</strong>'+(score===5?' 🌟 Full marks!':score>=4?' — well done!':' — review the Shema text and try again.');
+  if(score>=4)markDone('C','pd3');
+}
+
+/* ── ORDER ── */
+let ordDragged=null;
+function ordStart(e){ordDragged=e.currentTarget;setTimeout(()=>{if(ordDragged)ordDragged.style.opacity='.4';},0);}
+function ordOver(e){e.preventDefault();e.currentTarget.classList.add('drag-over');}
+function ordLeave(e){e.currentTarget.classList.remove('drag-over');}
+function ordDrop(e){
+  e.preventDefault();e.currentTarget.classList.remove('drag-over');
+  if(!ordDragged||ordDragged===e.currentTarget)return;
+  const list=document.getElementById('orderList');
+  const items=Array.from(list.children);
+  const fromIdx=items.indexOf(ordDragged);
+  const toIdx=items.indexOf(e.currentTarget);
+  if(fromIdx<toIdx)e.currentTarget.after(ordDragged);else e.currentTarget.before(ordDragged);
+  ordDragged.style.opacity='1';ordDragged=null;
+  updateOrderNums();
+}
+function updateOrderNums(){
+  document.querySelectorAll('.order-item').forEach((item,i)=>{item.querySelector('.order-num').textContent=(i+1);});
+}
+function checkOrder(){
+  const items=document.querySelectorAll('.order-item');
+  const correctOrder=[1,2,3,4];
+  let allCorrect=true;
+  items.forEach((item,i)=>{
+    item.classList.remove('correct-order','wrong-order');
+    if(parseInt(item.dataset.pos)===correctOrder[i])item.classList.add('correct-order');
+    else{item.classList.add('wrong-order');allCorrect=false;}
+  });
+  const fb=document.getElementById('orderFb');fb.style.display='block';
+  if(allCorrect){fb.style.background='var(--green-bg)';fb.style.color='var(--green)';fb.textContent='✅ Perfect order! Belief → Action → Symbol → Conclusion.';markDone('D','pd4');}
+  else{fb.style.background='#fff8ee';fb.style.color='#7a4800';fb.textContent='Not quite — red items are in the wrong position. Think: which comes first, belief or symbol?';}
+}
+function shuffleOrder(){
+  const list=document.getElementById('orderList');
+  const items=Array.from(list.children);
+  items.sort(()=>Math.random()-.5);
+  items.forEach(i=>{i.classList.remove('correct-order','wrong-order');list.appendChild(i);});
+  updateOrderNums();document.getElementById('orderFb').style.display='none';
+}
+</script>
+</body>
+</html>
