@@ -433,12 +433,15 @@ function markTab(n, everWrong) {
 
 // ── Check if all exercises are done-gold (trigger celebration) ──
 function checkAllGold() {
-  const allDoneGold = document.querySelectorAll('.tab-btn.done-gold').length === 3;
-  if (allDoneGold) showCelebration();
+  const goldCount = document.querySelectorAll('.tab-btn.done-gold').length;
+  const doneCount = goldCount + document.querySelectorAll('.tab-btn.done-green').length;
+  if (goldCount === 3) showCelebration();
+  if (doneCount === 3) Classroom.submitGrade(goldCount === 3 ? 100 : 80, 'Legislation Activities');
 }
 
 // ── Check / Reveal / Reset for Ex1 & Ex2 ──
 function checkEx(exId) {
+  if (!Classroom.verifyAuth()) return;
   const panel = document.getElementById(exId);
   const zones = panel.querySelectorAll('.drop-zone');
   let correct = 0, attempted = 0;
@@ -575,6 +578,7 @@ function liveCheckAct(zone) {
 }
 
 function checkAllCorrectEx3() {
+  if (!Classroom.verifyAuth()) return;
   const zones = [...document.querySelectorAll('.act-drop')];
   const total = zones.length;
   const allFilled = zones.every(z => z.dataset.current && z.dataset.current.trim() !== '');
@@ -909,6 +913,6 @@ document.addEventListener('DOMContentLoaded', function() {
   loadState();
 });
 </script>
-
+<script src="../../classroom.js"></script>
 </body>
 </html>

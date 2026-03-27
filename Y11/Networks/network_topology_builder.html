@@ -237,6 +237,7 @@ function checkAllComplete() {
 }
 
 function showCelebration(isGold) {
+  Classroom.submitGrade(isGold ? 100 : 80, 'Network Topology Builder');
   let banner = document.getElementById('all-done-banner');
   if (!banner) {
     banner = document.createElement('div');
@@ -622,6 +623,7 @@ function updateCounters() {
 
 // ── Check dispatcher ──────────────────────────────────────────────────────────
 function checkTopology() {
+  if (!Classroom.verifyAuth()) return;
   if(!currentTaskId) return showFeedback(false,'No Task Selected','Click a task in the sidebar to begin.');
   const t=TASKS.find(x=>x.id===currentTaskId);
   if(!t)return;
@@ -787,5 +789,6 @@ function closeFeedback(){ document.getElementById('feedback').style.display='non
 
 init();
 </script>
+<script src="../../classroom.js"></script>
 </body>
 </html>

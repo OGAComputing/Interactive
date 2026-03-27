@@ -11,7 +11,6 @@ color:  purple
 -->
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<script src="https://accounts.google.com/gsi/client" onload="initTokenClient()" async defer></script>
 <title>Operating Systems – Mind Map Builder</title>
 <style>
   :root {
@@ -403,26 +402,6 @@ color:  purple
     flex-wrap: wrap;
   }
 
-  /* ── Google Classroom Integration UI ── */
-  .classroom-bar {
-    max-width: 960px; margin: 14px auto; padding: 12px 20px;
-    background: #111827; border: 1.5px solid #374151; border-radius: 10px;
-    display: flex; align-items: center; justify-content: space-between;
-    font-size: 13px; color: #9ca3af;
-  }
-  .google-status { display: flex; align-items: center; gap: 10px; }
-  .status-dot { width: 8px; height: 8px; border-radius: 50%; background: #ef4444; }
-  .status-dot.online { background: #10b981; box-shadow: 0 0 8px #10b981; }
-  .btn-google {
-    background: #fff; color: #000; padding: 6px 12px; border-radius: 4px;
-    font-weight: 700; border: none; cursor: pointer; display: flex; align-items: center; gap: 8px;
-  }
-  .glow-gold { animation: pulse-gold 1.5s infinite; }
-  @keyframes pulse-gold {
-    0%,100% { box-shadow: 0 0 0 0 rgba(245,158,11,0); }
-    50% { box-shadow: 0 0 15px 5px rgba(245,158,11,0.4); }
-  }
-
   .score-item { display: flex; flex-direction: column; align-items: center; gap: 2px; }
   .score-num { font-family: var(--font-head); font-size: 1.4rem; font-weight: 900; color: var(--navy); }
   .score-label { color: var(--muted); font-size: 0.72rem; text-transform: uppercase; letter-spacing: 0.06em; }
@@ -448,14 +427,6 @@ color:  purple
     <div class="progress-bar-bg"><div class="progress-bar-fill" id="progress-bar"></div></div>
   </div>
 </header>
-
-<div class="classroom-bar">
-  <div class="google-status">
-    <div id="googleDot" class="status-dot"></div>
-    <span id="googleText">Not connected to Google Classroom</span>
-  </div>
-  <button id="btnLogin" class="btn-google" onclick="requestPermission()">Sign in to Google</button>
-</div>
 
 <div class="stage-banner" id="stage-banner">
   <span class="stage-icon">🧩</span>
@@ -517,83 +488,6 @@ color:  purple
 
 <script>
 // ─────────────────────────────────────────
-// GOOGLE CLASSROOM INTEGRATION
-// ─────────────────────────────────────────
-const urlParams = new URLSearchParams(window.location.search);
-const CLASSROOM_CONFIG = {
-  clientId: '379663437881-iukh6qnkq8jmqtqko3qog0n6ohuhemmq.apps.googleusercontent.com',
-  courseId: urlParams.get('courseId'),
-  courseWorkId: urlParams.get('courseWorkId')
-};
-
-let tokenClient;
-let accessToken = null;
-
-function initTokenClient() {
-  tokenClient = google.accounts.oauth2.initTokenClient({
-    client_id: CLASSROOM_CONFIG.clientId,
-    scope: 'https://www.googleapis.com/auth/classroom.coursework.students',
-    callback: (tokenResponse) => {
-      if (tokenResponse.error !== undefined) throw (tokenResponse);
-      accessToken = tokenResponse.access_token;
-      document.getElementById('googleDot').classList.add('online');
-      document.getElementById('googleText').textContent = 'Connected to Classroom - Results will sync.';
-      document.getElementById('btnLogin').style.display = 'none';
-      document.getElementById('btnLogin').classList.remove('glow-gold');
-    },
-  });
-
-  if (CLASSROOM_CONFIG.courseId && CLASSROOM_CONFIG.courseWorkId && !accessToken) {
-    document.getElementById('googleText').textContent = 'Login required to submit results.';
-    document.getElementById('btnLogin').classList.add('glow-gold');
-  }
-}
-
-function requestPermission() {
-  tokenClient.requestAccessToken();
-}
-
-function verifyClassroomAuth() {
-  if (CLASSROOM_CONFIG.courseId && CLASSROOM_CONFIG.courseWorkId && !accessToken) {
-    alert("This assignment is linked to Google Classroom. Please click 'Sign in to Google' to record your results.");
-    return false;
-  }
-  return true;
-}
-
-async function submitGradeToClassroom(gradePercent) {
-  if (!accessToken || !CLASSROOM_CONFIG.courseId) return;
-
-  try {
-    const listUrl = `https://classroom.googleapis.com/v1/courses/${CLASSROOM_CONFIG.courseId}/courseWork/${CLASSROOM_CONFIG.courseWorkId}/studentSubmissions?userId=me`;
-    const listRes = await fetch(listUrl, { headers: { 'Authorization': `Bearer ${accessToken}` } });
-    const data = await listRes.json();
-    if (!data.studentSubmissions || data.studentSubmissions.length === 0) return;
-    const submissionId = data.studentSubmissions[0].id;
-
-    // 1. Patch the draft grade
-    const patchUrl = `https://classroom.googleapis.com/v1/courses/${CLASSROOM_CONFIG.courseId}/courseWork/${CLASSROOM_CONFIG.courseWorkId}/studentSubmissions/${submissionId}?updateMask=draftGrade`;
-    await fetch(patchUrl, {
-      method: 'PATCH',
-      headers: { 'Authorization': `Bearer ${accessToken}`, 'Content-Type': 'application/json' },
-      body: JSON.stringify({ "draftGrade": gradePercent })
-    });
-
-    // 2. Post a private comment as feedback
-    const commentUrl = `https://classroom.googleapis.com/v1/courses/${CLASSROOM_CONFIG.courseId}/courseWork/${CLASSROOM_CONFIG.courseWorkId}/studentSubmissions/${submissionId}/comments`;
-    await fetch(commentUrl, {
-      method: 'POST',
-      headers: { 'Authorization': `Bearer ${accessToken}`, 'Content-Type': 'application/json' },
-      body: JSON.stringify({ "text": `Operating Systems Mind Map completed with ${gradePercent}% accuracy.` })
-    });
-
-    console.log("Classroom results synced.");
-    showToast("Classroom Updated! ✅", "success");
-  } catch (err) {
-    console.error("Classroom sync failed:", err);
-  }
-}
-
 // ═══════════════════════════════════════════════
 //  DATA — mind map structure
 // ═══════════════════════════════════════════════
@@ -970,7 +864,7 @@ function updateStageText() {
 // ═══════════════════════════════════════════════
 
 function checkAll() {
-  if (!verifyClassroomAuth()) return;
+  if (!Classroom.verifyAuth()) return;
 
   // For typed inputs, trigger check on all
   NODES.forEach(node => {
@@ -1070,12 +964,12 @@ function celebrate() {
   if (firstAttemptAllCorrect) {
     document.body.classList.add('perfect');
     showToast('🏆 Perfect — all correct first time!', 'success');
-    submitGradeToClassroom(100);
+    Classroom.submitGrade(100, 'OS Mind Map');
     launchConfetti();
   } else {
     document.body.classList.add('all-correct');
     showToast('✅ All correct! Great work.', 'success');
-    submitGradeToClassroom(80);
+    Classroom.submitGrade(80, 'OS Mind Map');
     launchConfetti(false);
   }
 }
@@ -1183,5 +1077,6 @@ updateScoreboard();
 updateProgress();
 updateStageText();
 </script>
+<script src="../../classroom.js"></script>
 </body>
 </html>

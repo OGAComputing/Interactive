@@ -1047,6 +1047,7 @@ function updateProgress() {
 }
 
 function triggerCompletion(goldAll) {
+  Classroom.submitGrade(goldAll ? 100 : 80, 'Client-Server & P2P Networks');
   const banner = $('global-cb');
   document.body.classList.remove('all-correct','all-gold');
   if (goldAll) {
@@ -1095,6 +1096,7 @@ function launchConfetti(gold) {
 
 // ═══════════════════ CHECK TABS ═══════════════════
 function checkTab(ti) {
+  if (!Classroom.verifyAuth()) return;
   let score=0, total=0, allOk=true;
   function q(ok){ total++; if(ok) score++; else allOk=false; return ok; }
   function qN(n, ok){ total+=n; if(ok) score+=n; else allOk=false; return ok; }
@@ -1381,5 +1383,6 @@ document.addEventListener('DOMContentLoaded', () => {
   updateProgress();
 });
 </script>
+<script src="../../classroom.js"></script>
 </body>
 </html>

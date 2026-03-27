@@ -312,6 +312,7 @@ function pickA(btn){
 }
 
 function checkA(qid){
+  if (!Classroom.verifyAuth()) return;
   const s=stA[qid]; if(s.checked) return; s.checked=true;
   let allOk=true; const feedbacks=[];
   s.tasks.forEach((t,i)=>{
@@ -354,6 +355,7 @@ function taInput(id){ document.getElementById('bchk-'+id).disabled=document.getE
 function toggleHint(id){ document.getElementById('hbox-'+id).classList.toggle('show'); }
 
 function checkB(id){
+  if (!Classroom.verifyAuth()) return;
   const t=PART_B.find(x=>x.id===id);
   const ta=document.getElementById('ta-'+id);
   const ok=t.validate(ta.value);
@@ -375,6 +377,7 @@ function checkB(id){
   if(Object.values(stB).every(s=>s.correct)){
     document.getElementById('done-b').classList.add('show');
     document.getElementById('tab-b').classList.add('done');
+    Classroom.submitGrade(Math.round((scoreA + scoreB) / (totalA + totalB) * 100), 'Spot the Error');
     fireFireworks();
   }
 }
@@ -429,5 +432,6 @@ PART_A.forEach(q=>renderA(q));
 PART_B.forEach(t=>renderB(t));
 updateScore();
 </script>
+<script src="../../classroom.js"></script>
 </body>
 </html>

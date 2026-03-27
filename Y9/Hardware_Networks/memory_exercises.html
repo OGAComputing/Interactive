@@ -11,7 +11,6 @@ color:  blue
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<script src="https://accounts.google.com/gsi/client" onload="initTokenClient()" async defer></script>
 <title>Primary & Secondary Memory — Interactive Exercises</title>
 <style>
   @import url('https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=DM+Sans:wght@300;400;500;700&display=swap');
@@ -250,34 +249,12 @@ color:  blue
   .correct-zone .tick { display: block; color: var(--green-l); }
   .wrong-zone   .tick { display: block; color: var(--red-l); }
 
-  /* ── Google Classroom Integration UI ── */
-  .classroom-bar {
-    max-width: 820px; margin: 0 auto 20px; padding: 12px 20px;
-    background: var(--surface2); border: 1.5px solid var(--border); border-radius: 10px;
-    display: flex; align-items: center; justify-content: space-between;
-    font-size: 13px;
-  }
-  .google-status { display: flex; align-items: center; gap: 10px; color: var(--grey-l); }
-  .status-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--red); }
-  .status-dot.online { background: var(--green-l); box-shadow: 0 0 8px var(--green); }
-  .btn-google {
-    background: #fff; color: #000; padding: 6px 12px; border-radius: 4px;
-    font-weight: 700; border: none; cursor: pointer; display: flex; align-items: center; gap: 8px;
-  }
 </style>
 </head>
 <body>
 
 <canvas id="fwCanvas"></canvas>
 <div class="completion-banner" id="completionBanner"></div>
-
-<div class="classroom-bar">
-  <div class="google-status">
-    <div id="googleDot" class="status-dot"></div>
-    <span id="googleText">Not connected to Google Classroom</span>
-  </div>
-  <button id="btnLogin" class="btn-google" onclick="requestPermission()">Sign in to Google</button>
-</div>
 
 <h1>Year 9 Computing</h1>
 <h2>Primary &amp; Secondary Memory</h2>
@@ -354,95 +331,6 @@ color:  blue
 </div>
 
 <script>
-// ─────────────────────────────────────────
-// GOOGLE CLASSROOM INTEGRATION
-// ─────────────────────────────────────────
-const urlParams = new URLSearchParams(window.location.search);
-const CLASSROOM_CONFIG = {
-  clientId: '379663437881-iukh6qnkq8jmqtqko3qog0n6ohuhemmq.apps.googleusercontent.com', // Replace with your actual ID
-  courseId: urlParams.get('courseId'),
-  courseWorkId: urlParams.get('courseWorkId')
-};
-
-let tokenClient;
-let accessToken = null;
-
-function initTokenClient() {
-  tokenClient = google.accounts.oauth2.initTokenClient({
-    client_id: CLASSROOM_CONFIG.clientId,
-    scope: 'https://www.googleapis.com/auth/classroom.coursework.students',
-    callback: (tokenResponse) => {
-      if (tokenResponse.error !== undefined) throw (tokenResponse);
-      accessToken = tokenResponse.access_token;
-      document.getElementById('googleDot').classList.add('online');
-      document.getElementById('googleText').textContent = 'Connected to Classroom - Progress will sync.';
-      document.getElementById('btnLogin').style.display = 'none';
-      document.getElementById('btnLogin').classList.remove('glow-gold');
-    },
-  });
-
-  // Alert user if assigned via Classroom but not logged in
-  if (CLASSROOM_CONFIG.courseId && CLASSROOM_CONFIG.courseWorkId && !accessToken) {
-    document.getElementById('googleText').innerHTML = '<strong style="color:var(--amber-l)">Login required to submit results for this assignment.</strong>';
-    document.getElementById('btnLogin').classList.add('glow-gold');
-  }
-}
-
-function requestPermission() {
-  tokenClient.requestAccessToken();
-}
-
-function verifyClassroomAuth() {
-  if (CLASSROOM_CONFIG.courseId && CLASSROOM_CONFIG.courseWorkId && !accessToken) {
-    alert("This activity has been assigned via Google Classroom. Please 'Sign in to Google' at the top of the page to record your results.");
-    return false;
-  }
-  return true;
-}
-
-async function submitGradeToClassroom(gradePercent) {
-  if (!accessToken) return;
-
-  try {
-    // 1. Find the student's submission ID for this assignment
-    const listUrl = `https://classroom.googleapis.com/v1/courses/${CLASSROOM_CONFIG.courseId}/courseWork/${CLASSROOM_CONFIG.courseWorkId}/studentSubmissions?userId=me`;
-    const listRes = await fetch(listUrl, { headers: { 'Authorization': `Bearer ${accessToken}` } });
-    const data = await listRes.json();
-    
-    if (!data.studentSubmissions || data.studentSubmissions.length === 0) return;
-    
-    const submissionId = data.studentSubmissions[0].id;
-
-    // 2. Patch the draft grade (students can typically only set draftGrade)
-    const patchUrl = `https://classroom.googleapis.com/v1/courses/${CLASSROOM_CONFIG.courseId}/courseWork/${CLASSROOM_CONFIG.courseWorkId}/studentSubmissions/${submissionId}?updateMask=draftGrade`;
-    
-    const response = await fetch(patchUrl, {
-      method: 'PATCH',
-      headers: {
-        'Authorization': `Bearer ${accessToken}`,
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify({ "draftGrade": gradePercent })
-    });
-
-    // 3. Post a private comment as feedback
-    const commentUrl = `https://classroom.googleapis.com/v1/courses/${CLASSROOM_CONFIG.courseId}/courseWork/${CLASSROOM_CONFIG.courseWorkId}/studentSubmissions/${submissionId}/comments`;
-    await fetch(commentUrl, {
-      method: 'POST',
-      headers: { 'Authorization': `Bearer ${accessToken}`, 'Content-Type': 'application/json' },
-      body: JSON.stringify({ "text": `Exercise Completed. Score: ${gradePercent}% accuracy.` })
-    });
-
-    if (response.ok) {
-      console.log("Grade synced to Classroom dashboard.");
-      const banner = document.getElementById('completionBanner');
-      banner.innerHTML += " <span style='font-size:0.6em; opacity:0.8;'>(Classroom Updated! ✅)</span>";
-    }
-  } catch (err) {
-    console.error("Classroom sync failed:", err);
-  }
-}
-
 // ─────────────────────────────────────────
 // FIREWORKS ENGINE (shared)
 // ─────────────────────────────────────────
@@ -535,7 +423,7 @@ function triggerCompletion(perfect) {
   }
 
   // Reporting: If perfect, send 100. If complete but not perfect, send 80.
-  if (accessToken) submitGradeToClassroom(perfect ? 100 : 80);
+  Classroom.submitGrade(perfect ? 100 : 80, 'Memory Exercises');
 
   banner.classList.add('show');
 }
@@ -731,7 +619,7 @@ function returnWordToBank(word, sourceBlankId) {
 }
 
 function checkFITB() {
-  if (!verifyClassroomAuth()) return;
+  if (!Classroom.verifyAuth()) return;
 
   let correct = 0, anyWrongThisCheck = false;
   sentences.forEach((s, i) => {
@@ -874,7 +762,7 @@ function setupZones() {
 }
 
 function checkDiagram() {
-  if (!verifyClassroomAuth()) return;
+  if (!Classroom.verifyAuth()) return;
 
   let correct = 0;
   const total = 5;
@@ -1046,5 +934,6 @@ function loadState() {
 
 loadState();
 </script>
+<script src="../../classroom.js"></script>
 </body>
 </html>

@@ -546,6 +546,7 @@ function checkAllComplete(){
   setTimeout(()=>triggerCompletion(perfect),400);
 }
 function triggerCompletion(perfect){
+  Classroom.submitGrade(perfect ? 100 : 80, 'RAM vs ROM');
   const body=document.body,banner=document.getElementById('completionBanner');
   body.classList.remove('complete-green','complete-gold');
   banner.classList.remove('green-banner','gold-banner');
@@ -657,6 +658,7 @@ function clearSelected(){if(selectedId)document.getElementById('card-'+selectedI
 function assignSelected(target){if(!selectedId)return;placeCard(selectedId,target);}
 function updateProgress(){const placed=Object.values(cardState).filter(s=>s.placed!==null).length;document.getElementById('progressFill').style.width=(placed/statements.length*100)+'%';document.getElementById('progressLabel').textContent=placed+' / '+statements.length+' placed';}
 function checkAnswers(){
+  if (!Classroom.verifyAuth()) return;
   clearSelected();let correct=0,checked=0,anyWrong=false;
   statements.forEach(s=>{const st=cardState[s.id];if(st.placed===null)return;if(st.locked){correct++;checked++;return;}checked++;const el=document.getElementById('card-'+s.id);const badge=el.querySelector('.card-badge');
     if(st.placed===s.answer){el.classList.remove('placed-ram','placed-rom','wrong-card');el.classList.add('correct-card');el.draggable=false;badge.textContent='✓';st.locked=true;correct++;}
@@ -825,6 +827,7 @@ function clearDeviceSelected(){if(selectedDevId)document.getElementById('dev-'+s
 function assignDevice(target){if(!selectedDevId)return;const id=selectedDevId,st=devState[id];if(st.locked){clearDeviceSelected();return;}const el=document.getElementById('dev-'+id);el.classList.remove('dev-selected','dev-primary','dev-secondary');el.classList.add(target==='primary'?'dev-primary':'dev-secondary');st.placed=target;clearDeviceSelected();}
 
 function checkPartA(){
+  if (!Classroom.verifyAuth()) return;
   clearDeviceSelected();let correct=0,checked=0,anyWrong=false;
   devices.forEach(d=>{const st=devState[d.id];if(st.placed===null)return;if(st.locked){correct++;checked++;return;}checked++;const el=document.getElementById('dev-'+d.id);const badge=el.querySelector('.device-badge');
     if(st.placed===d.answer){el.classList.remove('dev-primary','dev-secondary','dev-wrong');el.classList.add('dev-correct');badge.textContent='✓';st.locked=true;correct++;}
@@ -1041,6 +1044,7 @@ function selectOption(id, value, btn){
 }
 
 function checkTask3(){
+  if (!Classroom.verifyAuth()) return;
   let correct = 0, checked = 0, anyWrong = false;
 
   stmItems.forEach(q => {
@@ -1609,5 +1613,6 @@ function resetStretch(){
     <button class="btn-main btn-reset-main" onclick="resetStretch()">Start again</button>
   </div>
 
+<script src="../../classroom.js"></script>
 </body>
 </html>

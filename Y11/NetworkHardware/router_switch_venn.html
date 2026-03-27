@@ -485,6 +485,7 @@ function init() {
 
 /* ── Check answers ──────────────────────────────────────── */
 function checkAnswers() {
+  if (!Classroom.verifyAuth()) return;
   const fb = document.getElementById('feedback');
   let correct = 0;
   const wrong = [];
@@ -522,6 +523,7 @@ function checkAnswers() {
     fb.className = 'show';
     fb.innerHTML = `<p class="fb-score">🎯 Score: ${correct}/${CARDS.length}</p><p class="fb-perfect">✨ Outstanding! Every card is in the right place!</p>`;
     document.getElementById('venn-zones').classList.add('all-correct');
+    Classroom.submitGrade(!everWrong ? 100 : 80, 'Router vs Switch');
     if (!everWrong) showGoldCelebration();
     else showGreenResult();
   } else {
@@ -896,5 +898,6 @@ if (restored) {
   );
 }
 </script>
+<script src="../../classroom.js"></script>
 </body>
 </html>

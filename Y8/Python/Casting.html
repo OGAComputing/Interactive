@@ -525,7 +525,7 @@ function t1Upd(){
   if(n===6){fb.className='fb ok-gold';fb.innerHTML='&#127942; All correct &#8212; gold!';btn.classList.add('tab-gold');updateBg();chkAll();}
   else{fb.className='fb';btn.classList.remove('tab-gold','tab-green');updateBg();}
 }
-function t1All(){[1,2,3,4,5,6].forEach(t1Row);t1Upd()}
+function t1All(){if (!Classroom.verifyAuth()) return;[1,2,3,4,5,6].forEach(t1Row);t1Upd()}
 function t1Rst(){
   [1,2,3,4,5,6].forEach(r=>{d1[r]=0;const inp=document.getElementById('ci'+r),cell=document.getElementById('c'+r),rv=document.getElementById('cr'+r),hn=document.getElementById('h'+r);cell.classList.remove('ok','wrong');inp.style.display='';inp.value='';rv.style.display='none';rv.textContent='';cell.querySelector('.ph').style.display='';hn.classList.remove('show');});
   document.getElementById('s1').textContent='0';document.getElementById('fb1').className='fb';document.getElementById('tbtn1').classList.remove('tab-gold','tab-green');resetGold();saveState();
@@ -564,7 +564,7 @@ function t2Upd(){
     updateBg();chkAll();
   }else{fb.className='fb';btn.classList.remove('tab-gold','tab-green');updateBg();}
 }
-function t2All(){[1,2,3,4,5,6].forEach(t2Row);t2Upd()}
+function t2All(){if (!Classroom.verifyAuth()) return;[1,2,3,4,5,6].forEach(t2Row);t2Upd()}
 function t2Rst(){
   [1,2,3,4,5,6].forEach(r=>{d2[r]=0;t2sel[r]=null;const cell=document.getElementById('t2c'+r),hn=document.getElementById('t2h'+r),rv=document.getElementById('t2v'+r);cell.classList.remove('ok','wrong');cell.querySelectorAll('.cb').forEach(b=>b.classList.remove('sn','si','ss'));hn.classList.remove('show');rv.textContent='';});
   t2bad=false;document.getElementById('s2').textContent='0';document.getElementById('fb2').className='fb';document.getElementById('tbtn2').classList.remove('tab-gold','tab-green');resetGold();saveState();
@@ -612,7 +612,7 @@ function t3Upd(){
   if(n===6){fb.className='fb ok-gold';fb.innerHTML='&#127942; All correct &#8212; gold!';btn.classList.add('tab-gold');updateBg();chkAll();}
   else{fb.className='fb';btn.classList.remove('tab-gold','tab-green');updateBg();}
 }
-function t3All(){[1,2,3,4,5,6].forEach(t3Row);t3Upd()}
+function t3All(){if (!Classroom.verifyAuth()) return;[1,2,3,4,5,6].forEach(t3Row);t3Upd()}
 function t3Rst(){
   [1,2,3,4,5,6].forEach(q=>{d3[q]=0;const card=document.getElementById('q3-'+q),ta=document.getElementById('ta3-'+q),hn=document.getElementById('t3h'+q);card.classList.remove('ok','wrong');if(ta)ta.value='';hn.classList.remove('show');});
   document.getElementById('s3').textContent='0';document.getElementById('fb3').className='fb';document.getElementById('tbtn3').classList.remove('tab-gold','tab-green');resetGold();saveState();
@@ -629,7 +629,10 @@ function updateBg(){
   const active=[1,2,3].find(i=>document.getElementById('tab'+i).classList.contains('active'));
   document.body.className=isGold(active)?'bg-gold':isGreen(active)?'bg-green':'';
 }
-function chkAll(){if(allGold()){document.getElementById('gbanner').classList.add('show');startFW();}}
+function chkAll(){
+  if(allGold()){document.getElementById('gbanner').classList.add('show');startFW();Classroom.submitGrade(100,'Casting Exercises');}
+  else if([1,2,3].every(t=>isGold(t)||isGreen(t))){Classroom.submitGrade(80,'Casting Exercises');}
+}
 function resetGold(){document.getElementById('gbanner').classList.remove('show');stopFW();updateBg();}
 document.querySelectorAll('.tab-btn').forEach(b=>b.addEventListener('click',()=>setTimeout(updateBg,30)));
 
@@ -649,5 +652,6 @@ addEventListener('resize',()=>{if(fwOn){cvs.width=innerWidth;cvs.height=innerHei
 loadState();
 
 </script>
+<script src="../../classroom.js"></script>
 </body>
 </html>

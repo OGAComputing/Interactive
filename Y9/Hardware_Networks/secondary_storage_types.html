@@ -703,6 +703,7 @@ function mcqClick(btn, qId) {
 }
 
 function checkMCQPanel(panelIdx, prefix) {
+  if (!Classroom.verifyAuth()) return;
   const qs = QUESTIONS[prefix];
   let answered=0, correct=0;
   qs.forEach(q => {
@@ -1033,11 +1034,15 @@ function completePanelGreen(panelIdx) {
   btn.className='tab-btn done-green'+(currentTab===panelIdx?' active':'');
   btn.textContent='✓ '+btn.textContent.replace(/[★✓]/g,'').trim();
   tabStatus[panelIdx] = 'green';
+  checkAllGold();
 }
 
 function checkAllGold() {
   if (Object.values(tabStatus).every(v => v === 'gold')) {
     setTimeout(showGoldOverlay, 700);
+    Classroom.submitGrade(100, 'Secondary Storage Types');
+  } else if (Object.values(tabStatus).every(v => v !== null)) {
+    Classroom.submitGrade(80, 'Secondary Storage Types');
   }
 }
 
@@ -1217,5 +1222,6 @@ function loadState() {
   }
 }
 </script>
+<script src="../../classroom.js"></script>
 </body>
 </html>

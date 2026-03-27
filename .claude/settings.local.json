@@ -3,7 +3,9 @@
     "allow": [
       "Bash(git -C \"/c/Users/n.houlton_grange.out/source/repos/interactive\" log --oneline -20)",
       "Bash(node:*)",
-      "Bash(python -c \"import sys,json; lines=[l.strip\\(\\) for l in sys.stdin if l.strip\\(\\)]; last=json.loads\\(lines[-1]\\) if lines else {}; role=last.get\\(''''message'''',{}\\).get\\(''''role'''',''''?''''\\); stype=last.get\\(''''type'''',''''?''''\\); print\\(''''role:'''',role,''''type:'''',stype\\)\")"
+      "Bash(python -c \"import sys,json; lines=[l.strip\\(\\) for l in sys.stdin if l.strip\\(\\)]; last=json.loads\\(lines[-1]\\) if lines else {}; role=last.get\\(''''message'''',{}\\).get\\(''''role'''',''''?''''\\); stype=last.get\\(''''type'''',''''?''''\\); print\\(''''role:'''',role,''''type:'''',stype\\)\")",
+      "Bash(grep -l \"submitGradeToClassroom\" /c/Users/n.houlton_grange.out/source/repos/interactive/**/*.html)",
+      "Bash(grep -l \"classroom.js\" c:/Users/n.houlton_grange.out/source/repos/interactive/Y8/Python/*.html c:/Users/n.houlton_grange.out/source/repos/interactive/Y9/Hardware_Networks/*.html \"c:/Users/n.houlton_grange.out/source/repos/interactive/Y11/System Software/os-mindmap.html\" c:/Users/n.houlton_grange.out/source/repos/interactive/Y11/Networks/*.html c:/Users/n.houlton_grange.out/source/repos/interactive/Y11/NetworkHardware/*.html c:/Users/n.houlton_grange.out/source/repos/interactive/Y11/Legislation/*.html)"
     ]
   }
 }

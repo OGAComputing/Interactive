@@ -512,6 +512,7 @@ function renderSpotError() {
 }
 
 function checkSpotError() {
+  if (!Classroom.verifyAuth()) return;
   const slotIds = ERRORS.map(s=>'slot-err-'+s.id);
   const allFilled = slotIds.every(id => slotState[id]?.word);
   if (!allFilled) { setFb('p1','redo',`Replace all ${ERRORS.length} highlighted words first!`); return; }
@@ -753,10 +754,13 @@ function completePanelGreen(i){
   const b=document.getElementById('banner'+i); b.className='banner green-banner'; b.textContent='✓ Completed — well done!'; b.style.display='block';
   const btn=document.getElementById('tabBtn'+i); btn.className='tab-btn done-green'+(currentTab===i?' active':'');
   btn.textContent='✓ '+btn.textContent.replace(/[★✓]/g,'').trim();
-  tabStatus[i]='green'; saveProgress();
+  tabStatus[i]='green'; checkAllGold(); saveProgress();
 }
 
-function checkAllGold(){if(Object.values(tabStatus).every(v=>v==='gold'))setTimeout(showGoldOverlay,700);}
+function checkAllGold(){
+  if(Object.values(tabStatus).every(v=>v==='gold')){setTimeout(showGoldOverlay,700);Classroom.submitGrade(100,'Secondary Storage Characteristics');}
+  else if(Object.values(tabStatus).every(v=>v!==null)){Classroom.submitGrade(80,'Secondary Storage Characteristics');}
+}
 function showGoldOverlay(){document.body.classList.add('all-gold');document.getElementById('goldOverlay').classList.add('show');}
 function closeOverlay(){document.getElementById('goldOverlay').classList.remove('show');}
 
@@ -930,5 +934,6 @@ document.addEventListener('DOMContentLoaded',()=>{
   });
 });
 </script>
+<script src="../../classroom.js"></script>
 </body>
 </html>
