@@ -70,40 +70,40 @@
     "color": "teal"
   },
   {
-    "path": "Y9/HardwareNetworks/memory_exercises.html",
+    "path": "Y9/Hardware_Networks/memory_exercises.html",
     "title": "Primary & Secondary Memory",
     "year": "Year 9",
-    "topic": "Hardwarenetworks",
+    "topic": "Hardware Networks",
     "type": "Practice",
     "stars": 3,
     "desc": "Fill-in-the-blanks and diagram-building exercises on primary memory and secondary storage",
     "color": "blue"
   },
   {
-    "path": "Y9/HardwareNetworks/ram_rom_exercise.html",
+    "path": "Y9/Hardware_Networks/ram_rom_exercise.html",
     "title": "RAM vs ROM Sorting",
     "year": "Year 9",
-    "topic": "Hardwarenetworks",
+    "topic": "Hardware Networks",
     "type": "Practice",
     "stars": 3,
     "desc": "3 tasks covering RAM vs ROM card sort, types of primary memory, and spot the mistake on secondary storage",
     "color": "blue"
   },
   {
-    "path": "Y9/HardwareNetworks/secondary_storage_characteristics.html",
+    "path": "Y9/Hardware_Networks/secondary_storage_characteristics.html",
     "title": "Secondary Storage \u2013 Characteristics & Application",
     "year": "Year 9",
-    "topic": "Hardwarenetworks",
+    "topic": "Hardware Networks",
     "type": "Practice",
     "stars": 5,
     "desc": "Characteristics MCQ, Spot the Error, Scenarios, Fix the Bad Advice, Compare Devices",
     "color": "purple"
   },
   {
-    "path": "Y9/HardwareNetworks/secondary_storage_types.html",
+    "path": "Y9/Hardware_Networks/secondary_storage_types.html",
     "title": "Secondary Storage \u2013 Types & Sorting",
     "year": "Year 9",
-    "topic": "Hardwarenetworks",
+    "topic": "Hardware Networks",
     "type": "Practice",
     "stars": 3,
     "desc": "What is secondary storage, how each type works (with gap fill), and sorting devices",
