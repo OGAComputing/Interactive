@@ -176,7 +176,7 @@ color:  purple
   .mindmap-svg-wrap {
     position: relative;
     width: 100%;
-    min-width: 980px;
+    min-width: 900px;
   }
 
   /* background SVG lines */
@@ -429,29 +429,8 @@ color:  purple
   .score-item.green .score-num { color: var(--correct); }
   .score-item.purple .score-num { color: var(--purple); }
 
-  /* ── DEMOTE BUTTON (go back to drag-drop for this node) ── */
-  .demote-btn {
-    position: absolute;
-    width: 18px;
-    height: 18px;
-    border-radius: 50%;
-    background: #e5e7eb;
-    border: 1px solid #9ca3af;
-    color: #6b7280;
-    font-size: 0.62rem;
-    line-height: 1;
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    transition: background 0.15s, color 0.15s;
-    z-index: 10;
-    title: 'Go back to drag-drop for this word';
-  }
-  .demote-btn:hover { background: var(--orange); color: white; border-color: var(--orange); }
-
   /* ── MINDMAP LAYOUT ── */
-  .mm-root { position: relative; width: 980px; height: 520px; margin: 0 auto; }
+  .mm-root { position: relative; width: 960px; height: 580px; margin: 0 auto; }
 </style>
 </head>
 <body>
@@ -514,13 +493,13 @@ color:  purple
     <div class="mindmap-svg-wrap">
 
       <!-- SVG connector lines -->
-      <svg class="mm-svg" id="mm-svg" viewBox="0 0 980 520" xmlns="http://www.w3.org/2000/svg">
+      <svg class="mm-svg" id="mm-svg" viewBox="0 0 960 580" xmlns="http://www.w3.org/2000/svg">
         <!-- Lines drawn by JS -->
       </svg>
 
       <div class="mm-root" id="mm-root">
         <!-- Central node -->
-        <div class="central-node" style="left:395px;top:175px;width:150px;height:72px;">OPERATING<br>SYSTEMS</div>
+        <div class="central-node" style="left:370px;top:225px;width:130px;height:72px;">OPERATING<br>SYSTEMS</div>
 
         <!-- Drop zones injected by JS -->
       </div>
@@ -621,27 +600,27 @@ async function submitGradeToClassroom(gradePercent) {
 
 const NODES = [
   // Main OS components (the 5 branches)
-  { id: 'fm',   answer: 'File Management',       aliases: ['file management','file mgmt'], x: 120, y: 130, w: 165, h: 44, icon: '📄', iconX: 292, iconY: 130, group: 'main' },
-  { id: 'pm',   answer: 'Peripheral Management', aliases: ['peripheral management','peripherals management','peripheral mgmt'], x: 430, y: 80,  w: 195, h: 44, icon: '🖱️', iconX: 632, iconY: 80,  group: 'main' },
-  { id: 'um',   answer: 'User Management',       aliases: ['user management','user mgmt'], x: 760, y: 130, w: 165, h: 44, icon: '👤', iconX: 932, iconY: 130, group: 'main' },
-  { id: 'ui',   answer: 'User Interfaces',       aliases: ['user interfaces','user interface'], x: 120, y: 260, w: 165, h: 44, icon: '🖥️', iconX: 292, iconY: 260, group: 'main' },
-  { id: 'mm',   answer: 'Memory Management',     aliases: ['memory management','memory mgmt'], x: 430, y: 230, w: 185, h: 44, icon: '💾', iconX: 622, iconY: 230, group: 'main' },
+  { id: 'fm',   answer: 'File Management',      x: 180, y: 165, w: 155, h: 44, icon: '📄', iconX: 348, iconY: 155, group: 'main' },
+  { id: 'pm',   answer: 'Peripheral Management', x: 490, y: 165, w: 185, h: 44, icon: '🖱️', iconX: 680, iconY: 155, group: 'main' },
+  { id: 'um',   answer: 'User Management',       x: 735, y: 165, w: 155, h: 44, icon: '👤', iconX: 895, iconY: 155, group: 'main' },
+  { id: 'ui',   answer: 'User Interfaces',       x: 180, y: 280, w: 155, h: 44, icon: '🖥️', iconX: 348, iconY: 280, group: 'main' },
+  { id: 'mm',   answer: 'Memory Management',     x: 490, y: 280, w: 185, h: 44, icon: '💾', iconX: 680, iconY: 280, group: 'main' },
 
   // User Interfaces sub-branches
-  { id: 'ui-purpose', answer: 'Allow users to interact with the hardware', aliases: ['allow users to interact with the hardware','allow users to interact with hardware','interact with hardware'], x: 14, y: 380, w: 178, h: 56, icon: null, group: 'ui-sub' },
-  { id: 'gui',    answer: 'GUI',              aliases: ['gui','graphical user interface','graphical'], x: 210, y: 355, w: 100, h: 38, icon: '🖼️', iconX: 316, iconY: 358, group: 'ui-types' },
-  { id: 'nl',     answer: 'Natural Language', aliases: ['natural language','natural language interface','nli'], x: 210, y: 405, w: 140, h: 38, icon: '🗣️', iconX: 356, iconY: 408, group: 'ui-types' },
-  { id: 'cli',    answer: 'Command Line',     aliases: ['command line','command line interface','cli','cmd line','command-line'], x: 210, y: 455, w: 130, h: 38, icon: '⌨️', iconX: 347, iconY: 458, group: 'ui-types' },
+  { id: 'ui-purpose', answer: 'Allow users to interact with the hardware', x: 30, y: 370, w: 170, h: 52, icon: null, group: 'ui-sub', connFrom: 'ui' },
+  { id: 'gui',    answer: 'GUI',              x: 220, y: 360, w: 100, h: 36, icon: '🖼️', iconX: 325, iconY: 360, group: 'ui-types', connFrom: 'ui' },
+  { id: 'nl',     answer: 'Natural Language', x: 220, y: 407, w: 130, h: 36, icon: '🗣️', iconX: 355, iconY: 407, group: 'ui-types', connFrom: 'ui' },
+  { id: 'cli',    answer: 'Command Line',     x: 220, y: 453, w: 120, h: 36, icon: '⌨️', iconX: 345, iconY: 453, group: 'ui-types', connFrom: 'ui' },
 
   // Memory Management sub-branches
-  { id: 'vm',            answer: 'Manage virtual memory',                   aliases: ['manage virtual memory','virtual memory'], x: 390, y: 370, w: 185, h: 44, icon: null, group: 'mm-sub' },
-  { id: 'multi-purpose', answer: 'Allow multiple programs to run at once',  aliases: ['allow multiple programs to run at once','multiple programs run at once','allow multiple programs to run'], x: 390, y: 430, w: 185, h: 56, icon: null, group: 'mm-sub' },
-  { id: 'multi',         answer: 'Multitasking',                            aliases: ['multitasking','multi-tasking'], x: 610, y: 430, w: 140, h: 38, icon: '⚙️', iconX: 757, iconY: 433, group: 'mm-sub' },
+  { id: 'vm',     answer: 'Manage virtual memory',           x: 450, y: 378, w: 165, h: 44, icon: null, group: 'mm-sub', connFrom: 'mm' },
+  { id: 'multi',  answer: 'Multitasking',                    x: 680, y: 430, w: 130, h: 36, icon: '⚙️', iconX: 815, iconY: 430, group: 'mm-sub', connFrom: 'mm' },
+  { id: 'multi-purpose', answer: 'Allow multiple programs to run at once', x: 450, y: 440, w: 165, h: 52, icon: null, group: 'mm-sub', connFrom: 'mm' },
 
   // User Management sub-branches
-  { id: 'um-purpose', answer: 'Keep files and accounts secure', aliases: ['keep files and accounts secure','keep accounts secure','keep files secure'], x: 760, y: 240, w: 180, h: 48, icon: null, group: 'um-sub' },
-  { id: 'upw',    answer: 'User & Password Management', aliases: ['user & password management','user and password management','username and password','user password management'], x: 760, y: 360, w: 185, h: 44, icon: null, group: 'um-sub' },
-  { id: 'far',    answer: 'File access rights',         aliases: ['file access rights','file access right','access rights'], x: 760, y: 418, w: 165, h: 38, icon: null, group: 'um-sub' },
+  { id: 'um-purpose', answer: 'Keep files and accounts secure', x: 755, y: 255, w: 165, h: 44, icon: null, group: 'um-sub', connFrom: 'um' },
+  { id: 'upw',    answer: 'User & Password Management', x: 755, y: 345, w: 175, h: 44, icon: null, group: 'um-sub', connFrom: 'um' },
+  { id: 'far',    answer: 'File access rights',         x: 755, y: 410, w: 155, h: 36, icon: null, group: 'um-sub', connFrom: 'um' },
 ];
 
 // Connector lines: [fromNodeId_or_coord, toNodeId, label]
@@ -691,7 +670,7 @@ function buildMindMap() {
   // Draw connector lines
   CONNECTORS.forEach(([fromId, toId, label]) => {
     const from = fromId === 'os'
-      ? { cx: 470, cy: 211 } // central node centre (left:395 + w:150/2, top:175 + h:72/2)
+      ? { cx: 435, cy: 261 } // central node centre
       : nodeCenter(NODES.find(n => n.id === fromId));
     const to   = nodeCenter(NODES.find(n => n.id === toId));
 
@@ -744,21 +723,10 @@ function createNodeElement(node) {
     inp.placeholder = '…';
     inp.style.cssText = `left:${node.x}px;top:${node.y}px;width:${node.w}px;height:${node.h}px;`;
     inp.value = s.value || '';
-    if (s.correct) { inp.classList.add('correct-fi'); inp.disabled = true; }
+    if (s.correct) inp.classList.add('correct-fi');
     inp.addEventListener('keydown', e => { if (e.key === 'Enter') checkInput(node.id); });
     inp.addEventListener('blur', () => checkInput(node.id));
     root.appendChild(inp);
-
-    // Demote button — only show if not yet correct
-    if (!s.correct) {
-      const btn = document.createElement('button');
-      btn.className = 'demote-btn';
-      btn.title = 'Struggling? Switch back to drag-and-drop for this word';
-      btn.textContent = '↩';
-      btn.style.cssText = `left:${node.x + node.w + 3}px;top:${node.y + node.h/2 - 9}px;`;
-      btn.addEventListener('click', () => demoteNode(node.id));
-      root.appendChild(btn);
-    }
   } else {
     // Drop zone
     const dz = document.createElement('div');
@@ -831,16 +799,14 @@ function bankDrop(e) {
   e.preventDefault();
   document.getElementById('word-bank').classList.remove('drag-over');
   const val = e.dataTransfer.getData('text/plain');
-  // Only act if this tile came FROM a drop zone (not already in the bank)
+  // If dragged back from a drop zone, clear that zone
   const node = NODES.find(n => state[n.id] && state[n.id].value === val && !state[n.id].correct);
   if (node) {
-    // Came from a drop zone — clear that zone and return tile to bank
     state[node.id].value = '';
     const dz = document.getElementById('dz-' + node.id);
     if (dz) { dz.textContent = ''; dz.classList.add('awaiting'); }
-    createTile(val, document.getElementById('word-bank'));
   }
-  // If tile came from the bank itself, do nothing — dragend handles visual cleanup
+  createTile(val, document.getElementById('word-bank'));
 }
 
 // ═══════════════════════════════════════════════
@@ -867,7 +833,7 @@ function handleDrop(e, nodeId) {
   const dz = document.getElementById('dz-' + nodeId);
   dz.textContent = val;
 
-  const isCorrect = isAnswerAccepted(val, node);
+  const isCorrect = normalise(val) === normalise(node.answer);
   if (isCorrect) {
     markCorrect(nodeId, 'dd');
   } else {
@@ -909,7 +875,7 @@ function checkInput(nodeId) {
   if (!val) return;
   s.attempts++;
   s.value = val;
-  const isCorrect = isAnswerAccepted(val, node);
+  const isCorrect = normalise(val) === normalise(node.answer);
   if (isCorrect) {
     markCorrect(nodeId, 'fi');
   } else {
@@ -980,34 +946,8 @@ function checkGraduation() {
 }
 
 // ═══════════════════════════════════════════════
-//  DEMOTE NODE (back to drag-drop)
+//  STAGE TEXT
 // ═══════════════════════════════════════════════
-
-function demoteNode(nodeId) {
-  const s = state[nodeId];
-  if (s.correct) return; // can't demote already-correct
-  s.mastered = false;
-  s.value = '';
-  // Rebuild just this node's element
-  const root = document.getElementById('mm-root');
-  // Remove existing input and demote button for this node
-  root.querySelectorAll(`#inp-${nodeId}, .demote-btn`).forEach(el => {
-    // Only remove demote buttons that are adjacent to this input
-    if (el.id === 'inp-' + nodeId) el.remove();
-  });
-  // Remove all demote buttons and re-render (simpler: full rebuild)
-  buildMindMap();
-  // Add this answer back to word bank
-  const node = NODES.find(n => n.id === nodeId);
-  createTile(node.answer, document.getElementById('word-bank'));
-  totalMastered = NODES.filter(n => state[n.id] && state[n.id].mastered).length;
-  updateScoreboard();
-  updateStageText();
-  saveState();
-  showToast('↩ Switched back to drag-and-drop for that word.', 'info');
-}
-
-
 
 function updateStageText() {
   const mastered = NODES.filter(n => state[n.id].mastered).length;
@@ -1017,7 +957,7 @@ function updateStageText() {
     stageText.textContent = 'Stage 1 — Drag the labels from the word bank into the correct boxes on the mind map.';
     stageBanner.querySelector('.stage-icon').textContent = '🧩';
   } else if (mastered < TOTAL) {
-    stageText.textContent = `Stage 2 — Some boxes need typed recall (no word bank). Mastered: ${mastered} / ${TOTAL}. Tap ↩ on any box to switch it back to drag-and-drop.`;
+    stageText.textContent = `Stage 2 — Some boxes are now typed recall (no word bank help). You've mastered ${mastered} / ${TOTAL}.`;
     stageBanner.querySelector('.stage-icon').textContent = '✍️';
   } else {
     stageText.textContent = 'Stage 3 — Full typed recall! Complete the entire mind map from memory.';
@@ -1220,15 +1160,6 @@ function loadState() {
 
 function normalise(str) {
   return str.trim().toLowerCase().replace(/\s+/g,' ').replace(/['']/g,"'");
-}
-
-function isAnswerAccepted(val, node) {
-  const n = normalise(val);
-  if (n === normalise(node.answer)) return true;
-  if (node.aliases) {
-    return node.aliases.some(a => n === normalise(a));
-  }
-  return false;
 }
 
 function shuffle(arr) {
