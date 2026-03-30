@@ -22,8 +22,9 @@
   'use strict';
 
   const CLIENT_ID = '379663437881-iukh6qnkq8jmqtqko3qog0n6ohuhemmq.apps.googleusercontent.com';
-  // classroom.coursework.me lets students list course assignments and patch
-  // their own draft grade — both needed for grade submission
+  // classroom.coursework.me lets students list their own submissions and turn them in.
+  // Note: draftGrade/assignedGrade can only be set by teachers via the Classroom API —
+  // this scope is sufficient for turnIn (student self-submission) but not for grade writes.
   const SCOPE = 'https://www.googleapis.com/auth/classroom.coursework.me';
 
   const urlParams = new URLSearchParams(window.location.search);
@@ -236,24 +237,59 @@
         const listRes = await fetch(`${base}?userId=me`, {
           headers: { Authorization: `Bearer ${accessToken}` }
         });
+        if (!listRes.ok) {
+          console.warn('Classroom: could not list submissions', listRes.status);
+          return;
+        }
         const data = await listRes.json();
         if (!data.studentSubmissions || data.studentSubmissions.length === 0) return;
-        const submissionId = data.studentSubmissions[0].id;
+        const submission = data.studentSubmissions[0];
+        const submissionId = submission.id;
 
-        await fetch(`${base}/${submissionId}?updateMask=draftGrade`, {
-          method: 'PATCH',
-          headers: { Authorization: `Bearer ${accessToken}`, 'Content-Type': 'application/json' },
-          body: JSON.stringify({ draftGrade: gradePercent })
-        });
+        // The Classroom REST API does not allow students to set draftGrade/assignedGrade —
+        // those fields are teacher-only. Instead, we attach the score to the submission
+        // as short-answer text (if the assignment type supports it) and turn it in,
+        // which marks it as complete for the teacher to grade.
+        // If the submission is already turned in, we skip the turnIn call.
+        // Don't touch submissions the teacher has already returned/graded
+        if (submission.state === 'RETURNED') {
+          console.log('Classroom: submission already returned by teacher — skipping');
+          return;
+        }
 
-        await fetch(`${base}/${submissionId}/comments`, {
+        // If already turned in, reclaim it first so we can resubmit with the updated score
+        if (submission.state === 'TURNED_IN') {
+          await fetch(`${base}/${submissionId}:reclaim`, {
+            method: 'POST',
+            headers: { Authorization: `Bearer ${accessToken}`, 'Content-Type': 'application/json' },
+            body: JSON.stringify({})
+          });
+        }
+
+        // Encode score in the shortAnswerSubmission text so the teacher can see it
+        const shortAnswerPatch = await fetch(
+          `${base}/${submissionId}?updateMask=shortAnswerSubmission`,
+          {
+            method: 'PATCH',
+            headers: { Authorization: `Bearer ${accessToken}`, 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              shortAnswerSubmission: { answer: `Score: ${gradePercent}% — ${activityName}` }
+            })
+          }
+        );
+        // shortAnswerSubmission only applies to SHORT_ANSWER assignments; ignore if it fails
+        if (!shortAnswerPatch.ok) {
+          console.log('Classroom: shortAnswerSubmission patch skipped (not a short-answer assignment)');
+        }
+
+        await fetch(`${base}/${submissionId}:turnIn`, {
           method: 'POST',
           headers: { Authorization: `Bearer ${accessToken}`, 'Content-Type': 'application/json' },
-          body: JSON.stringify({ text: `${activityName} completed with ${gradePercent}% accuracy.` })
+          body: JSON.stringify({})
         });
 
-        showClassroomToast('Classroom Updated! ✅');
-        console.log(`Classroom grade synced: ${gradePercent}% for "${activityName}"`);
+        showClassroomToast('Submitted to Classroom! ✅');
+        console.log(`Classroom submission turned in: ${gradePercent}% for "${activityName}"`);
       } catch (err) {
         console.error('Classroom sync failed:', err);
       }
