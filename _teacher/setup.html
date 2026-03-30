@@ -1,0 +1,388 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Classroom Grade Proxy Setup</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: 'Segoe UI', system-ui, sans-serif;
+      background: #0f172a; color: #e2e8f0;
+      min-height: 100vh; display: flex; align-items: center; justify-content: center;
+      padding: 24px;
+    }
+    .card {
+      background: #1e293b; border: 1px solid #334155;
+      border-radius: 12px; padding: 40px; max-width: 560px; width: 100%;
+      box-shadow: 0 8px 32px rgba(0,0,0,0.4);
+    }
+    h1 { font-size: 1.4rem; font-weight: 700; color: #f1f5f9; margin-bottom: 6px; }
+    .subtitle { font-size: 0.85rem; color: #94a3b8; margin-bottom: 32px; }
+    .steps { display: flex; flex-direction: column; gap: 12px; margin-bottom: 28px; }
+    .step {
+      display: flex; align-items: flex-start; gap: 14px;
+      padding: 14px 16px; border-radius: 8px;
+      background: #0f172a; border: 1px solid #334155;
+      transition: border-color 0.2s, background 0.2s;
+    }
+    .step.active   { border-color: #3b82f6; background: #1e3a5f; }
+    .step.done     { border-color: #10b981; background: #0d2d22; }
+    .step.error    { border-color: #ef4444; background: #2d0d0d; }
+    .step-num {
+      width: 26px; height: 26px; border-radius: 50%; flex-shrink: 0;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 0.78rem; font-weight: 700;
+      background: #334155; color: #94a3b8;
+      transition: background 0.2s, color 0.2s;
+    }
+    .step.active .step-num { background: #3b82f6; color: #fff; }
+    .step.done   .step-num { background: #10b981; color: #fff; }
+    .step.error  .step-num { background: #ef4444; color: #fff; }
+    .step-body { flex: 1; }
+    .step-title { font-size: 0.88rem; font-weight: 600; color: #f1f5f9; margin-bottom: 2px; }
+    .step-desc  { font-size: 0.78rem; color: #64748b; }
+    .step.active .step-desc,
+    .step.done   .step-desc { color: #94a3b8; }
+    .step-icon { font-size: 1.1rem; line-height: 26px; }
+
+    button {
+      width: 100%; padding: 12px 20px; border: none; border-radius: 8px;
+      font-size: 0.9rem; font-weight: 700; cursor: pointer;
+      transition: opacity 0.15s, transform 0.1s;
+    }
+    button:active { transform: scale(0.98); }
+    button:disabled { opacity: 0.45; cursor: not-allowed; transform: none; }
+    .btn-primary { background: #3b82f6; color: #fff; }
+    .btn-primary:not(:disabled):hover { background: #2563eb; }
+    .btn-success { background: #10b981; color: #fff; }
+    .btn-success:not(:disabled):hover { background: #059669; }
+
+    .url-box {
+      display: none; margin-top: 20px;
+      background: #0f172a; border: 1px solid #10b981;
+      border-radius: 8px; padding: 14px 16px;
+    }
+    .url-box.visible { display: block; }
+    .url-label { font-size: 0.75rem; color: #10b981; font-weight: 700;
+                 text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 8px; }
+    .url-text {
+      font-family: 'Cascadia Code', 'Consolas', monospace;
+      font-size: 0.75rem; color: #a7f3d0; word-break: break-all;
+      background: #0a1628; padding: 8px 10px; border-radius: 4px;
+      margin-bottom: 10px; border: 1px solid #1e3a5f;
+    }
+    .url-actions { display: flex; gap: 8px; }
+    .url-actions button { width: auto; flex: 1; padding: 8px 14px; font-size: 0.82rem; }
+    .btn-copy { background: #334155; color: #e2e8f0; }
+    .btn-copy:hover { background: #475569; }
+    .btn-activate { background: #f59e0b; color: #111827; }
+    .btn-activate:hover { background: #d97706; }
+
+    .activate-note {
+      display: none; margin-top: 12px;
+      font-size: 0.78rem; color: #fbbf24;
+      background: #292400; border: 1px solid #78350f;
+      border-radius: 6px; padding: 10px 12px; line-height: 1.5;
+    }
+    .activate-note.visible { display: block; }
+
+    .error-msg {
+      display: none; margin-top: 16px;
+      font-size: 0.8rem; color: #fca5a5;
+      background: #2d0d0d; border: 1px solid #ef4444;
+      border-radius: 6px; padding: 10px 12px;
+    }
+    .error-msg.visible { display: block; }
+
+    .spinner {
+      display: inline-block; width: 14px; height: 14px;
+      border: 2px solid rgba(255,255,255,0.3); border-top-color: #fff;
+      border-radius: 50%; animation: spin 0.7s linear infinite;
+      vertical-align: middle; margin-right: 6px;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    .divider { height: 1px; background: #334155; margin: 24px 0; }
+    .note { font-size: 0.75rem; color: #64748b; line-height: 1.6; }
+    .note a { color: #60a5fa; text-decoration: none; }
+    .note a:hover { text-decoration: underline; }
+  </style>
+</head>
+<body>
+<div class="card">
+  <h1>Classroom Grade Proxy Setup</h1>
+  <p class="subtitle">One-time setup — creates a personal grade proxy in your Google account so student scores sync directly to your Google Classroom.</p>
+
+  <div class="steps">
+    <div class="step active" id="step1">
+      <div class="step-num">1</div>
+      <div class="step-body">
+        <div class="step-title">Sign in with Google</div>
+        <div class="step-desc">Uses your account to create the proxy — it will only have access to your own classrooms.</div>
+      </div>
+      <div class="step-icon" id="step1-icon">🔑</div>
+    </div>
+    <div class="step" id="step2">
+      <div class="step-num">2</div>
+      <div class="step-body">
+        <div class="step-title">Create &amp; deploy the proxy</div>
+        <div class="step-desc">Automatically creates an Apps Script project in your Google Drive and deploys it as a web app.</div>
+      </div>
+      <div class="step-icon" id="step2-icon">⚙️</div>
+    </div>
+    <div class="step" id="step3">
+      <div class="step-num">3</div>
+      <div class="step-body">
+        <div class="step-title">Activate (one click)</div>
+        <div class="step-desc">Open the proxy URL once so Google can authorise it to access your Classroom.</div>
+      </div>
+      <div class="step-icon" id="step3-icon">✅</div>
+    </div>
+  </div>
+
+  <button class="btn-primary" id="main-btn" onclick="handleMainBtn()">Sign in with Google</button>
+
+  <div class="url-box" id="url-box">
+    <div class="url-label">Your proxy URL</div>
+    <div class="url-text" id="url-display"></div>
+    <div class="url-actions">
+      <button class="btn-copy" onclick="copyUrl()">Copy URL</button>
+      <button class="btn-activate" onclick="activateProxy()">Activate →</button>
+    </div>
+  </div>
+
+  <div class="activate-note" id="activate-note">
+    <strong>After clicking Activate:</strong> Google will ask you to grant the proxy permission to access your Classroom. Click "Allow". You can then close that tab and copy the URL above to use in your assignment links.
+  </div>
+
+  <div class="error-msg" id="error-msg"></div>
+
+  <div class="divider"></div>
+  <p class="note">
+    The proxy script is saved to your Google Drive under <em>My Drive</em> → <em>Apps Scripts</em>.
+    You only need to do this once per Google account. Each teacher in the department runs this page with their own account to get their own personal proxy URL.<br><br>
+    When creating a Classroom assignment, append <code style="color:#a7f3d0">?courseId=YOUR_COURSE_ID&amp;proxyUrl=YOUR_PROXY_URL</code> to the activity link.
+  </p>
+</div>
+
+<script>
+  const CLIENT_ID = '379663437881-iukh6qnkq8jmqtqko3qog0n6ohuhemmq.apps.googleusercontent.com';
+  const SCOPE = 'https://www.googleapis.com/auth/script.projects https://www.googleapis.com/auth/script.deployments';
+  const SCRIPT_API = 'https://script.googleapis.com/v1';
+
+  const PROXY_JS = `// OGA Classroom Grade Proxy
+// Security model:
+//   1. Student identity is verified via their OAuth token (not a self-reported userId).
+//   2. The target assignment must link to ogacomputing.github.io (prevents use on
+//      arbitrary non-OGA assignments even if a student discovers the proxy URL).
+//   3. Grade is clamped to 0-100.
+function doPost(e) {
+  try {
+    var courseId     = e.parameter.courseId;
+    var courseWorkId = e.parameter.courseWorkId;
+    var studentToken = e.parameter.studentToken;
+    var grade        = Math.min(100, Math.max(0, Number(e.parameter.grade)));
+
+    // 1. Verify student identity — call Google userinfo with their own token
+    var userInfoResp = UrlFetchApp.fetch(
+      'https://www.googleapis.com/oauth2/v3/userinfo',
+      { headers: { Authorization: 'Bearer ' + studentToken }, muteHttpExceptions: true }
+    );
+    if (userInfoResp.getResponseCode() !== 200) return out('invalid token');
+    var userId = JSON.parse(userInfoResp.getContentText()).sub;
+    if (!userId) return out('could not verify identity');
+
+    // 2. Verify the assignment belongs to an OGA activity
+    var cw = Classroom.Courses.CourseWork.get(courseId, courseWorkId);
+    var isOGA = (cw.materials || []).some(function(m) {
+      return m.link && m.link.url && m.link.url.indexOf('ogacomputing.github.io') !== -1;
+    });
+    if (!isOGA) return out('not an OGA assignment');
+
+    // 3. Look up and update the verified student's own submission
+    var subs = Classroom.Courses.CourseWork.StudentSubmissions.list(
+      courseId, courseWorkId, { userId: userId }
+    );
+    if (!subs.studentSubmissions || subs.studentSubmissions.length === 0) {
+      return out('no submission found');
+    }
+    Classroom.Courses.CourseWork.StudentSubmissions.patch(
+      { draftGrade: grade },
+      courseId, courseWorkId, subs.studentSubmissions[0].id,
+      { updateMask: 'draftGrade' }
+    );
+    return out('ok');
+  } catch (err) {
+    return out('error: ' + err.message);
+  }
+}
+function out(msg) {
+  return ContentService.createTextOutput(msg).setMimeType(ContentService.MimeType.TEXT);
+}`;
+
+  const PROXY_MANIFEST = JSON.stringify({
+    timeZone: 'Europe/London',
+    dependencies: {
+      enabledAdvancedServices: [{
+        userSymbol: 'Classroom',
+        serviceId: 'classroom',
+        version: 'v1'
+      }]
+    },
+    webapp: { access: 'ANYONE', executeAs: 'USER_DEPLOYING' },
+    exceptionLogging: 'STACKDRIVER',
+    runtimeVersion: 'V8'
+  });
+
+  let tokenClient = null;
+  let accessToken = null;
+  let proxyUrl    = null;
+  let phase = 'signin'; // signin | deploy | done
+
+  window.initSetupTokenClient = function () {
+    tokenClient = google.accounts.oauth2.initTokenClient({
+      client_id: CLIENT_ID,
+      scope: SCOPE,
+      callback: async (resp) => {
+        if (resp.error) { showError('Sign-in failed: ' + resp.error); return; }
+        accessToken = resp.access_token;
+        markStep(1, 'done');
+        await runDeploy();
+      }
+    });
+  };
+
+  function handleMainBtn() {
+    if (phase === 'signin')  { tokenClient && tokenClient.requestAccessToken(); return; }
+    if (phase === 'deploy')  return; // in progress
+    if (phase === 'done')    { copyUrl(); }
+  }
+
+  async function runDeploy() {
+    phase = 'deploy';
+    setBtn('deploying');
+    markStep(2, 'active');
+
+    try {
+      // 1. Create project
+      setStepDesc(2, 'Creating Apps Script project…');
+      const project = await apiFetch('POST', '/projects', { title: 'OGA Classroom Grade Proxy' });
+
+      // 2. Upload code
+      setStepDesc(2, 'Uploading proxy code…');
+      await apiFetch('PUT', `/projects/${project.scriptId}/content`, {
+        files: [
+          { name: 'Code',        type: 'SERVER_JS', source: PROXY_JS       },
+          { name: 'appsscript',  type: 'JSON',      source: PROXY_MANIFEST }
+        ]
+      });
+
+      // 3. Create version
+      setStepDesc(2, 'Creating version…');
+      const version = await apiFetch('POST', `/projects/${project.scriptId}/versions`, { description: 'v1' });
+
+      // 4. Deploy web app
+      setStepDesc(2, 'Deploying web app…');
+      const deployment = await apiFetch('POST', `/projects/${project.scriptId}/deployments`, {
+        versionNumber: version.versionNumber,
+        manifestFileName: 'appsscript',
+        description: 'Grade proxy'
+      });
+
+      const entry = (deployment.entryPoints || []).find(ep => ep.entryPointType === 'WEB_APP');
+      proxyUrl = entry && entry.webApp && entry.webApp.url;
+      if (!proxyUrl) throw new Error('Deployment succeeded but no web app URL in response.');
+
+      // Save to localStorage so the activity pages on this browser auto-detect it
+      try { localStorage.setItem('oga_proxy_url', proxyUrl); } catch (_) {}
+
+      markStep(2, 'done');
+      markStep(3, 'active');
+      showUrl(proxyUrl);
+      setBtn('done');
+      phase = 'done';
+
+    } catch (err) {
+      markStep(2, 'error');
+      showError(err.message || String(err));
+      setBtn('signin');
+      phase = 'signin';
+    }
+  }
+
+  async function apiFetch(method, path, body) {
+    const res = await fetch(SCRIPT_API + path, {
+      method,
+      headers: {
+        Authorization: `Bearer ${accessToken}`,
+        'Content-Type': 'application/json'
+      },
+      body: body ? JSON.stringify(body) : undefined
+    });
+    const data = await res.json();
+    if (!res.ok) {
+      const msg = data.error && data.error.message ? data.error.message : JSON.stringify(data);
+      throw new Error(msg);
+    }
+    return data;
+  }
+
+  // ── UI helpers ───────────────────────────────────────────────────────────────
+
+  function markStep(n, state) {
+    const el = document.getElementById('step' + n);
+    el.className = 'step ' + state;
+  }
+
+  function setStepDesc(n, text) {
+    document.querySelector('#step' + n + ' .step-desc').textContent = text;
+  }
+
+  function setBtn(state) {
+    const btn = document.getElementById('main-btn');
+    const labels = {
+      signin:    'Sign in with Google',
+      deploying: '<span class="spinner"></span>Setting up…',
+      done:      'Copy URL'
+    };
+    btn.innerHTML = labels[state];
+    btn.disabled  = (state === 'deploying');
+    btn.className = state === 'done' ? 'btn-success' : 'btn-primary';
+  }
+
+  function showUrl(url) {
+    document.getElementById('url-display').textContent = url;
+    document.getElementById('url-box').classList.add('visible');
+    document.getElementById('activate-note').classList.add('visible');
+  }
+
+  function copyUrl() {
+    if (!proxyUrl) return;
+    navigator.clipboard.writeText(proxyUrl).then(() => {
+      const btn = document.querySelector('.btn-copy');
+      btn.textContent = 'Copied!';
+      setTimeout(() => btn.textContent = 'Copy URL', 2000);
+    });
+  }
+
+  function activateProxy() {
+    if (proxyUrl) window.open(proxyUrl, '_blank');
+    markStep(3, 'done');
+  }
+
+  function showError(msg) {
+    const el = document.getElementById('error-msg');
+    el.textContent = 'Error: ' + msg;
+    el.classList.add('visible');
+  }
+
+  // Load GSI
+  const gsi = document.createElement('script');
+  gsi.src = 'https://accounts.google.com/gsi/client';
+  gsi.onload = () => window.initSetupTokenClient();
+  gsi.async = true;
+  document.head.appendChild(gsi);
+</script>
+</body>
+</html>

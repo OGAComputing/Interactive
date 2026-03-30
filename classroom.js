@@ -4,39 +4,50 @@
  * Usage in any activity HTML file (all are 2 levels deep: Y<n>/Topic/file.html):
  *   <script src="../../classroom.js"></script>
  *
- * When the page URL contains ?courseId=X (set by index.html when a teacher
- * assigns the activity), this script:
+ * When the page URL contains ?courseId=X this script:
  *   1. Injects a sticky login banner at the top of the page
  *   2. Loads the Google Sign-In library and initialises the OAuth token client
  *   3. After sign-in, automatically looks up the courseWorkId by scanning the
  *      course's published assignments for one whose link URL matches this page
- *   4. Exposes window.Classroom.verifyAuth() — call at the start of Check Answer
+ *   4. Detects whether the signed-in user is a teacher of this course and, if so,
+ *      shows a "Teacher mode" panel with a pre-built assignment link to copy
+ *   5. Exposes window.Classroom.verifyAuth() — call at the start of Check Answer
  *      handlers to block unauthenticated students when in a Classroom context
- *   5. Exposes window.Classroom.submitGrade(percent, activityName) — call when
- *      an activity is complete to post the draft grade
+ *   6. Exposes window.Classroom.submitGrade(percent, activityName) — posts the
+ *      draft grade via the teacher's Apps Script proxy. The proxy URL is resolved
+ *      from (in order): ?proxyUrl= URL param → localStorage (set by setup page).
+ *      Grade submission is silently skipped when no proxy URL is available.
  *
  * If no courseId URL param is present, nothing is injected and all API calls
  * are no-ops, so activities work identically for students not using Classroom.
+ *
+ * Teacher setup: open _teacher/setup.html once per teacher account. This
+ * deploys a personal Apps Script proxy and saves its URL to localStorage so
+ * activity pages on that browser work automatically.
  */
 (function () {
   'use strict';
 
   const CLIENT_ID = '379663437881-iukh6qnkq8jmqtqko3qog0n6ohuhemmq.apps.googleusercontent.com';
-  // classroom.coursework.me lets students list their own submissions and turn them in.
-  // Note: draftGrade/assignedGrade can only be set by teachers via the Classroom API —
-  // this scope is sufficient for turnIn (student self-submission) but not for grade writes.
-  const SCOPE = 'https://www.googleapis.com/auth/classroom.coursework.me';
+  // classroom.coursework.me — read/turn-in student's own submissions.
+  // openid + email — fetch the student's Google user ID for the proxy call.
+  const SCOPE = 'https://www.googleapis.com/auth/classroom.coursework.me openid email';
 
-  const urlParams = new URLSearchParams(window.location.search);
-  const courseId = urlParams.get('courseId');
-  // isClassroomContext only requires courseId — courseWorkId is resolved after sign-in
+  // urlParams must be declared before proxyUrl so the reference is valid
+  const urlParams   = new URLSearchParams(window.location.search);
+  const courseId    = urlParams.get('courseId');
   const isClassroomContext = !!courseId;
 
-  let tokenClient = null;
-  let accessToken = null;
-  let courseWorkId = null; // resolved after sign-in via lookupCourseWorkId()
+  // Proxy URL resolution: URL param wins, then localStorage (saved by setup page)
+  let proxyUrl = urlParams.get('proxyUrl') || (() => {
+    try { return localStorage.getItem('oga_proxy_url'); } catch (_) { return null; }
+  })() || null;
 
-  // ── Login banner ────────────────────────────────────────────────────────────
+  let tokenClient  = null;
+  let accessToken  = null;
+  let courseWorkId = null; // resolved after sign-in
+
+  // ── Login banner ─────────────────────────────────────────────────────────────
 
   function injectBanner() {
     const style = document.createElement('style');
@@ -50,18 +61,20 @@
         border-bottom: 2px solid #374151;
         box-shadow: 0 2px 8px rgba(0,0,0,0.4);
       }
-      #classroom-banner-msg { display: flex; align-items: center; gap: 10px; }
+      #classroom-banner-msg { display: flex; align-items: center; gap: 10px; min-width: 0; }
       #classroom-dot {
         width: 9px; height: 9px; border-radius: 50%;
         background: #ef4444; flex-shrink: 0;
         transition: background 0.3s, box-shadow 0.3s;
       }
-      #classroom-dot.online { background: #10b981; box-shadow: 0 0 8px #10b981; }
+      #classroom-dot.online  { background: #10b981; box-shadow: 0 0 8px #10b981; }
+      #classroom-dot.teacher { background: #f59e0b; box-shadow: 0 0 8px #f59e0b; }
+      #classroom-banner-actions { display: flex; align-items: center; gap: 8px; flex-shrink: 0; }
       #classroom-signin-btn {
         background: #fff; color: #111827; border: none;
         padding: 6px 14px; border-radius: 4px;
         font-weight: 700; font-size: 0.82rem; cursor: pointer;
-        white-space: nowrap; flex-shrink: 0;
+        white-space: nowrap;
         animation: classroom-pulse-btn 1.5s infinite;
       }
       #classroom-signin-btn:hover { background: #f3f4f6; }
@@ -70,6 +83,14 @@
         0%,100% { box-shadow: 0 0 0 0 rgba(245,158,11,0); }
         50%      { box-shadow: 0 0 0 5px rgba(245,158,11,0.45); }
       }
+      #classroom-copy-btn {
+        background: #f59e0b; color: #111827; border: none;
+        padding: 6px 14px; border-radius: 4px;
+        font-weight: 700; font-size: 0.82rem; cursor: pointer;
+        white-space: nowrap; display: none;
+      }
+      #classroom-copy-btn:hover { background: #d97706; }
+      #classroom-copy-btn.visible { display: inline-block; }
       #classroom-toast {
         position: fixed; bottom: 24px; right: 24px; z-index: 99999;
         background: #10b981; color: #fff;
@@ -82,6 +103,38 @@
         pointer-events: none;
       }
       #classroom-toast.show { transform: translateY(0); opacity: 1; }
+
+      /* Teacher setup modal */
+      #cr-modal-backdrop {
+        display: none; position: fixed; inset: 0; z-index: 99998;
+        background: rgba(0,0,0,0.7); align-items: center; justify-content: center;
+      }
+      #cr-modal-backdrop.open { display: flex; }
+      #cr-modal {
+        background: #1e293b; border: 1px solid #475569; border-radius: 12px;
+        padding: 28px 32px; max-width: 480px; width: calc(100% - 48px);
+        font-family: 'Segoe UI', system-ui, sans-serif;
+        box-shadow: 0 12px 40px rgba(0,0,0,0.5);
+      }
+      #cr-modal h2 { font-size: 1.1rem; color: #f1f5f9; margin-bottom: 8px; }
+      #cr-modal p  { font-size: 0.82rem; color: #94a3b8; line-height: 1.6; margin-bottom: 16px; }
+      #cr-modal a  { color: #60a5fa; }
+      #cr-modal input {
+        width: 100%; padding: 8px 12px; border-radius: 6px;
+        background: #0f172a; border: 1px solid #334155; color: #e2e8f0;
+        font-size: 0.82rem; margin-bottom: 12px;
+        font-family: 'Cascadia Code', 'Consolas', monospace;
+      }
+      #cr-modal input:focus { outline: none; border-color: #3b82f6; }
+      #cr-modal-actions { display: flex; gap: 8px; justify-content: flex-end; }
+      #cr-modal-actions button {
+        padding: 7px 18px; border: none; border-radius: 6px;
+        font-size: 0.82rem; font-weight: 700; cursor: pointer;
+      }
+      #cr-modal-save   { background: #3b82f6; color: #fff; }
+      #cr-modal-save:hover { background: #2563eb; }
+      #cr-modal-skip   { background: #374151; color: #d1d5db; }
+      #cr-modal-skip:hover { background: #4b5563; }
     `;
     document.head.appendChild(style);
 
@@ -92,9 +145,11 @@
         <span id="classroom-dot"></span>
         <span id="classroom-text">⚠️ This activity is linked to Google Classroom — sign in to record your results.</span>
       </div>
-      <button id="classroom-signin-btn" onclick="window._classroomSignIn()">Sign in with Google</button>
+      <div id="classroom-banner-actions">
+        <button id="classroom-copy-btn" onclick="window._classroomCopyLink()">Copy assignment link</button>
+        <button id="classroom-signin-btn" onclick="window._classroomSignIn()">Sign in with Google</button>
+      </div>
     `;
-
     if (document.body.firstChild) {
       document.body.insertBefore(banner, document.body.firstChild);
     } else {
@@ -104,15 +159,53 @@
     const toast = document.createElement('div');
     toast.id = 'classroom-toast';
     document.body.appendChild(toast);
+
+    // Modal (hidden until teacher needs setup)
+    const modal = document.createElement('div');
+    modal.id = 'cr-modal-backdrop';
+    modal.innerHTML = `
+      <div id="cr-modal">
+        <h2>⚙️ Teacher: grade proxy not configured</h2>
+        <p>
+          To automatically sync student scores to Google Classroom you need a
+          personal grade proxy. Run the one-time setup, then come back here.
+          <br><br>
+          <a href="../../_teacher/setup.html" target="_blank">Open setup page →</a>
+          &nbsp;(opens in a new tab — refresh this page when done)
+        </p>
+        <p>Already set up? Paste your proxy URL below:</p>
+        <input id="cr-proxy-input" type="url" placeholder="https://script.google.com/macros/s/…/exec">
+        <div id="cr-modal-actions">
+          <button id="cr-modal-skip" onclick="window._classroomModalSkip()">Skip for now</button>
+          <button id="cr-modal-save" onclick="window._classroomModalSave()">Save &amp; use</button>
+        </div>
+      </div>
+    `;
+    document.body.appendChild(modal);
   }
 
-  function setBannerConnected() {
+  function setBannerStudent() {
     const dot  = document.getElementById('classroom-dot');
     const text = document.getElementById('classroom-text');
     const btn  = document.getElementById('classroom-signin-btn');
     if (dot)  dot.classList.add('online');
     if (text) text.textContent = '✅ Connected to Google Classroom — your results will be recorded automatically.';
     if (btn)  btn.classList.add('hidden');
+  }
+
+  function setBannerTeacher(hasProxy) {
+    const dot      = document.getElementById('classroom-dot');
+    const text     = document.getElementById('classroom-text');
+    const btn      = document.getElementById('classroom-signin-btn');
+    const copyBtn  = document.getElementById('classroom-copy-btn');
+    if (dot)  { dot.classList.add('teacher'); }
+    if (btn)  btn.classList.add('hidden');
+    if (hasProxy) {
+      if (text) text.textContent = '🎓 Teacher mode — grade proxy configured. Share the assignment link with your class.';
+      if (copyBtn) copyBtn.classList.add('visible');
+    } else {
+      if (text) text.textContent = '🎓 Teacher mode — no grade proxy configured. Students\' scores won\'t sync automatically.';
+    }
   }
 
   function showClassroomToast(msg) {
@@ -123,18 +216,42 @@
     setTimeout(() => toast.classList.remove('show'), 2800);
   }
 
-  // ── courseWorkId lookup ──────────────────────────────────────────────────────
-  // After sign-in we scan the course's published assignments for one whose
-  // material link URL matches the current page path. This avoids needing the
-  // courseWorkId embedded in the URL (which the Classroom API won't let us
-  // patch into the assignment after creation).
+  // ── Teacher modal ─────────────────────────────────────────────────────────────
+
+  window._classroomModalSkip = function () {
+    const el = document.getElementById('cr-modal-backdrop');
+    if (el) el.classList.remove('open');
+  };
+
+  window._classroomModalSave = function () {
+    const input = document.getElementById('cr-proxy-input');
+    const url   = input && input.value.trim();
+    if (!url || !url.startsWith('https://')) {
+      input && (input.style.borderColor = '#ef4444');
+      return;
+    }
+    proxyUrl = url;
+    try { localStorage.setItem('oga_proxy_url', url); } catch (_) {}
+    window._classroomModalSkip();
+    setBannerTeacher(true);
+    showClassroomToast('Proxy URL saved ✅');
+  };
+
+  window._classroomCopyLink = function () {
+    if (!proxyUrl) return;
+    const link = `${location.origin}${location.pathname}?courseId=${courseId}&proxyUrl=${encodeURIComponent(proxyUrl)}`;
+    navigator.clipboard.writeText(link).then(() => {
+      const btn = document.getElementById('classroom-copy-btn');
+      if (btn) { btn.textContent = 'Copied!'; setTimeout(() => btn.textContent = 'Copy assignment link', 2000); }
+    });
+  };
+
+  // ── courseWorkId lookup ───────────────────────────────────────────────────────
 
   async function lookupCourseWorkId(token) {
     const pageBase = decodeURIComponent(window.location.origin + window.location.pathname);
-    const pagePath = decodeURIComponent(window.location.pathname); // fallback: match path only
-
+    const pagePath = decodeURIComponent(window.location.pathname);
     try {
-      // Fetch all pages of courseWork (published + draft) to find a match
       for (const state of ['PUBLISHED', 'DRAFT']) {
         let pageToken = '';
         do {
@@ -151,9 +268,7 @@
             if (!cw.materials) continue;
             for (const m of cw.materials) {
               if (m.link && m.link.url) {
-                // Strip query params and decode before comparing
                 const linkBase = decodeURIComponent(m.link.url.split('?')[0]);
-                // Primary: full origin+path match; fallback: path-only match
                 if (linkBase === pageBase || linkBase.endsWith(pagePath)) return cw.id;
               }
             }
@@ -168,7 +283,25 @@
     return null;
   }
 
-  // ── OAuth ───────────────────────────────────────────────────────────────────
+  // ── Teacher detection ─────────────────────────────────────────────────────────
+  // courses.list?teacherId=me returns only courses the user teaches, which works
+  // with the classroom.coursework.me scope and needs no additional permissions.
+
+  async function detectTeacher(token) {
+    try {
+      const res  = await fetch(
+        'https://classroom.googleapis.com/v1/courses?teacherId=me&pageSize=50',
+        { headers: { Authorization: `Bearer ${token}` } }
+      );
+      if (!res.ok) return false;
+      const data = await res.json();
+      return (data.courses || []).some(c => c.id === courseId);
+    } catch (_) {
+      return false;
+    }
+  }
+
+  // ── OAuth ─────────────────────────────────────────────────────────────────────
 
   function initTokenClient() {
     tokenClient = google.accounts.oauth2.initTokenClient({
@@ -180,38 +313,32 @@
           return;
         }
         accessToken = tokenResponse.access_token;
-        setBannerConnected();
-
-        // Resolve courseWorkId now that we have a token
         courseWorkId = await lookupCourseWorkId(accessToken);
+
+        const isTeacher = await detectTeacher(accessToken);
+        if (isTeacher) {
+          setBannerTeacher(!!proxyUrl);
+          if (!proxyUrl) {
+            // Show modal so teacher can enter their proxy URL
+            const modal = document.getElementById('cr-modal-backdrop');
+            if (modal) modal.classList.add('open');
+          }
+        } else {
+          setBannerStudent();
+        }
       },
     });
   }
 
-  // Called by the dynamically-loaded GSI script's onload
-  window.initClassroomTokenClient = function () {
-    initTokenClient();
-  };
+  window.initClassroomTokenClient = function () { initTokenClient(); };
+  window._classroomSignIn = function () { if (tokenClient) tokenClient.requestAccessToken(); };
 
-  // Called by the Sign in button
-  window._classroomSignIn = function () {
-    if (tokenClient) tokenClient.requestAccessToken();
-  };
-
-  // ── Public API ──────────────────────────────────────────────────────────────
+  // ── Public API ────────────────────────────────────────────────────────────────
 
   window.Classroom = {
-    /** True when the page URL contains a courseId param. */
     get isClassroomContext() { return isClassroomContext; },
+    get isAuthenticated()    { return !!accessToken; },
 
-    /** True once the student has authenticated with Google. */
-    get isAuthenticated() { return !!accessToken; },
-
-    /**
-     * Call at the start of every Check Answer handler.
-     * If the activity was opened from Classroom but the student hasn't signed in,
-     * alerts them and returns false so the handler can abort.
-     */
     verifyAuth() {
       if (isClassroomContext && !accessToken) {
         alert("This assignment is linked to Google Classroom.\nPlease click 'Sign in with Google' at the top of the page to record your results.");
@@ -221,93 +348,47 @@
     },
 
     /**
-     * Submit a draft grade to Classroom.
-     * Safe to call unconditionally — silently does nothing when not in a
-     * Classroom context or when the student hasn't authenticated.
+     * Submit a draft grade via the teacher's Apps Script proxy.
+     * No-op when not in a Classroom context, not authenticated, or no proxy configured.
      *
      * @param {number} gradePercent  0–100
-     * @param {string} activityName  Used in the private comment text
+     * @param {string} activityName  Logged to console for debugging
      */
     async submitGrade(gradePercent, activityName) {
-      if (!accessToken || !courseWorkId) return;
+      if (!accessToken || !courseWorkId || !proxyUrl) return;
       try {
-        const base = `https://classroom.googleapis.com/v1/courses/${courseId}` +
-                     `/courseWork/${courseWorkId}/studentSubmissions`;
-
-        const listRes = await fetch(`${base}?userId=me`, {
-          headers: { Authorization: `Bearer ${accessToken}` }
-        });
-        if (!listRes.ok) {
-          console.warn('Classroom: could not list submissions', listRes.status);
-          return;
-        }
-        const data = await listRes.json();
-        if (!data.studentSubmissions || data.studentSubmissions.length === 0) return;
-        const submission = data.studentSubmissions[0];
-        const submissionId = submission.id;
-
-        // The Classroom REST API does not allow students to set draftGrade/assignedGrade —
-        // those fields are teacher-only. Instead, we attach the score to the submission
-        // as short-answer text (if the assignment type supports it) and turn it in,
-        // which marks it as complete for the teacher to grade.
-        // If the submission is already turned in, we skip the turnIn call.
-        // Don't touch submissions the teacher has already returned/graded
-        if (submission.state === 'RETURNED') {
-          console.log('Classroom: submission already returned by teacher — skipping');
-          return;
-        }
-
-        // If already turned in, reclaim it first so we can resubmit with the updated score
-        if (submission.state === 'TURNED_IN') {
-          await fetch(`${base}/${submissionId}:reclaim`, {
-            method: 'POST',
-            headers: { Authorization: `Bearer ${accessToken}`, 'Content-Type': 'application/json' },
-            body: JSON.stringify({})
-          });
-        }
-
-        // Encode score in the shortAnswerSubmission text so the teacher can see it
-        const shortAnswerPatch = await fetch(
-          `${base}/${submissionId}?updateMask=shortAnswerSubmission`,
-          {
-            method: 'PATCH',
-            headers: { Authorization: `Bearer ${accessToken}`, 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-              shortAnswerSubmission: { answer: `Score: ${gradePercent}% — ${activityName}` }
-            })
-          }
-        );
-        // shortAnswerSubmission only applies to SHORT_ANSWER assignments; ignore if it fails
-        if (!shortAnswerPatch.ok) {
-          console.log('Classroom: shortAnswerSubmission patch skipped (not a short-answer assignment)');
-        }
-
-        await fetch(`${base}/${submissionId}:turnIn`, {
+        // Send the student's own OAuth token rather than a self-reported userId.
+        // The proxy calls the userinfo endpoint to verify identity server-side,
+        // so a student cannot impersonate another user by supplying a different userId.
+        await fetch(proxyUrl, {
           method: 'POST',
-          headers: { Authorization: `Bearer ${accessToken}`, 'Content-Type': 'application/json' },
-          body: JSON.stringify({})
+          mode: 'no-cors',
+          headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+          body: new URLSearchParams({
+            courseId,
+            courseWorkId,
+            studentToken: accessToken,
+            grade: gradePercent
+          }).toString()
         });
 
-        showClassroomToast('Submitted to Classroom! ✅');
-        console.log(`Classroom submission turned in: ${gradePercent}% for "${activityName}"`);
+        showClassroomToast('Grade sent to Classroom! ✅');
+        console.log(`Classroom grade submitted via proxy: ${gradePercent}% for "${activityName}"`);
       } catch (err) {
         console.error('Classroom sync failed:', err);
       }
     }
   };
 
-  // ── Bootstrap ───────────────────────────────────────────────────────────────
+  // ── Bootstrap ─────────────────────────────────────────────────────────────────
 
   function bootstrap() {
     if (!isClassroomContext) return;
-
     injectBanner();
-
     const script = document.createElement('script');
-    script.src = 'https://accounts.google.com/gsi/client';
+    script.src   = 'https://accounts.google.com/gsi/client';
     script.onload = () => window.initClassroomTokenClient();
-    script.async = true;
-    script.defer = true;
+    script.async = script.defer = true;
     document.head.appendChild(script);
   }
 
