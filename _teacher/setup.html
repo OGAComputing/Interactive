@@ -177,6 +177,10 @@
 //   2. The target assignment must link to ogacomputing.github.io (prevents use on
 //      arbitrary non-OGA assignments even if a student discovers the proxy URL).
 //   3. Grade is clamped to 0-100.
+function doGet() {
+  return ContentService.createTextOutput('OGA Classroom Grade Proxy is active.')
+    .setMimeType(ContentService.MimeType.TEXT);
+}
 function doPost(e) {
   try {
     var courseId     = e.parameter.courseId;
