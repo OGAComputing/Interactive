@@ -130,28 +130,40 @@
 
   async function lookupCourseWorkId(token) {
     const pageBase = window.location.origin + window.location.pathname;
+    const pagePath = window.location.pathname; // fallback: match path only
+
     try {
-      const res = await fetch(
-        `https://classroom.googleapis.com/v1/courses/${courseId}/courseWork` +
-        `?courseWorkStates=PUBLISHED&pageSize=50`,
-        { headers: { Authorization: `Bearer ${token}` } }
-      );
-      if (!res.ok) return null;
-      const data = await res.json();
-      if (!data.courseWork) return null;
-      for (const cw of data.courseWork) {
-        if (!cw.materials) continue;
-        for (const m of cw.materials) {
-          if (m.link && m.link.url) {
-            // Strip any query params from the stored URL before comparing
-            const linkBase = m.link.url.split('?')[0];
-            if (linkBase === pageBase) return cw.id;
+      // Fetch all pages of courseWork (published + draft) to find a match
+      for (const state of ['PUBLISHED', 'DRAFT']) {
+        let pageToken = '';
+        do {
+          const url =
+            `https://classroom.googleapis.com/v1/courses/${courseId}/courseWork` +
+            `?courseWorkStates=${state}&pageSize=50` +
+            (pageToken ? `&pageToken=${encodeURIComponent(pageToken)}` : '');
+          const res = await fetch(url, { headers: { Authorization: `Bearer ${token}` } });
+          if (!res.ok) break;
+          const data = await res.json();
+          pageToken = data.nextPageToken || '';
+          if (!data.courseWork) break;
+          for (const cw of data.courseWork) {
+            if (!cw.materials) continue;
+            for (const m of cw.materials) {
+              if (m.link && m.link.url) {
+                // Strip query params from the stored URL before comparing
+                const linkBase = m.link.url.split('?')[0];
+                // Primary: full origin+path match; fallback: path-only match
+                if (linkBase === pageBase || linkBase.endsWith(pagePath)) return cw.id;
+              }
+            }
           }
-        }
+        } while (pageToken);
       }
     } catch (e) {
       console.warn('Classroom: courseWork lookup failed', e);
     }
+    console.warn('Classroom: no matching assignment found for this page in course', courseId,
+      '— expected URL containing:', pagePath);
     return null;
   }
 
@@ -171,9 +183,6 @@
 
         // Resolve courseWorkId now that we have a token
         courseWorkId = await lookupCourseWorkId(accessToken);
-        if (!courseWorkId) {
-          console.warn('Classroom: no matching assignment found for this page in course', courseId);
-        }
       },
     });
   }
