@@ -129,8 +129,8 @@
   // patch into the assignment after creation).
 
   async function lookupCourseWorkId(token) {
-    const pageBase = window.location.origin + window.location.pathname;
-    const pagePath = window.location.pathname; // fallback: match path only
+    const pageBase = decodeURIComponent(window.location.origin + window.location.pathname);
+    const pagePath = decodeURIComponent(window.location.pathname); // fallback: match path only
 
     try {
       // Fetch all pages of courseWork (published + draft) to find a match
@@ -150,8 +150,8 @@
             if (!cw.materials) continue;
             for (const m of cw.materials) {
               if (m.link && m.link.url) {
-                // Strip query params from the stored URL before comparing
-                const linkBase = m.link.url.split('?')[0];
+                // Strip query params and decode before comparing
+                const linkBase = decodeURIComponent(m.link.url.split('?')[0]);
                 // Primary: full origin+path match; fallback: path-only match
                 if (linkBase === pageBase || linkBase.endsWith(pagePath)) return cw.id;
               }
