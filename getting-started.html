@@ -1,0 +1,465 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Getting Started — OGA CS Activities</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: 'Trebuchet MS', Calibri, sans-serif;
+      background: #0f1c2e;
+      color: #e8edf2;
+      min-height: 100vh;
+    }
+
+    /* ── Header ── */
+    header {
+      background: #0a1520;
+      border-bottom: 3px solid #00b4b4;
+      padding: 2rem 2.5rem 1.5rem;
+    }
+    .header-inner { max-width: 900px; margin: 0 auto; }
+    .header-eyebrow {
+      font-size: 0.78rem;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      color: #00b4b4;
+      margin-bottom: 0.35rem;
+    }
+    header h1 {
+      font-size: 2rem;
+      font-weight: 800;
+      color: #ffffff;
+      line-height: 1.2;
+    }
+    header h1 span { color: #00b4b4; }
+    .header-sub {
+      margin-top: 0.5rem;
+      font-size: 0.9rem;
+      color: #7a9ab5;
+    }
+    .back-link {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+      margin-top: 1rem;
+      font-size: 0.8rem;
+      font-weight: 700;
+      color: #00b4b4;
+      text-decoration: none;
+      letter-spacing: 0.03em;
+    }
+    .back-link:hover { color: #00ffff; }
+
+    /* ── Main layout ── */
+    main {
+      max-width: 900px;
+      margin: 0 auto;
+      padding: 2.5rem 2.5rem 5rem;
+    }
+
+    /* ── Intro banner ── */
+    .intro-banner {
+      background: #162032;
+      border: 1px solid #1e3048;
+      border-left: 4px solid #00b4b4;
+      border-radius: 8px;
+      padding: 1.4rem 1.6rem;
+      margin-bottom: 2.5rem;
+      font-size: 0.9rem;
+      color: #b0c8de;
+      line-height: 1.7;
+    }
+    .intro-banner strong { color: #ffffff; }
+
+    /* ── Section headings ── */
+    .section-label {
+      font-size: 0.72rem;
+      font-weight: 700;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: #7a9ab5;
+      border-bottom: 1px solid #1e3048;
+      padding-bottom: 0.5rem;
+      margin-bottom: 1.5rem;
+    }
+
+    /* ── Steps ── */
+    .steps-list { display: flex; flex-direction: column; gap: 1.2rem; margin-bottom: 3rem; }
+
+    .step-card {
+      background: #162032;
+      border: 1px solid #1e3048;
+      border-radius: 10px;
+      padding: 1.4rem 1.6rem 1.4rem 1.2rem;
+      display: grid;
+      grid-template-columns: 48px 1fr;
+      gap: 0 1.1rem;
+      align-items: start;
+    }
+    .step-card.highlight { border-color: #00b4b4; }
+
+    .step-num {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      background: #00b4b4;
+      color: #0a1520;
+      font-size: 1rem;
+      font-weight: 800;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      margin-top: 2px;
+    }
+    .step-card.prereq .step-num {
+      background: #1e3048;
+      color: #7a9ab5;
+      font-size: 0.7rem;
+      letter-spacing: 0.05em;
+      font-weight: 700;
+    }
+
+    .step-body h3 {
+      font-size: 1rem;
+      font-weight: 700;
+      color: #ffffff;
+      margin-bottom: 0.5rem;
+    }
+    .step-body p, .step-body li {
+      font-size: 0.875rem;
+      color: #b0c8de;
+      line-height: 1.65;
+    }
+    .step-body ul, .step-body ol {
+      padding-left: 1.2rem;
+      margin-top: 0.5rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.3rem;
+    }
+    .step-body a {
+      color: #00b4b4;
+      text-decoration: none;
+      font-weight: 600;
+    }
+    .step-body a:hover { color: #00ffff; text-decoration: underline; }
+
+    /* ── Callout boxes ── */
+    .callout {
+      border-radius: 7px;
+      padding: 0.9rem 1.1rem;
+      font-size: 0.825rem;
+      line-height: 1.6;
+      margin-top: 0.85rem;
+    }
+    .callout-tip {
+      background: #0d2d22;
+      border: 1px solid #10b981;
+      color: #a7f3d0;
+    }
+    .callout-warn {
+      background: #262000;
+      border: 1px solid #f5a623;
+      color: #fde68a;
+    }
+    .callout-info {
+      background: #0f1f38;
+      border: 1px solid #3b82f6;
+      color: #93c5fd;
+    }
+    .callout strong { font-weight: 700; }
+    .callout-label {
+      font-size: 0.7rem;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      display: block;
+      margin-bottom: 0.3rem;
+    }
+    .callout-tip .callout-label   { color: #10b981; }
+    .callout-warn .callout-label  { color: #f5a623; }
+    .callout-info .callout-label  { color: #60a5fa; }
+
+    /* ── CTA button ── */
+    .cta-btn {
+      display: inline-block;
+      margin-top: 1rem;
+      background: #00b4b4;
+      color: #0a1520;
+      font-size: 0.85rem;
+      font-weight: 800;
+      padding: 0.6rem 1.2rem;
+      border-radius: 6px;
+      text-decoration: none;
+      letter-spacing: 0.02em;
+      transition: background 0.15s;
+    }
+    .cta-btn:hover { background: #00ffff; }
+
+    /* ── Flow diagram ── */
+    .flow {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 0.5rem;
+      margin: 1.5rem 0 0.5rem;
+      font-size: 0.8rem;
+    }
+    .flow-box {
+      background: #1e3048;
+      border: 1px solid #2a4060;
+      border-radius: 6px;
+      padding: 0.5rem 0.9rem;
+      color: #c8d8e8;
+      line-height: 1.4;
+      text-align: center;
+    }
+    .flow-arrow { color: #00b4b4; font-size: 1.1rem; font-weight: 700; }
+
+    /* ── Troubleshooting table ── */
+    .trouble-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.85rem;
+      margin-top: 0.5rem;
+    }
+    .trouble-table th {
+      text-align: left;
+      font-size: 0.72rem;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: #7a9ab5;
+      border-bottom: 1px solid #1e3048;
+      padding: 0.5rem 0.75rem;
+    }
+    .trouble-table td {
+      padding: 0.75rem;
+      border-bottom: 1px solid #1e3048;
+      color: #b0c8de;
+      vertical-align: top;
+    }
+    .trouble-table tr:last-child td { border-bottom: none; }
+    .trouble-table td:first-child { color: #e8edf2; font-weight: 600; }
+    .trouble-table a { color: #00b4b4; text-decoration: none; }
+    .trouble-table a:hover { text-decoration: underline; }
+
+    /* ── Footer ── */
+    footer {
+      text-align: center;
+      font-size: 0.75rem;
+      color: #2a4060;
+      padding: 1.5rem;
+      border-top: 1px solid #1e3048;
+    }
+    footer a { color: #3a6080; text-decoration: none; }
+    footer a:hover { color: #7a9ab5; }
+
+    @media (max-width: 600px) {
+      header { padding: 1.5rem 1.2rem 1.2rem; }
+      main { padding: 1.5rem 1.2rem 4rem; }
+      header h1 { font-size: 1.5rem; }
+      .step-card { grid-template-columns: 36px 1fr; gap: 0 0.8rem; }
+      .step-num { width: 32px; height: 32px; font-size: 0.85rem; }
+    }
+  </style>
+</head>
+<body>
+
+<header>
+  <div class="header-inner">
+    <div class="header-eyebrow">Outwood Grange Academies Trust — Computer Science</div>
+    <h1>Getting <span>Started</span></h1>
+    <p class="header-sub">A guide for teachers: setting up Google Classroom integration with the CS Activities Hub</p>
+    <a href="index.html" class="back-link">← Back to Activities Hub</a>
+  </div>
+</header>
+
+<main>
+
+  <div class="intro-banner">
+    <strong>What does this integration do?</strong> The OGA CS Activities Hub can automatically post student scores back to your Google Classroom gradebook when students complete activities. This guide walks you through the one-time setup required to enable that. Once set up, grades flow automatically — no manual marking needed.
+  </div>
+
+  <!-- ── Prerequisites ── -->
+  <div class="section-label">Before you begin</div>
+  <div class="steps-list">
+    <div class="step-card prereq">
+      <div class="step-num">PRE</div>
+      <div class="step-body">
+        <h3>What you need</h3>
+        <ul>
+          <li>A Google account associated with your school (e.g. <em>yourname@outwood.com</em>)</li>
+          <li>At least one active class in <a href="https://classroom.google.com" target="_blank" rel="noopener">Google Classroom</a></li>
+          <li>A desktop browser (Chrome recommended) — this setup does not work on mobile</li>
+        </ul>
+        <div class="callout callout-info">
+          <span class="callout-label">Note</span>
+          Each teacher in the department completes this setup <strong>once with their own account</strong> to get their own personal proxy. You cannot share a proxy between teachers.
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── Steps ── -->
+  <div class="section-label">Setup steps</div>
+  <div class="steps-list">
+
+    <div class="step-card highlight">
+      <div class="step-num">1</div>
+      <div class="step-body">
+        <h3>Deploy your personal grade proxy</h3>
+        <p>This is the most important step. It creates a small Google Apps Script in <em>your</em> Google Drive that securely submits grades to your classes on your behalf.</p>
+        <ol>
+          <li>Open the <a href="_teacher/setup.html" target="_blank">Grade Proxy Setup page</a></li>
+          <li>Click <strong>Sign in with Google</strong> and use your school account</li>
+          <li>Grant the requested permissions — these allow the setup page to create a script project in your Drive</li>
+          <li>The page will automatically create and deploy the script — this takes about 10–15 seconds</li>
+          <li>When complete, click <strong>Activate →</strong> to open the proxy URL in a new tab</li>
+          <li>In that new tab, Google will ask you to grant the proxy permission to access your Classroom — click <strong>Allow</strong></li>
+          <li>Close that tab and return to the setup page</li>
+        </ol>
+        <a href="_teacher/setup.html" class="cta-btn" target="_blank">Open Setup Page →</a>
+        <div class="callout callout-warn">
+          <span class="callout-label">Important</span>
+          This step saves your proxy URL to <strong>this browser</strong>. If you switch to a different browser or device, you will need to either repeat this step or copy your proxy URL to use manually. Your proxy URL is visible in the setup page after deployment.
+        </div>
+        <div class="callout callout-tip">
+          <span class="callout-label">Where is the script saved?</span>
+          In your Google Drive under <strong>My Drive → Apps Scripts → OGA Classroom Grade Proxy</strong>. You can view or delete it there at any time.
+        </div>
+      </div>
+    </div>
+
+    <div class="step-card">
+      <div class="step-num">2</div>
+      <div class="step-body">
+        <h3>Sign in on the Activities Hub</h3>
+        <p>Head to the <a href="index.html">CS Activities Hub</a>. In the Teacher Tools bar at the top of the page:</p>
+        <ol>
+          <li>Click <strong>Sign in to Assign to Classroom</strong></li>
+          <li>Sign in with the same school Google account you used in Step 1</li>
+          <li>Grant the requested permissions (read your courses, manage coursework)</li>
+        </ol>
+        <p style="margin-top:0.6rem;">Once signed in, a <strong>class selector dropdown</strong> will appear and each activity card will show an <strong>Assign to Class</strong> button.</p>
+      </div>
+    </div>
+
+    <div class="step-card">
+      <div class="step-num">3</div>
+      <div class="step-body">
+        <h3>Assign an activity to your class</h3>
+        <ol>
+          <li>Use the <strong>class selector</strong> in the Teacher Tools bar to choose which class you are assigning to</li>
+          <li>Find the activity you want on the hub (use the Year tabs to filter)</li>
+          <li>Click <strong>➕ Assign to Class</strong> on the activity card</li>
+        </ol>
+        <p style="margin-top:0.6rem;">The platform will create a new assignment in Google Classroom with the activity link automatically embedded. The assignment appears in your students' Classroom feeds immediately.</p>
+        <div class="callout callout-info">
+          <span class="callout-label">How does grade sync work?</span>
+          The assignment link includes a <code style="color:#93c5fd">?courseId=</code> parameter. When a student opens the link and signs in, the platform can identify their submission and post their score automatically.
+        </div>
+      </div>
+    </div>
+
+    <div class="step-card">
+      <div class="step-num">4</div>
+      <div class="step-body">
+        <h3>Students complete the activity</h3>
+        <p>Students open the assignment from their <a href="https://classroom.google.com" target="_blank" rel="noopener">Google Classroom</a> feed. The activity page will:</p>
+        <ol>
+          <li>Show a sign-in banner at the top of the page</li>
+          <li>Ask the student to sign in with their school Google account</li>
+          <li>Allow the student to complete the activity as normal</li>
+          <li>On completion, automatically submit their score as a <strong>draft grade</strong> in Classroom</li>
+        </ol>
+        <div class="callout callout-warn">
+          <span class="callout-label">Draft grades</span>
+          Scores appear as <strong>draft grades</strong> in Classroom — you still need to review and <strong>Return</strong> them to students in the Classroom gradebook, just as you would with any manually marked assignment.
+        </div>
+      </div>
+    </div>
+
+    <div class="step-card">
+      <div class="step-num">5</div>
+      <div class="step-body">
+        <h3>Return grades to students</h3>
+        <p>Once students have completed the activity, their draft grades will be visible in your Classroom gradebook:</p>
+        <ol>
+          <li>Open the assignment in <a href="https://classroom.google.com" target="_blank" rel="noopener">Google Classroom</a></li>
+          <li>Go to the <strong>Student Work</strong> tab</li>
+          <li>Review the draft grades — you can adjust any score if needed</li>
+          <li>Select all students and click <strong>Return</strong> to publish grades</li>
+        </ol>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- ── Flow summary ── -->
+  <div class="section-label">How it all fits together</div>
+  <div class="flow">
+    <div class="flow-box">Teacher<br>runs setup page<br><em style="font-size:0.72rem;color:#7a9ab5">(once)</em></div>
+    <div class="flow-arrow">→</div>
+    <div class="flow-box">Teacher signs in<br>on hub &amp; assigns<br>activities</div>
+    <div class="flow-arrow">→</div>
+    <div class="flow-box">Student opens<br>Classroom link<br>&amp; signs in</div>
+    <div class="flow-arrow">→</div>
+    <div class="flow-box">Student completes<br>activity</div>
+    <div class="flow-arrow">→</div>
+    <div class="flow-box">Draft grade<br>posted to<br>Classroom</div>
+    <div class="flow-arrow">→</div>
+    <div class="flow-box">Teacher reviews<br>&amp; returns<br>grades</div>
+  </div>
+
+  <!-- ── Troubleshooting ── -->
+  <div class="section-label" style="margin-top:3rem;">Troubleshooting</div>
+  <table class="trouble-table">
+    <thead>
+      <tr>
+        <th>Problem</th>
+        <th>Fix</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>"No proxy configured" error when a student completes an activity</td>
+        <td>Re-run <a href="_teacher/setup.html" target="_blank">Step 1</a> on the current browser, or append <code style="color:#93c5fd">?proxyUrl=YOUR_URL</code> to the activity link when creating the assignment.</td>
+      </tr>
+      <tr>
+        <td>Grades not appearing in Classroom</td>
+        <td>Check the Apps Script deployment is still active: open Google Drive → My Drive → Apps Scripts → OGA Classroom Grade Proxy → Manage Deployments.</td>
+      </tr>
+      <tr>
+        <td>Activity cards show no "Assign to Class" button</td>
+        <td>You need to sign in first — click <strong>Sign in to Assign to Classroom</strong> in the Teacher Tools bar on the <a href="index.html">hub page</a>.</td>
+      </tr>
+      <tr>
+        <td>Class dropdown is empty after signing in</td>
+        <td>Check that your Google Classroom courses are set to <strong>Active</strong> (not Archived). Archived courses are not shown.</td>
+      </tr>
+      <tr>
+        <td>Switched to a new computer or browser</td>
+        <td>Either re-run the <a href="_teacher/setup.html" target="_blank">setup page</a> on the new browser, or copy your proxy URL from the original browser and add it as a URL parameter: <code style="color:#93c5fd">?proxyUrl=YOUR_URL</code>.</td>
+      </tr>
+      <tr>
+        <td>Setup page fails with a permissions error</td>
+        <td>Make sure you are signed in with a Google account that has access to Google Apps Script. Some school accounts may have Apps Script disabled by the IT administrator — contact your IT support team.</td>
+      </tr>
+    </tbody>
+  </table>
+
+</main>
+
+<footer>
+  Outwood Grange Academies Trust — Computer Science &nbsp;|&nbsp;
+  <a href="index.html">Activities Hub</a> &nbsp;|&nbsp;
+  <a href="_teacher/setup.html">Grade Proxy Setup</a>
+</footer>
+
+</body>
+</html>
