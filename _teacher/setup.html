@@ -204,7 +204,7 @@
 
 <script>
   const CLIENT_ID = '379663437881-iukh6qnkq8jmqtqko3qog0n6ohuhemmq.apps.googleusercontent.com';
-  const SCOPE = 'https://www.googleapis.com/auth/script.projects https://www.googleapis.com/auth/script.deployments';
+  const SCOPE = 'https://www.googleapis.com/auth/script.projects https://www.googleapis.com/auth/script.deployments https://www.googleapis.com/auth/cloud-platform';
   const SCRIPT_API = 'https://script.googleapis.com/v1';
 
   const PROXY_JS = `// OGA Classroom Grade Proxy
@@ -212,14 +212,21 @@
 //   1. Student identity is verified via their OAuth token (not a self-reported userId).
 //   2. Grade is clamped to 0-100.
 //   3. Student can only update their own submission (userId resolved from verified token).
-// Uses the Classroom Advanced Service so no manual GCP project / API-enablement step
-// is required during teacher setup.
 function doGet(e) {
   // ?action=test — called by the setup page to confirm the Classroom API is accessible.
+  // Returns 'ok' on success or the raw API error body (so setup.html can extract the
+  // project number and auto-enable the API via the Service Usage API).
   if (e && e.parameter && e.parameter.action === 'test') {
     try {
-      Classroom.Courses.list({ pageSize: 1 });
-      return ContentService.createTextOutput('ok').setMimeType(ContentService.MimeType.TEXT);
+      var token = ScriptApp.getOAuthToken();
+      var res = UrlFetchApp.fetch(
+        'https://classroom.googleapis.com/v1/courses?pageSize=1',
+        { headers: { Authorization: 'Bearer ' + token }, muteHttpExceptions: true }
+      );
+      if (res.getResponseCode() === 200) {
+        return ContentService.createTextOutput('ok').setMimeType(ContentService.MimeType.TEXT);
+      }
+      return ContentService.createTextOutput(res.getContentText()).setMimeType(ContentService.MimeType.TEXT);
     } catch(err) {
       return ContentService.createTextOutput('{"error":{"message":"' + err.message + '"}}')
         .setMimeType(ContentService.MimeType.TEXT);
@@ -247,15 +254,20 @@ function doPost(e) {
     var userId = JSON.parse(userInfoResp.getContentText()).sub;
     if (!userId) return out('could not verify identity');
 
-    // 2. Patch the draft grade using the Classroom Advanced Service.
-    //    The service runs as the deploying teacher (executeAs: USER_DEPLOYING).
-    Classroom.Courses.CourseWork.StudentSubmissions.patch(
-      { draftGrade: grade },
-      courseId,
-      courseWorkId,
-      submissionId,
-      { updateMask: 'draftGrade' }
+    // 2. Patch the draft grade — runs as the deploying teacher (executeAs: USER_DEPLOYING)
+    var teacherToken = ScriptApp.getOAuthToken();
+    var patchResp = UrlFetchApp.fetch(
+      'https://classroom.googleapis.com/v1/courses/' + courseId +
+        '/courseWork/' + courseWorkId + '/studentSubmissions/' + submissionId +
+        '?updateMask=draftGrade',
+      {
+        method: 'patch',
+        headers: { Authorization: 'Bearer ' + teacherToken, 'Content-Type': 'application/json' },
+        payload: JSON.stringify({ draftGrade: grade }),
+        muteHttpExceptions: true
+      }
     );
+    if (patchResp.getResponseCode() !== 200) return out('patch failed (' + patchResp.getResponseCode() + '): ' + patchResp.getContentText());
     return out('ok');
   } catch (err) {
     return out('error: ' + err.message);
@@ -267,17 +279,11 @@ function out(msg) {
 
   const PROXY_MANIFEST = JSON.stringify({
     timeZone: 'Europe/London',
-    dependencies: {
-      enabledAdvancedServices: [{
-        userSymbol: 'Classroom',
-        serviceId: 'classroom',
-        version: 'v1'
-      }]
-    },
     oauthScopes: [
-      'https://www.googleapis.com/auth/classroom.grades',
+      'https://www.googleapis.com/auth/classroom.coursework.students',
       'https://www.googleapis.com/auth/classroom.courses.readonly',
       'https://www.googleapis.com/auth/script.external_request'
+
     ],
     webapp: { access: 'ANYONE_ANONYMOUS', executeAs: 'USER_DEPLOYING' },
     exceptionLogging: 'STACKDRIVER',
@@ -377,32 +383,38 @@ function out(msg) {
       const text = await res.text();
       if (text === 'ok') return true;
 
-      // Extract the Cloud Console URL from the SERVICE_DISABLED error body
-      let consoleUrl = null;
+      // Extract the project number from the SERVICE_DISABLED error body
+      let projectNum = null;
       try {
         const data    = JSON.parse(text);
         const details = (data.error && data.error.details) || [];
-        // Prefer the direct URL from the Help entry
-        const help    = details.find(d => d['@type'] && d['@type'].includes('Help'));
-        if (help && help.links && help.links[0] && help.links[0].url) {
-          consoleUrl = help.links[0].url;
-        }
-        // Fall back to building from the consumer project number
-        if (!consoleUrl) {
-          const info = details.find(d => d['@type'] && d['@type'].includes('ErrorInfo'));
-          const consumer = info && info.metadata && info.metadata.consumer; // e.g. "projects/123456"
-          if (consumer) {
-            const projectNum = consumer.replace(/^projects\//, '');
-            consoleUrl = 'https://console.developers.google.com/apis/api/classroom.googleapis.com/overview?project=' + projectNum;
-          }
-        }
+        const info    = details.find(d => d['@type'] && d['@type'].includes('ErrorInfo'));
+        const consumer = info && info.metadata && info.metadata.consumer; // e.g. "projects/123456"
+        if (consumer) projectNum = consumer.replace(/^projects\//, '');
       } catch (_) {}
 
-      // Generic fallback if we couldn't extract a project-specific URL
-      if (!consoleUrl) {
-        consoleUrl = 'https://console.developers.google.com/apis/api/classroom.googleapis.com';
+      if (projectNum) {
+        // Auto-enable the Classroom API via the Service Usage API
+        setStepDesc(3, 'Enabling Classroom API automatically…');
+        try {
+          const enableRes = await fetch(
+            `https://serviceusage.googleapis.com/v1/projects/${projectNum}/services/classroom.googleapis.com:enable`,
+            { method: 'POST', headers: { Authorization: `Bearer ${accessToken}` } }
+          );
+          if (enableRes.ok) {
+            // Wait for propagation then retest
+            setStepDesc(3, 'Waiting for API to activate…');
+            await new Promise(r => setTimeout(r, 4000));
+            const retry = await fetch(url + '?action=test');
+            if ((await retry.text()) === 'ok') return true;
+          }
+        } catch (_) {}
       }
 
+      // Fallback: show manual enable box
+      const consoleUrl = projectNum
+        ? 'https://console.developers.google.com/apis/api/classroom.googleapis.com/overview?project=' + projectNum
+        : 'https://console.developers.google.com/apis/api/classroom.googleapis.com';
       showApiEnableBox(consoleUrl);
       return false;
     } catch (e) {
