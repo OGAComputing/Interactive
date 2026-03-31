@@ -212,23 +212,14 @@
 //   1. Student identity is verified via their OAuth token (not a self-reported userId).
 //   2. Grade is clamped to 0-100.
 //   3. Student can only update their own submission (userId resolved from verified token).
-// Uses direct REST calls via UrlFetchApp. The Google Classroom API must be enabled
-// in the Cloud project associated with this Apps Script (done once during setup).
+// Uses the Classroom Advanced Service so no manual GCP project / API-enablement step
+// is required during teacher setup.
 function doGet(e) {
-  // ?action=test — called by the setup page to check if the Classroom API is enabled.
-  // Returns 'ok' on success or the raw API error body so setup.html can extract the
-  // Cloud project number and show the teacher a direct enablement link.
+  // ?action=test — called by the setup page to confirm the Classroom API is accessible.
   if (e && e.parameter && e.parameter.action === 'test') {
     try {
-      var token = ScriptApp.getOAuthToken();
-      var res = UrlFetchApp.fetch(
-        'https://classroom.googleapis.com/v1/courses?pageSize=1',
-        { headers: { Authorization: 'Bearer ' + token }, muteHttpExceptions: true }
-      );
-      if (res.getResponseCode() === 200) {
-        return ContentService.createTextOutput('ok').setMimeType(ContentService.MimeType.TEXT);
-      }
-      return ContentService.createTextOutput(res.getContentText()).setMimeType(ContentService.MimeType.TEXT);
+      Classroom.Courses.list({ pageSize: 1 });
+      return ContentService.createTextOutput('ok').setMimeType(ContentService.MimeType.TEXT);
     } catch(err) {
       return ContentService.createTextOutput('{"error":{"message":"' + err.message + '"}}')
         .setMimeType(ContentService.MimeType.TEXT);
@@ -256,24 +247,15 @@ function doPost(e) {
     var userId = JSON.parse(userInfoResp.getContentText()).sub;
     if (!userId) return out('could not verify identity');
 
-    // Teacher token — the script runs as the deploying user (the teacher)
-    var teacherToken = ScriptApp.getOAuthToken();
-    var authHeaders  = { Authorization: 'Bearer ' + teacherToken };
-
-    // 2. Patch the draft grade directly using the submissionId resolved by the client
-    //    (looked up by the student using their own token, so no teacher-level list needed)
-    var patchResp = UrlFetchApp.fetch(
-      'https://classroom.googleapis.com/v1/courses/' + courseId +
-        '/courseWork/' + courseWorkId + '/studentSubmissions/' + submissionId +
-        '?updateMask=draftGrade',
-      {
-        method: 'patch',
-        headers: Object.assign({ 'Content-Type': 'application/json' }, authHeaders),
-        payload: JSON.stringify({ draftGrade: grade }),
-        muteHttpExceptions: true
-      }
+    // 2. Patch the draft grade using the Classroom Advanced Service.
+    //    The service runs as the deploying teacher (executeAs: USER_DEPLOYING).
+    Classroom.Courses.CourseWork.StudentSubmissions.patch(
+      { draftGrade: grade },
+      courseId,
+      courseWorkId,
+      submissionId,
+      { updateMask: 'draftGrade' }
     );
-    if (patchResp.getResponseCode() !== 200) return out('patch failed (' + patchResp.getResponseCode() + '): ' + patchResp.getContentText());
     return out('ok');
   } catch (err) {
     return out('error: ' + err.message);
@@ -285,8 +267,16 @@ function out(msg) {
 
   const PROXY_MANIFEST = JSON.stringify({
     timeZone: 'Europe/London',
+    dependencies: {
+      enabledAdvancedServices: [{
+        userSymbol: 'Classroom',
+        serviceId: 'classroom',
+        version: 'v1'
+      }]
+    },
     oauthScopes: [
       'https://www.googleapis.com/auth/classroom.coursework.students',
+      'https://www.googleapis.com/auth/classroom.courses.readonly',
       'https://www.googleapis.com/auth/script.external_request'
     ],
     webapp: { access: 'ANYONE_ANONYMOUS', executeAs: 'USER_DEPLOYING' },
