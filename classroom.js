@@ -106,6 +106,13 @@
       }
       #classroom-toast.show { transform: translateY(0); opacity: 1; }
 
+      /* Classroom API disabled modal */
+      #cr-api-modal-backdrop {
+        display: none; position: fixed; inset: 0; z-index: 99998;
+        background: rgba(0,0,0,0.7); align-items: center; justify-content: center;
+      }
+      #cr-api-modal-backdrop.open { display: flex; }
+
       /* Teacher setup modal */
       #cr-modal-backdrop {
         display: none; position: fixed; inset: 0; z-index: 99998;
@@ -161,6 +168,25 @@
     const toast = document.createElement('div');
     toast.id = 'classroom-toast';
     document.body.appendChild(toast);
+
+    // SERVICE_DISABLED modal — shown when the Classroom API is not enabled in the proxy's Cloud project
+    const apiModal = document.createElement('div');
+    apiModal.id = 'cr-api-modal-backdrop';
+    apiModal.innerHTML = `
+      <div id="cr-modal">
+        <h2>⚙️ Classroom API not enabled</h2>
+        <p>
+          The grade proxy is deployed but the Google Classroom API hasn't been enabled
+          in its Cloud project yet. Click the button below to open Google Cloud Console,
+          click <strong>Enable</strong>, then refresh this page and try again.
+        </p>
+        <div id="cr-modal-actions">
+          <button id="cr-modal-skip" onclick="window._classroomApiModalClose()">Dismiss</button>
+          <a id="cr-api-console-link" href="#" target="_blank" style="background:#f59e0b;color:#111827;padding:7px 18px;border-radius:6px;font-size:0.82rem;font-weight:700;text-decoration:none;">Enable in Cloud Console →</a>
+        </div>
+      </div>
+    `;
+    document.body.appendChild(apiModal);
 
     // Modal (hidden until teacher needs setup)
     const modal = document.createElement('div');
@@ -220,6 +246,11 @@
   }
 
   // ── Teacher modal ─────────────────────────────────────────────────────────────
+
+  window._classroomApiModalClose = function () {
+    const el = document.getElementById('cr-api-modal-backdrop');
+    if (el) el.classList.remove('open');
+  };
 
   window._classroomModalSkip = function () {
     const el = document.getElementById('cr-modal-backdrop');
@@ -419,6 +450,28 @@
         const result = await res.text();
         if (result !== 'ok') {
           console.warn(`Classroom proxy responded: "${result}" for "${activityName}"`);
+
+          // SERVICE_DISABLED — show actionable modal so the teacher can fix it
+          if (result.includes('SERVICE_DISABLED') || result.includes('has not been used')) {
+            let projectNum = null;
+            try {
+              const match = result.match(/"containerInfo":\s*"(\d+)"/);
+              if (match) projectNum = match[1];
+            } catch (_) {}
+            const backdrop = document.getElementById('cr-api-modal-backdrop');
+            if (backdrop) {
+              if (projectNum) {
+                const link = document.getElementById('cr-api-console-link');
+                if (link) link.href = 'https://console.developers.google.com/apis/api/classroom.googleapis.com/overview?project=' + projectNum;
+              }
+              backdrop.classList.add('open');
+            }
+            showClassroomToast('⚠️ Classroom API not enabled — see popup.');
+            return;
+          }
+
+          showClassroomToast('⚠️ Grade sync issue — see console.');
+          return;
         }
         showClassroomToast('Grade sent to Classroom! ✅');
         console.log(`Classroom grade submitted via proxy: ${gradePercent}% for "${activityName}" — proxy said: ${result}`);

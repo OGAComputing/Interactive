@@ -169,7 +169,8 @@
     <div class="url-label">Your proxy URL</div>
     <div class="url-text" id="url-display"></div>
     <div class="url-actions">
-      <button class="btn-activate" onclick="activateProxy()">Activate →</button>
+      <button class="btn-activate" id="activate-btn" onclick="activateProxy()">Activate →</button>
+      <button class="btn-api-done" id="activated-confirm-btn" style="display:none" onclick="handleActivated()">I've activated it →</button>
     </div>
   </div>
 
@@ -351,11 +352,6 @@ function out(msg) {
       proxyUrl = entry && entry.webApp && entry.webApp.url;
       if (!proxyUrl) throw new Error('Deployment succeeded but no web app URL in response.');
 
-      // 5. Test whether the Classroom API is enabled in the new Cloud project
-      setStepDesc(2, 'Testing Classroom API access…');
-      const apiOk = await testClassroomApi(proxyUrl);
-      if (!apiOk) return; // paused — handleApiEnabled() will complete setup
-
       completeSetup();
 
     } catch (err) {
@@ -412,23 +408,29 @@ function out(msg) {
   }
 
   function showApiEnableBox(projectNum) {
-    markStep(2, 'error');
-    setStepDesc(2, 'Classroom API needs enabling — follow the instructions below.');
+    markStep(3, 'error');
+    setStepDesc(3, 'Classroom API needs enabling — follow the instructions below.');
     if (projectNum) {
       document.getElementById('api-enable-link').href =
         'https://console.developers.google.com/apis/api/classroom.googleapis.com/overview?project=' + projectNum;
     }
     document.getElementById('api-enable-box').classList.add('visible');
-    document.getElementById('main-btn').disabled = true;
   }
 
   window.handleApiEnabled = async function () {
     document.getElementById('api-enable-box').classList.remove('visible');
-    markStep(2, 'active');
-    setStepDesc(2, 'Re-testing Classroom API access…');
-    document.getElementById('main-btn').disabled = true;
+    markStep(3, 'active');
+    setStepDesc(3, 'Re-testing Classroom API access…');
     const ok = await testClassroomApi(proxyUrl);
-    if (ok) completeSetup();
+    if (ok) completeActivation();
+  };
+
+  window.handleActivated = async function () {
+    document.getElementById('activated-confirm-btn').disabled = true;
+    setStepDesc(3, 'Testing Classroom API access…');
+    const ok = await testClassroomApi(proxyUrl);
+    if (ok) completeActivation();
+    // if not ok, showApiEnableBox is called inside testClassroomApi
   };
 
   function completeSetup() {
@@ -438,6 +440,11 @@ function out(msg) {
     showUrl(proxyUrl);
     setBtn('done');
     phase = 'done';
+  }
+
+  function completeActivation() {
+    markStep(3, 'done');
+    setStepDesc(3, 'Proxy activated and Classroom API confirmed — you\'re all set!');
   }
 
   // ── UI helpers ───────────────────────────────────────────────────────────────
@@ -480,7 +487,9 @@ function out(msg) {
 
   function activateProxy() {
     if (proxyUrl) window.open(proxyUrl, '_blank');
-    markStep(3, 'done');
+    document.getElementById('activate-btn').style.display = 'none';
+    document.getElementById('activated-confirm-btn').style.display = '';
+    setStepDesc(3, 'Click Allow in the new tab, then click the button below.');
   }
 
   function showError(msg) {
