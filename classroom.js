@@ -372,9 +372,8 @@
         // Send the student's own OAuth token rather than a self-reported userId.
         // The proxy calls the userinfo endpoint to verify identity server-side,
         // so a student cannot impersonate another user by supplying a different userId.
-        await fetch(proxyUrl, {
+        const res = await fetch(proxyUrl, {
           method: 'POST',
-          mode: 'no-cors',
           headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
           body: new URLSearchParams({
             courseId,
@@ -384,8 +383,16 @@
           }).toString()
         });
 
+        if (!res.ok) {
+          const text = await res.text().catch(() => res.status);
+          throw new Error(`Proxy returned ${res.status}: ${text}`);
+        }
+        const result = await res.text();
+        if (result !== 'ok') {
+          console.warn(`Classroom proxy responded: "${result}" for "${activityName}"`);
+        }
         showClassroomToast('Grade sent to Classroom! ✅');
-        console.log(`Classroom grade submitted via proxy: ${gradePercent}% for "${activityName}"`);
+        console.log(`Classroom grade submitted via proxy: ${gradePercent}% for "${activityName}" — proxy said: ${result}`);
       } catch (err) {
         console.error('Classroom sync failed:', err);
         showClassroomToast('⚠️ Grade sync failed — see console.');
