@@ -348,6 +348,33 @@ color:  purple
     color: #22c55e; font-style: italic; font-weight: 700;
   }
 
+  /* ── "READ THIS STEP" CALL-OUT — fires when a student presses Check in an
+       Investigate step without having made the code change it describes ── */
+  @keyframes ig-attention-glow {
+    0%, 100% { box-shadow: 0 6px 20px rgba(0,0,0,0.3), 0 0 0 0 rgba(43,217,107,0); }
+    50%      { box-shadow: 0 6px 20px rgba(0,0,0,0.3), 0 0 0 7px rgba(43,217,107,0.4); }
+  }
+  @keyframes ig-arrow-bob {
+    0%, 100% { transform: translateX(-3px); opacity: 0.5; }
+    50%      { transform: translateX(4px);  opacity: 1; }
+  }
+  .q-card.needs-attention {
+    border-left-color: var(--green) !important;
+    animation: ig-attention-glow 1s ease-in-out 4;
+  }
+  .ig-callout {
+    display: flex; align-items: center; gap: 0.6rem;
+    margin-bottom: 0.75rem; padding: 0.55rem 0.9rem;
+    background: rgba(43,217,107,0.14); border: 1.5px solid var(--green);
+    border-radius: 9px; color: #147a3d; font-weight: 700; font-size: 0.84rem;
+    animation: feedback-enter 0.35s ease;
+  }
+  .ig-callout-arrows {
+    font-size: 1.15rem; letter-spacing: 0.1em; color: var(--green); flex-shrink: 0;
+    animation: ig-arrow-bob 0.7s ease-in-out infinite;
+    text-shadow: 0 0 10px rgba(43,217,107,0.7);
+  }
+
   /* ── WORD BANK (click-to-place) — available for Predict questions ── */
   .wb-pool { display: flex; flex-wrap: wrap; gap: 0.4rem; padding: 0.55rem 0.75rem; background: rgba(168,92,255,0.12); border: 1.5px dashed var(--purple-light); border-radius: 10px; min-height: 40px; margin-bottom: 0.5rem; }
   .wb-answer { display: flex; flex-wrap: wrap; gap: 0.35rem; padding: 0.45rem 0.7rem; background: white; border: 1.5px solid #d6c9f2; border-radius: 10px; min-height: 42px; align-items: center; margin-bottom: 0.5rem; }
@@ -1714,6 +1741,28 @@ function tryCompleteRun() {
 
 // ── Investigate ───────────────────────────────────────
 
+// Draw the student's eye back to the step instruction when they press Check
+// without having made the code change. Adds bobbing green arrows + a glow and
+// scrolls the instruction (which sits directly above the editor) into view.
+function flashInstruction(n) {
+  const prompt = document.getElementById('qcard_i' + n + '_prompt');
+  if (!prompt) return;
+  if (!prompt.querySelector('.ig-callout')) {
+    const note = document.createElement('div');
+    note.className = 'ig-callout';
+    note.setAttribute('role', 'status');
+    note.innerHTML = '<span class="ig-callout-arrows" aria-hidden="true">➜➜➜</span>' +
+      '<span>Do this step first — make the change described here in the editor below, then press Check.</span>';
+    prompt.insertBefore(note, prompt.firstChild);
+  }
+  prompt.classList.remove('needs-attention');
+  void prompt.offsetWidth;            // restart the glow animation
+  prompt.classList.add('needs-attention');
+  prompt.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  clearTimeout(flashInstruction._t);
+  flashInstruction._t = setTimeout(() => prompt.classList.remove('needs-attention'), 4200);
+}
+
 function nextStep(stage, n) {
   if (stage !== 'I') return;
   const field = I_FIELDS[n - 1];
@@ -1726,7 +1775,7 @@ function nextStep(stage, n) {
     card.classList.add('error');
     card.classList.remove('is-right');
     fieldHint(card, 'Make the code change first: ' + codeMsg);
-    document.getElementById('i_editor')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    flashInstruction(n);
     return;
   }
 
