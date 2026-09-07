@@ -68,7 +68,7 @@ These files are intentionally shared across activities via relative paths (`../.
 | `activity-ui.js` | Shared `window.ActivityUI` helpers for completion celebrations, reduced-motion-safe animation, and `.ac-toast` feedback | Activities that use shared completion/toast behaviour |
 | `pseudocode-transpiler.js` | OCR pseudocode → Python transpiler (`transpile`, `mapErrorLine`) | `pseudocode-editor.js` (indirect) |
 | `pseudocode-editor.js` | Editor widget — highlighting, syntax hints, run/output panel (`setupEditors`, `runPseudocode`, …) | Pseudocode activities (import via `../../pseudocode-editor.js` or `../../../pseudocode-editor.js`) |
-| `python-error-hints.js` | Maps a raw Python/Pyodide error to a Year-8-friendly explanation (`explainPythonError(rawError)` → `{id, title, plain}`; `plain` marks its bold takeaway with `**…**`). Consumed by `code-editor.js`, not imported by activities directly | Enabled per editor via `setupEditors(selector, { errorHints: true })` |
+| `python-error-hints.js` | Maps a raw Python/Pyodide error to a short Year-8-friendly explanation (`explainPythonError(rawError)` → `{id, title, plain, fix}`; `plain`/`fix` are each one short clause, bold takeaway marked with `**…**`). Consumed by `code-editor.js`, not imported by activities directly | Enabled per editor via `setupEditors(selector, { errorHints: true })` |
 
 These files are allowed exceptions to the self-contained rule because:
 - Activities are always accessed through the hub or GitHub Pages, never as isolated downloads
@@ -78,21 +78,25 @@ These files are allowed exceptions to the self-contained rule because:
 
 ### Just-in-time error help (`errorHints`)
 
-`setupEditors(selector, { errorHints: true })` makes the shared editor offer a
-Year-8-friendly explanation plus the four-step **Debugging Recipe**. The help window
-**quotes the actual Python error back and translates it** — e.g. *“unterminated string
-literal” means you are **missing a speech mark*** — with the plain-English "means …"
-clauses coming from `python-error-hints.js` (the key takeaway is emboldened). Errors not
-in the library still get the quoted term + the generic recipe.
+`setupEditors(selector, { errorHints: true })` makes the shared editor offer a short,
+scannable help card — kept deliberately brief for Year 8 readers. It always shows three
+lines: the **error type and line number** (e.g. *NameError — line 3*), the **quoted
+Python error translated into one short sentence** (from `python-error-hints.js`'s
+`plain` field, key takeaway emboldened), and a **"Try:" line** with the single most
+likely fix (`fix` field). Errors not in the library still get the type/line header plus
+a generic one-line meaning and fix.
 
-Two reveal paths, both opening the same single window:
+Two reveal paths, both opening the same single window — both are click-to-open, never
+automatic:
 
-- **💡 Get help button** on the live syntax-hint strip — opens it on demand, instantly,
-  before any run (syntax errors only, since that's what static analysis can see).
-- **Failed run** — any failed run auto-reveals the help ~3s later (the delay lets the
-  student read the raw error first). This covers run-time errors (`NameError`,
-  `TypeError`) that have no syntax-hint, and reliably re-opens help if the window was
-  dismissed. Fixing the code (clean syntax or a successful run) closes the window.
+- **💡 Get help button** on the live syntax-hint strip — appears instantly, before any
+  run (syntax errors only, since that's what static analysis can see).
+- **💡 Get help button** next to the output panel — appears as soon as a run fails,
+  covering run-time errors (`NameError`, `TypeError`) that have no syntax-hint. The
+  student reads the raw error first and opens help only if they want it.
+
+Fixing the code (clean syntax or a successful run) hides whichever button is showing
+and closes the window if it was open.
 
 It is **opt-in** — editors set up without the flag behave exactly as before. A single
 textarea can also opt in with a `data-error-hints` attribute. The PRIMM Y8 template

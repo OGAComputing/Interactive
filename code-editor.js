@@ -155,6 +155,22 @@ function _injectStyles() {
       white-space: nowrap;
     }
     :where(.syntax-hint-help:hover) { background: #ffc44d; }
+    :where(.output-help-btn) {
+      display: inline-flex;
+      align-self: flex-start;
+      margin-top: 0.6rem;
+      cursor: pointer;
+      font-family: inherit;
+      font-size: 0.74rem;
+      font-weight: 700;
+      color: #1a1206;
+      background: #f9b020;
+      border: none;
+      border-radius: 6px;
+      padding: 0.3rem 0.7rem;
+    }
+    :where(.output-help-btn:hover) { background: #ffc44d; }
+    :where(.output-help-btn[hidden]) { display: none; }
     :where(.output-panel) {
       flex: 1;
       background: #070710;
@@ -304,12 +320,11 @@ function _injectStyles() {
     :where(.error-helper[hidden]) { display: none; }
     :where(.error-helper .eh-head) { display: flex; align-items: center; gap: 0.5rem; color: #ffd98a; font-weight: 700; margin-bottom: 0.5rem; }
     :where(.error-helper .eh-icon) { font-size: 1.1rem; flex-shrink: 0; }
-    :where(.error-helper .eh-plain) { margin-bottom: 0.65rem; }
+    :where(.error-helper .eh-plain) { margin: 0 0 0.5rem; }
     :where(.error-helper .eh-term) { font-family: 'Courier New', monospace; color: #ffcf6b; font-weight: 700; }
     :where(.error-helper .eh-plain strong) { color: #fff; }
-    :where(.error-helper .eh-recipe-label) { font-size: 0.64rem; text-transform: uppercase; letter-spacing: 0.09em; color: #ffcf6b; font-weight: 700; margin-bottom: 0.25rem; }
-    :where(.error-helper .eh-recipe) { margin: 0 0 0 1.1rem; line-height: 1.75; }
-    :where(.error-helper .eh-recipe strong) { color: #ffd98a; }
+    :where(.error-helper .eh-fix) { margin: 0; }
+    :where(.error-helper .eh-fix strong) { color: #ffd98a; }
     @keyframes _eh-in { from { opacity: 0; transform: translateY(-4px); } to { opacity: 1; transform: none; } }
     @media (prefers-reduced-motion: reduce) {
       :where(.error-helper) { animation: none; }
@@ -332,14 +347,7 @@ const _uiTimers = new Map(); // textarea → debounce for fast UI tasks
 // ── Just-in-time error helper state ─────────────────────────────────────────────
 const _errHintsOn   = new Set(); // textareas opted into friendly error help
 const _errHelperMap = new Map(); // textarea → .error-helper element
-const _errHelperTmr = new Map(); // textarea → pending reveal timeout
-const _ERR_HELPER_DELAY = 3000;  // ms — let the student read the raw error first
-const _ERR_RECIPE_STEPS = [
-  'Read the <strong>last line</strong> of the error — it names what went wrong.',
-  'Find the <strong>line number</strong> Python points to.',
-  'Read <strong>that line</strong> out loud.',
-  'Compare it with what you <strong>meant</strong> to write — spot the difference.',
-];
+const _errHelpBtnMap = new Map(); // textarea → "Get help" button shown after a failed run
 
 function _escapeHTML(s) {
   return String(s).replace(/[&<>"']/g, c =>
@@ -362,6 +370,16 @@ function _cleanErrorTerm(raw) {
     .trim();
 }
 
+// Pull the exception class name (NameError, SyntaxError, ...) off the raw
+// error's last line, so the help card can show it even when no fuller
+// explanation matched.
+function _errorType(raw) {
+  if (!raw) return '';
+  const line = String(raw).split('\n').map(l => l.trim()).filter(Boolean).pop() || '';
+  const m = line.match(/^([A-Za-z]+Error)\b/);
+  return m ? m[1] : '';
+}
+
 function _errHelperEnabled(ta) {
   return _errHintsOn.has(ta) || (ta.hasAttribute && ta.hasAttribute('data-error-hints'));
 }
@@ -380,42 +398,64 @@ function _getErrHelper(ta) {
   return el;
 }
 
-function _scheduleErrHelper(ta, rawError) {
-  clearTimeout(_errHelperTmr.get(ta));
-  _errHelperTmr.set(ta, setTimeout(() => _showErrHelper(ta, rawError), _ERR_HELPER_DELAY));
+function _getErrHelpBtn(ta) {
+  let btn = _errHelpBtnMap.get(ta);
+  if (btn) return btn;
+  const content = _outputMap.get(ta)?.querySelector('.output-content');
+  if (!content) return null;
+  btn = document.createElement('button');
+  btn.type = 'button';
+  btn.className = 'output-help-btn';
+  btn.textContent = '💡 Get help';
+  btn.hidden = true;
+  content.insertAdjacentElement('afterend', btn);
+  _errHelpBtnMap.set(ta, btn);
+  return btn;
 }
 
-function _showErrHelper(ta, rawError) {
+// Offer help for a failed run: show a "Get help" button next to the output
+// rather than popping the explanation open automatically — the student reads
+// the raw error first and opens help only if they want it.
+function _offerErrHelp(ta, rawError, lineNo = null, errType = null) {
+  const btn = _getErrHelpBtn(ta);
+  if (!btn) return;
+  btn.onclick = () => _showErrHelper(ta, rawError, lineNo, errType);
+  btn.hidden = false;
+}
+
+// Kept deliberately short (type + line, one meaning sentence, one fix
+// sentence) — this is read by Year 8 students straight after a failed run.
+function _showErrHelper(ta, rawError, lineNo = null, errType = null) {
   const el = _getErrHelper(ta);
   if (!el) return;
-  // Quote the actual error back to the student, then translate it.
   const term = _cleanErrorTerm(rawError);
+  const type = errType || _errorType(rawError) || 'Error';
+  const where = lineNo ? ' — line ' + lineNo : '';
   const hint = explainPythonError(rawError);
-  const lead = term ? '<span class="eh-term">“' + _escapeHTML(term) + '”</span> means ' : '';
   const meaning = hint
     ? _boldify(hint.plain)
-    : 'an error happened on that line — read it out loud and compare it carefully with what you meant to write.';
-  const hintHTML = '<p class="eh-plain">' + lead + meaning + '</p>';
+    : 'Python could not read that line.';
+  const fix = hint
+    ? _escapeHTML(hint.fix)
+    : 'Read it out loud and compare it with what you meant to write.';
+  const termHTML = term ? '<span class="eh-term">“' + _escapeHTML(term) + '”</span> — ' : '';
   el.innerHTML =
     '<div class="eh-head"><span class="eh-icon">🛠️</span>'
-    + '<span>Stuck on this error? An error is information, not failure.</span></div>'
-    + hintHTML
-    + '<div class="eh-recipe-label">Debugging Recipe</div>'
-    + '<ol class="eh-recipe">' + _ERR_RECIPE_STEPS.map(s => '<li>' + s + '</li>').join('') + '</ol>';
+    + '<strong>' + _escapeHTML(type) + where + '</strong></div>'
+    + '<p class="eh-plain">' + termHTML + meaning + '</p>'
+    + '<p class="eh-fix"><strong>Try:</strong> ' + fix + '</p>';
   el.hidden = false;
 }
 
 function _hideErrHelper(ta) {
-  clearTimeout(_errHelperTmr.get(ta));
-  _errHelperTmr.delete(ta);
   const el = _errHelperMap.get(ta);
   if (el) el.hidden = true;
+  const btn = _errHelpBtnMap.get(ta);
+  if (btn) btn.hidden = true;
 }
 
-// Close an already-open help window without cancelling a pending run-driven
-// reveal — used when live analysis sees the syntax is clean again (the student
-// may have just fixed a syntax error, but a run-time error popup for the same
-// valid code should still be allowed to appear).
+// Close an already-open help window — used when live analysis sees the syntax
+// is clean again (the student may have just fixed a syntax error).
 function _dismissOpenErrHelper(ta) {
   const el = _errHelperMap.get(ta);
   if (el && !el.hidden) el.hidden = true;
@@ -508,10 +548,12 @@ async function _runHeavyTasks(ta) {
     if (!hint) return;
     
     if (result.ok || ta.value.trim().length < 5) {
+      // Only dismiss an open help window on the visible→clean edge — code that
+      // was always syntactically valid (e.g. it only fails at run-time) must
+      // never close a help window opened via the run-time "Get help" button.
+      const wasVisible = hint.classList.contains('visible');
       hint.classList.remove('visible');
-      // Syntax is clean again — close an open help window, but don't cancel a
-      // pending run-time-error popup for this (now valid) code.
-      if (_errHelperEnabled(ta)) _dismissOpenErrHelper(ta);
+      if (wasVisible && _errHelperEnabled(ta)) _dismissOpenErrHelper(ta);
     } else {
       const label = '⚠ ' + result.msg + (result.line ? ` — line ${result.line}` : '');
       if (_errHelperEnabled(ta)) {
@@ -520,7 +562,7 @@ async function _runHeavyTasks(ta) {
           '<button type="button" class="syntax-hint-help">💡 Get help</button>';
         hint.querySelector('.syntax-hint-msg').textContent = label;
         const raw = result.msg;
-        hint.querySelector('.syntax-hint-help').onclick = () => _showErrHelper(ta, raw);
+        hint.querySelector('.syntax-hint-help').onclick = () => _showErrHelper(ta, raw, result.line, result.type);
       } else {
         hint.textContent = label;
       }
@@ -555,8 +597,9 @@ export function clearSyntaxHint(ta) {
  * @param {HTMLTextAreaElement} ta - The source textarea
  * @param {string} text - The text to display
  * @param {boolean} isError - Whether to style as an error
+ * @param {number|null} [lineNo] - Line number the error was reported at, if known
  */
-export function setEditorOutput(ta, text, isError = false) {
+export function setEditorOutput(ta, text, isError = false, lineNo = null) {
   const panel = _outputMap.get(ta);
   if (!panel) return;
   panel.classList.toggle('error', isError);
@@ -565,9 +608,9 @@ export function setEditorOutput(ta, text, isError = false) {
   const inputRow = panel.querySelector('.output-input-row');
   if (inputRow) inputRow.style.display = 'none';
   if (_errHelperEnabled(ta)) {
-    // A failed run always offers help (after the short read-the-error delay);
-    // the syntax-hint's "Get help" button is just a faster, pre-run path to it.
-    if (isError) _scheduleErrHelper(ta, text);
+    // A failed run offers a "Get help" button next to the output; the
+    // syntax-hint's own "Get help" button is a faster, pre-run path to it.
+    if (isError) _offerErrHelp(ta, text, lineNo);
     else _hideErrHelper(ta);
   }
 }
@@ -687,9 +730,9 @@ export async function runCode(ta, { inputs = null } = {}) {
     if (hasHistory) {
       panel.classList.add('error');
       content.textContent += '\n' + msg;
-      if (_errHelperEnabled(ta)) _scheduleErrHelper(ta, msg);
+      if (_errHelperEnabled(ta)) _offerErrHelp(ta, msg, r.line);
     } else {
-      setEditorOutput(ta, msg, true);
+      setEditorOutput(ta, msg, true, r.line);
     }
   }
   return r;

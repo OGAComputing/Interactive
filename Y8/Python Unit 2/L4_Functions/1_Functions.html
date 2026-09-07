@@ -796,7 +796,7 @@ async function runCodeInEditor(editorId, statusElId) {
 
   const result = await runPython(code);
 
-  setEditorOutput(editorEl, result.output, !result.ok);
+  setEditorOutput(editorEl, result.output, !result.ok, result.line);
   clearSyntaxHint(editorEl);
 
   if (statusEl) {

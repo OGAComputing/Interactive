@@ -347,6 +347,33 @@ color:  purple
     color: #22c55e; font-style: italic; font-weight: 700;
   }
 
+  /* ── "READ THIS STEP" CALL-OUT — fires when a student presses Check in an
+       Investigate step without having made the code change it describes ── */
+  @keyframes ig-attention-glow {
+    0%, 100% { box-shadow: 0 6px 20px rgba(0,0,0,0.3), 0 0 0 0 rgba(43,217,107,0); }
+    50%      { box-shadow: 0 6px 20px rgba(0,0,0,0.3), 0 0 0 7px rgba(43,217,107,0.4); }
+  }
+  @keyframes ig-arrow-bob {
+    0%, 100% { transform: translateX(-3px); opacity: 0.5; }
+    50%      { transform: translateX(4px);  opacity: 1; }
+  }
+  .q-card.needs-attention {
+    border-left-color: var(--green) !important;
+    animation: ig-attention-glow 1s ease-in-out 4;
+  }
+  .ig-callout {
+    display: flex; align-items: center; gap: 0.6rem;
+    margin-bottom: 0.75rem; padding: 0.55rem 0.9rem;
+    background: rgba(43,217,107,0.14); border: 1.5px solid var(--green);
+    border-radius: 9px; color: #147a3d; font-weight: 700; font-size: 0.84rem;
+    animation: feedback-enter 0.35s ease;
+  }
+  .ig-callout-arrows {
+    font-size: 1.15rem; letter-spacing: 0.1em; color: var(--green); flex-shrink: 0;
+    animation: ig-arrow-bob 0.7s ease-in-out infinite;
+    text-shadow: 0 0 10px rgba(43,217,107,0.7);
+  }
+
   /* ── WORD BANK (click-to-place) — available for Predict questions ── */
   .wb-pool { display: flex; flex-wrap: wrap; gap: 0.4rem; padding: 0.55rem 0.75rem; background: rgba(168,92,255,0.12); border: 1.5px dashed var(--purple-light); border-radius: 10px; min-height: 40px; margin-bottom: 0.5rem; }
   .wb-answer { display: flex; flex-wrap: wrap; gap: 0.35rem; padding: 0.45rem 0.7rem; background: white; border: 1.5px solid #d6c9f2; border-radius: 10px; min-height: 42px; align-items: center; margin-bottom: 0.5rem; }
@@ -655,24 +682,45 @@ greeting <span class="kw">=</span> <span class="st">"Hello "</span>
 
     <div class="q-card step-hidden" id="qcard_i3_prompt" style="border-left-color:var(--stage-i)">
       <label class="q-label"><span class="q-num" style="background:var(--stage-i)">3</span>
-        Now let's meet an <strong>error</strong> on purpose — every programmer does, all the time.
-        <ul style="margin:0.5rem 0 0 1.2rem;line-height:2">
-          <li><strong>Add a new last line:</strong> <code style="background:#ede0ff;padding:0 3px;border-radius:3px">print(nickname)</code> — a variable you have <em>never created</em>.</li>
-          <li>Run it. Python stops with a red <strong>NameError</strong>.</li>
-          <li>A warning appears <strong>below the editor</strong> — click its <strong>💡 Get help</strong> button for a plain-English hint and the Debugging Recipe. Then <strong>delete that line again</strong> and run once more to fix it.</li>
-        </ul>
-        <!-- INSTRUCTIONS ONLY — put the question ("What did the error say and why?") in the answer card below. -->
-      </label>
-    </div>
-
-    <div class="q-card step-hidden" id="qcard_i4_prompt" style="border-left-color:var(--stage-i)">
-      <label class="q-label"><span class="q-num" style="background:var(--stage-i)">4</span>
         Time to make it <strong>interactive</strong>:
         <ul style="margin:0.5rem 0 0 1.2rem;line-height:2">
           <li>Change line 1 from <code style="background:#ede0ff;padding:0 3px;border-radius:3px">name = "your name"</code> to <code style="background:#ede0ff;padding:0 3px;border-radius:3px">name = input("What is your name? ")</code>.</li>
           <li>Run your code. <strong>A prompt will appear in the output panel</strong> — type your name and press Enter to see the result.</li>
         </ul>
         <!-- INSTRUCTIONS ONLY — put the question ("Where does the value come from now?") in the answer card below. -->
+      </label>
+    </div>
+
+    <!--
+      STANDARD BUG PAIR — steps 4 (guided) and 5 (self-practice) are ALWAYS the last
+      two Investigate steps (see _templates/PRIMM_Python_Y8.html). IBUG_LINE here is
+      print(nickname) — a variable that was never created, giving a NameError. There
+      is no "fixed" version of the line to edit towards; the fix is simply deleting
+      it, so this activity's IBUG_LINE has no matching IBUG_FIXED_LINE.
+    -->
+    <div class="q-card step-hidden" id="qcard_i4_prompt" style="border-left-color:var(--stage-i)">
+      <label class="q-label"><span class="q-num" style="background:var(--stage-i)">4</span>
+        Now let's <strong>meet an error</strong> — every programmer does, all the time, and it is not a disaster.
+        <ul style="margin:0.5rem 0 0 1.2rem;line-height:2">
+          <li>We've added <strong>one broken line</strong> to your code for you — it's <strong>line <span id="ibug_line">the last line</span></strong>:
+            <code style="background:#ede0ff;padding:0 3px;border-radius:3px">print(nickname)</code> — a variable you have <em>never created</em>.</li>
+          <li>Press <strong>▶ Run code</strong>. Python stops with a red <strong>NameError</strong> — that's expected.</li>
+          <li>Read the message, then click <strong>💡 Get help</strong> below the editor for a plain-English hint and the Debugging Recipe.</li>
+          <li><strong>Fix it:</strong> delete that broken line completely, then Run again until it works.</li>
+        </ul>
+        <!-- INSTRUCTIONS ONLY — put the "what was Python complaining about?" MCQ in the answer card below. -->
+      </label>
+    </div>
+
+    <div class="q-card step-hidden" id="qcard_i5_prompt" style="border-left-color:var(--stage-i)">
+      <label class="q-label"><span class="q-num" style="background:var(--stage-i)">5</span>
+        Last one — practise spotting and fixing this error quickly, on your own.
+        <ul style="margin:0.5rem 0 0 1.2rem;line-height:2">
+          <li>Under the editor, press <strong>😈 Break it</strong> — it reintroduces the same broken line and runs the code, so you can watch the <strong>NameError</strong> appear.</li>
+          <li><strong>Fix it yourself:</strong> delete the broken line again, without being told.</li>
+          <li>Press <strong>▶ Run code</strong> above to check it worked, then press <strong>😈 Break it</strong> again and repeat — do this <strong>two or three times</strong>.</li>
+        </ul>
+        <!-- INSTRUCTIONS ONLY — put the reflection MCQ in the answer card below. -->
       </label>
     </div>
   </div>
@@ -686,7 +734,7 @@ greeting <span class="kw">=</span> <span class="st">"Hello "</span>
   <div class="code-checker" style="margin-top:0.5rem">
     <textarea class="checker-textarea" id="i_editor" data-title="Python Editor" oninput="saveState()"></textarea>
     <div class="checker-footer">
-      <!-- Step 4 introduces input(); the queued test name is ignored by the earlier steps that have no input(). -->
+      <!-- Step 3 introduces input(); the queued test name is ignored by the earlier steps that have no input(). -->
       <button class="btn btn-check" onclick="runCodeInEditor('i_editor', 'i_fb_run')">▶ Run code</button>
       <button class="btn btn-reset" onclick="resetInvestigateEditor()">↺ Reset to original</button>
       <div class="feedback loading hidden" id="i_fb_run"></div>
@@ -722,31 +770,47 @@ greeting <span class="kw">=</span> <span class="st">"Hello "</span>
 
     <div class="q-card step-hidden" id="qcard_i3" style="border-left-color:var(--stage-i)">
       <div style="font-size:0.84rem;color:var(--muted);margin-bottom:0.4rem">✍️ Your answer — step 3</div>
-      <label class="q-label">What did Python's error message say, and why did it happen? (You used a variable that was never created.)</label>
-      <textarea id="i3" placeholder="Write what the NameError said and why…" oninput="saveState()"></textarea>
+      <label class="q-label">How is this different from before? Where does the value in the <code style="background:#ede0ff;padding:0 3px;border-radius:3px">name</code> variable come from now?</label>
+      <textarea id="i3" placeholder="Explain where the value comes from now…" oninput="saveState()"></textarea>
       <button class="btn btn-next" id="btn_check_i3" style="margin-top:10px" onclick="nextStep('I', 3)" disabled>✓ Check answer</button>
       <button class="btn btn-skip" id="btn_skip_i3" style="margin-top:6px;display:none" onclick="skipStep('I')">Move on without completing →</button>
     </div>
 
+    <!-- Guided bug encounter — step 4 answer is a comprehension MCQ about the error message. -->
     <div class="q-card step-hidden" id="qcard_i4" style="border-left-color:var(--stage-i)">
-      <div style="font-size:0.84rem;color:var(--muted);margin-bottom:0.4rem">✍️ Your answer — step 4</div>
-      <label class="q-label">How is this different from before? Where does the value in the <code style="background:#ede0ff;padding:0 3px;border-radius:3px">name</code> variable come from now?</label>
-      <textarea id="i4" placeholder="Explain where the value comes from now…" oninput="saveState()"></textarea>
-      <!-- Last step → tryCompleteInvestigate(), not nextStep() -->
-      <button class="btn btn-next" id="btn_check_i4" style="margin-top:10px" onclick="tryCompleteInvestigate()" disabled>✓ Check answer</button>
+      <div style="font-size:0.84rem;color:var(--muted);margin-bottom:0.4rem">✍️ Your answer — step 4 (read the error)</div>
+      <label class="q-label">You ran the broken line and read the error. <strong>What was Python complaining about?</strong></label>
+      <div class="radio-opts" id="ropts_i4_mcq" style="margin-top:0.5rem">
+        <label class="radio-opt"><input type="radio" name="i4_mcq" value="option_a" onchange="saveState()"> <span>The word print was spelled wrong on that line</span></label>
+        <label class="radio-opt"><input type="radio" name="i4_mcq" value="option_b" onchange="saveState()"> <span>A variable called nickname was used but never created</span></label>
+        <label class="radio-opt"><input type="radio" name="i4_mcq" value="option_c" onchange="saveState()"> <span>There were too many round brackets on that line</span></label>
+        <label class="radio-opt"><input type="radio" name="i4_mcq" value="option_d" onchange="saveState()"> <span>Python ran out of memory part-way through the program</span></label>
+      </div>
+      <div class="mcq-fb" id="fb_i4"></div>
+      <button class="btn btn-next" id="btn_check_i4" style="margin-top:10px" onclick="nextStep('I', 4)" disabled>✓ Check answer</button>
       <button class="btn btn-skip" id="btn_skip_i4" style="margin-top:6px;display:none" onclick="skipStep('I')">Move on without completing →</button>
     </div>
 
-    <!--
-      To add a 5th step:
-        1. Add a prompt card id="qcard_i5_prompt" in #i_steps above, and an answer card
-           id="qcard_i5" (textarea id="i5") here in #i_answers
-        2. Change the previous last step's button back to nextStep('I', 4)
-        3. New step 5 button calls tryCompleteInvestigate()
-        4. Add 'i5' to TEXT_FIELDS in the JS
-        5. Add a 5th entry to I_FIELDS in the JS
-        6. Set STEP_COUNT_I = 5
-    -->
+    <!-- Self-practice "Break it" — always the LAST step. Reflection MCQ: errors are
+         transient and normal — the same one keeps appearing, and fixing it clears it. -->
+    <div class="q-card step-hidden" id="qcard_i5" style="border-left-color:var(--stage-i)">
+      <div style="font-size:0.84rem;color:var(--muted);margin-bottom:0.4rem">✍️ Your answer — step 5 (errors come and go)</div>
+      <div style="display:flex;gap:0.6rem;flex-wrap:wrap;margin-bottom:0.7rem;align-items:center">
+        <button class="btn btn-check" type="button" onclick="breakItDemo()">😈 Break it</button>
+        <span style="font-size:0.82rem;color:var(--muted);font-style:italic">then fix the line yourself and press ▶ Run code above</span>
+      </div>
+      <label class="q-label">Each time you deleted the broken line and ran the code again, what happened?</label>
+      <div class="radio-opts" id="ropts_i5_mcq" style="margin-top:0.5rem">
+        <label class="radio-opt"><input type="radio" name="i5_mcq" value="option_a" onchange="saveState()"> <span>Python quietly fixed the code and ran it anyway</span></label>
+        <label class="radio-opt"><input type="radio" name="i5_mcq" value="option_b" onchange="saveState()"> <span>The same NameError appeared, and deleting the line cleared it</span></label>
+        <label class="radio-opt"><input type="radio" name="i5_mcq" value="option_c" onchange="saveState()"> <span>The program ran but showed no output on the screen</span></label>
+        <label class="radio-opt"><input type="radio" name="i5_mcq" value="option_d" onchange="saveState()"> <span>A brand new, different error came up on each attempt</span></label>
+      </div>
+      <div class="mcq-fb" id="fb_i5"></div>
+      <!-- Last step → tryCompleteInvestigate(), not nextStep() -->
+      <button class="btn btn-next" id="btn_check_i5" style="margin-top:10px" onclick="tryCompleteInvestigate()" disabled>✓ Check answer</button>
+      <button class="btn btn-skip" id="btn_skip_i5" style="margin-top:6px;display:none" onclick="skipStep('I')">Move on without completing →</button>
+    </div>
   </div>
 
   <!-- ④ Back / Forward through completed Investigate steps (same pattern as Predict). -->
@@ -992,8 +1056,21 @@ print(greeting + name)`;
 //  Everything else (progress bars, button labels, loops) updates automatically.
 // ═══════════════════════════════════════════════════════
 
-const STEP_COUNT_I  = 4;   // must equal the number of qcard_i1…qcard_iN cards
+const STEP_COUNT_I  = 5;   // must equal the number of qcard_i1…qcard_iN cards
 const STEP_COUNT_M1 = 4;   // must equal the number of m1_step_1…m1_step_N divs
+
+
+// ═══════════════════════════════════════════════════════
+//  The standard "fix a bug" pair (ALWAYS the last two Investigate steps)
+//  See _templates/PRIMM_Python_Y8.html FILL IN ②b for the full explanation.
+//  IBUG_LINE here is print(nickname) — a variable that was never created,
+//  giving a NameError. There is no edited "fixed" version of the line (unlike
+//  the missing-quote / missing-str() bugs in other lessons) — the fix is simply
+//  deleting it, so this activity has no IBUG_FIXED_LINE.
+// ═══════════════════════════════════════════════════════
+
+const IBUG_LINE = 'print(nickname)';   // deliberately broken — never-created variable
+const BUG_STEP = STEP_COUNT_I - 1;     // guided encounter is always second-to-last; break-it is always last
 
 
 // ═══════════════════════════════════════════════════════
@@ -1005,10 +1082,10 @@ const STEP_COUNT_M1 = 4;   // must equal the number of m1_step_1…m1_step_N div
 const TEXT_FIELDS = [
   'p_text1',                              // Predict free-text question(s)
   'r_editor', 'r1',                       // Run stage
-  'i_editor', 'i1', 'i3', 'i4',          // Investigate text answers (i2 is an MCQ)
+  'i_editor', 'i1', 'i3',                // Investigate text answers (i2/i4/i5 are MCQs)
   'm1_editor', 'm2_editor',              // Modify + Make editors
 ];
-const RADIO_GROUPS = ['p_mcq1', 'p_mcq2', 'i2_mcq'];  // Predict + Investigate radio group name= values
+const RADIO_GROUPS = ['p_mcq1', 'p_mcq2', 'i2_mcq', 'i4_mcq', 'i5_mcq'];  // Predict + Investigate radio group name= values
 
 
 // ═══════════════════════════════════════════════════════
@@ -1068,16 +1145,37 @@ const I_FIELDS = [
   },
 
   { id:'i3', cardId:'qcard_i3', type:'text', needsNewLine: false, validate(v) {
-    if (v.length < 4)  return 'Describe what the error said and why it happened.';
-    if (isNonsense(v)) return "That doesn't look like a real answer.";
-    return null;
-  }},
-  { id:'i4', cardId:'qcard_i4', type:'text', needsNewLine: false, validate(v) {
     if (v.length < 4)  return 'Explain where the value comes from now.';
     if (isNonsense(v)) return "That doesn't look like a real answer.";
     return null;
   }},
-  // Add a 5th entry here if STEP_COUNT_I = 5, and add 'i5' to TEXT_FIELDS above.
+
+  // ── THE STANDARD BUG PAIR (do not remove — see IBUG_LINE/BUG_STEP above) ──
+  // Step 4 — guided: the student reads the error and identifies what Python
+  // was complaining about.
+  { id:'i4', cardId:'qcard_i4', type:'mcq', radioName:'i4_mcq', correctValue:'option_b', needsNewLine: false,
+    passMsg: 'Exactly — nickname was never created with an = sign, so Python has no idea what it refers to.',
+    failMsg: 'Read the error and the line it points to again — which name has Python never seen before?',
+    validate() {
+      const c = document.querySelector('input[name="i4_mcq"]:checked');
+      if (!c) return 'Select an answer before checking — even a guess is fine.';
+      if (c.value !== 'option_b') return 'Not quite — read the error message again. Which variable has never been created?';
+      return null;
+    },
+  },
+  // Step 5 — self-practice: after repeating the break/fix cycle 2–3 times with
+  // "😈 Break it", the student reflects on the pattern (errors are transient and normal).
+  { id:'i5', cardId:'qcard_i5', type:'mcq', radioName:'i5_mcq', correctValue:'option_b', needsNewLine: false,
+    passMsg: 'Right — the same NameError every time, and it went away the moment you deleted the line.',
+    failMsg: 'Look again — each time the broken line was present Python stopped with the same error, and deleting it cleared it instantly.',
+    validate() {
+      const c = document.querySelector('input[name="i5_mcq"]:checked');
+      if (!c) return 'Select an answer before checking — even a guess is fine.';
+      if (c.value !== 'option_b') return 'Not quite — think about what happened each time the broken line was present.';
+      return null;
+    },
+  },
+  // ── End standard bug pair ───────────────────────────────────────────────────
 ];
 
 
@@ -1096,10 +1194,12 @@ const I_CODE_CHECKS = [
   function(code) { if (/name\s*=\s*["']\s*sam\s*["']/i.test(code)) return 'change the value of the name variable from "Sam" to your own name.'; return null; },
   // Step 2: greeting should no longer be "Hello ".
   function(code) { if (/greeting\s*=\s*["']\s*hello\s*["']/i.test(code)) return 'change the greeting variable on line 2 to "Hi there, ".'; return null; },
-  // Step 3: the planted-bug line is transient (added then removed) — no gate.
-  function(code) { return null; },
-  // Step 4: line 1 must now use input().
+  // Step 3: line 1 must now use input().
   function(code) { if (!/name\s*=\s*input\s*\(/.test(code)) return 'change line 1 so name is set with input("What is your name? ").'; return null; },
+  // Standard bug pair — both gates just require the planted line to be gone
+  // (i.e. deleted, not merely edited — there is no "fixed" version to check for).
+  function(code) { if (code.includes(IBUG_LINE)) return 'delete the broken print(nickname) line so your code runs cleanly again.'; return null; },
+  function(code) { if (code.includes(IBUG_LINE)) return 'press ▶ Run code after deleting the line you just broke.'; return null; },
 ];
 
 
@@ -1208,6 +1308,7 @@ function updateStepVisibility() {
     const checkBtn = document.getElementById('btn_check_i' + i);
     if (checkBtn) checkBtn.disabled = !iStepRan[i];
   }
+  maybePlantBugLine();   // standard bug pair — idempotent, safe to call on every render
   for (let i = 1; i <= STEP_COUNT_M1; i++) {
     const step = document.getElementById('m1_step_' + i);
     step?.classList.toggle('step-hidden', i !== stepM1);
@@ -1423,8 +1524,55 @@ async function runCodeInEditor(editorId, statusElId, inputs = null) {
 function resetInvestigateEditor() {
   const ta = document.getElementById('i_editor');
   ta.value = STARTER_CODE;
+  state.iBugPlanted = false;
   refreshEditor(ta);
   saveState();
+  if (stepI === BUG_STEP) maybePlantBugLine();   // BUG_STEP always starts from a broken line
+}
+
+// ── Standard "fix a bug" pair ──────────────────────────────────────────────
+//
+// BUG_STEP plants ONE broken line automatically so the student meets a real error
+// without having to sabotage their own code. It is removed again once they have
+// fixed it and moved on (see nextStep / skipStep / tryCompleteInvestigate).
+// Idempotent — safe to call from updateStepVisibility on every render.
+function maybePlantBugLine() {
+  const lineSpan = document.getElementById('ibug_line');
+  if (state.iBugPlanted && state.iBugPlantedLineNo && lineSpan)
+    lineSpan.textContent = String(state.iBugPlantedLineNo);
+  if (stepI !== BUG_STEP || state.iBugPlanted || maxStepI > BUG_STEP) return;
+  const ta = document.getElementById('i_editor');
+  if (!ta) return;
+  const body = ta.value.replace(/\s+$/, '');
+  ta.value = body + '\n' + IBUG_LINE + '\n';
+  state.iBugPlanted = true;
+  state.iBugPlantedLineNo = body.split('\n').length + 1;
+  if (lineSpan) lineSpan.textContent = String(state.iBugPlantedLineNo);
+  refreshEditor(ta);
+  saveState();
+}
+
+// The final Investigate step — "😈 Break it" reintroduces the SAME bug on demand so
+// the student can practise spotting and fixing it (by deleting the line) unaided,
+// 2–3 times in a row. Safe to mash — it only re-adds the line if it isn't there.
+function breakItDemo() {
+  const ta = document.getElementById('i_editor');
+  if (!ta) return;
+  if (!ta.value.includes(IBUG_LINE)) {
+    const body = ta.value.replace(/\s+$/, '');
+    ta.value = body + '\n' + IBUG_LINE + '\n';
+  }
+  refreshEditor(ta);
+  runCodeInEditor('i_editor', 'i_fb_run', []);
+}
+
+// Remove the auto-planted broken line once the bug pair has done its job (student
+// advanced past it or skipped it), so Modify inherits clean code.
+function stripPlantedBugLine() {
+  const ta = document.getElementById('i_editor');
+  if (!ta) return;
+  ta.value = ta.value.split('\n').filter(l => l.trim() !== IBUG_LINE).join('\n');
+  refreshEditor(ta);
 }
 
 function insertNewLine(editorId) {
@@ -1658,6 +1806,28 @@ function tryCompleteRun() {
 
 // ── Investigate ───────────────────────────────────────
 
+// Draw the student's eye back to the step instruction when they press Check
+// without having made the code change. Adds bobbing green arrows + a glow and
+// scrolls the instruction (which sits directly above the editor) into view.
+function flashInstruction(n) {
+  const prompt = document.getElementById('qcard_i' + n + '_prompt');
+  if (!prompt) return;
+  if (!prompt.querySelector('.ig-callout')) {
+    const note = document.createElement('div');
+    note.className = 'ig-callout';
+    note.setAttribute('role', 'status');
+    note.innerHTML = '<span class="ig-callout-arrows" aria-hidden="true">➜➜➜</span>' +
+      '<span>Do this step first — make the change described here in the editor below, then press Check.</span>';
+    prompt.insertBefore(note, prompt.firstChild);
+  }
+  prompt.classList.remove('needs-attention');
+  void prompt.offsetWidth;            // restart the glow animation
+  prompt.classList.add('needs-attention');
+  prompt.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  clearTimeout(flashInstruction._t);
+  flashInstruction._t = setTimeout(() => prompt.classList.remove('needs-attention'), 4200);
+}
+
 function nextStep(stage, n) {
   if (stage !== 'I') return;
   const field = I_FIELDS[n - 1];
@@ -1670,7 +1840,7 @@ function nextStep(stage, n) {
     card.classList.add('error');
     card.classList.remove('is-right');
     fieldHint(card, 'Make the code change first: ' + codeMsg);
-    document.getElementById('i_editor')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    flashInstruction(n);
     return;
   }
 
@@ -1723,6 +1893,7 @@ function nextStep(stage, n) {
     card.classList.remove('is-right');
     stepI = n + 1;
     maxStepI = Math.max(maxStepI, stepI);
+    if (n === BUG_STEP) stripPlantedBugLine();   // guided bug has served its purpose
     const nextField = I_FIELDS[stepI - 1];
     updateStepVisibility();
     saveState();
@@ -1745,6 +1916,21 @@ function nextStep(stage, n) {
 
 function tryCompleteInvestigate() {
   if (window.Classroom?.verifyAuth() === false) return;
+
+  // Same code-change gate as nextStep() — the LAST Investigate step is checked
+  // here instead, so it needs its own I_CODE_CHECKS lookup + flashInstruction
+  // call to stay consistent with every earlier step.
+  const code     = document.getElementById('i_editor')?.value || '';
+  const codeMsg  = I_CODE_CHECKS[STEP_COUNT_I - 1]?.(code);
+  const lastCard = document.getElementById('qcard_i' + STEP_COUNT_I);
+  if (codeMsg) {
+    lastCard?.classList.add('error');
+    lastCard?.classList.remove('is-right');
+    fieldHint(lastCard, 'Make the code change first: ' + codeMsg);
+    flashInstruction(STEP_COUNT_I);
+    return;
+  }
+
   let allOk = true;
   let firstError = null;
 
@@ -1776,7 +1962,7 @@ function tryCompleteInvestigate() {
   });
 
   if (allOk) {
-    const lastCard = document.getElementById('qcard_i' + STEP_COUNT_I);
+    stripPlantedBugLine();   // break-it demo line must not carry into Modify
     const lastBtn  = lastCard?.querySelector('.btn-next');
     if (lastBtn) { lastBtn.disabled = true; lastBtn.textContent = '✅ Investigation complete! Moving on…'; }
     window.ActivityUI?.miniCelebration(lastCard);
@@ -1911,6 +2097,7 @@ function markStageSkipped(stage) {
 function skipStep(stage) {
   markStageSkipped(stage);
   if (stage === 'I') {
+    if (stepI === BUG_STEP || stepI === STEP_COUNT_I) stripPlantedBugLine();   // don't carry the broken line forward
     if (stepI < STEP_COUNT_I) { stepI++; maxStepI = Math.max(maxStepI, stepI); updateStepVisibility(); saveState(); }
     else { completeStage('I'); }
   } else if (stage === 'M1') {
@@ -1948,7 +2135,7 @@ Object.assign(window, {
   tryCompleteInvestigate, nextStep,
   checkMod, completeStage,
   checkMake, checkExt,
-  runCodeInEditor, resetInvestigateEditor, insertNewLine,
+  runCodeInEditor, resetInvestigateEditor, insertNewLine, breakItDemo,
   skipStep, goBack, goForward,
 });
 

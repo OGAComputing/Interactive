@@ -636,11 +636,13 @@ color:  purple
 
     <div class="q-card step-hidden" id="qcard_i4_prompt" style="border-left-color:var(--stage-i)">
       <label class="q-label"><span class="q-num" style="background:var(--stage-i)">4</span>
-        Now let's meet an <strong>error</strong> on purpose — every programmer does, all the time.
+        Now let's <strong>meet an error</strong> — every programmer does, all the time, and it is not a disaster.
         <ul style="margin:0.5rem 0 0 1.2rem;line-height:2">
-          <li><strong>Delete one of the double quotation marks</strong> <code style="background:#ede0ff;padding:0 3px;border-radius:3px">"</code> from any line — e.g. change <code style="background:#ede0ff;padding:0 3px;border-radius:3px">print("This is fun!")</code> to <code style="background:#ede0ff;padding:0 3px;border-radius:3px">print("This is fun!)</code>.</li>
-          <li>Run it. Python stops with a red <strong>SyntaxError</strong>.</li>
-          <li>A warning appears <strong>below the editor</strong> — click its <strong>💡 Get help</strong> button for a plain-English hint and the Debugging Recipe. Then <strong>put the missing quote back</strong> and run again to fix it.</li>
+          <li>We've added <strong>one broken line</strong> to your code for you — it's <strong>line <span id="i4_line">the last line</span></strong>:
+            <code style="background:#ede0ff;padding:0 3px;border-radius:3px">print("Debugging is normal!)</code>. It is missing its closing <code style="background:#ede0ff;padding:0 3px;border-radius:3px">"</code>.</li>
+          <li>Press <strong>▶ Run code</strong>. Python stops with a red <strong>SyntaxError</strong> — that's expected.</li>
+          <li>Read the message, then click <strong>💡 Get help</strong> below the editor for a plain-English hint and the Debugging Recipe.</li>
+          <li><strong>Fix it:</strong> add the missing <code style="background:#ede0ff;padding:0 3px;border-radius:3px">"</code> before the <code style="background:#ede0ff;padding:0 3px;border-radius:3px">)</code>, then Run again until it works.</li>
         </ul>
       </label>
     </div>
@@ -651,6 +653,17 @@ color:  purple
         <ul style="margin:0.5rem 0 0 1.2rem;line-height:2">
           <li>Insert <code style="background:#ede0ff;padding:0 3px;border-radius:3px">print()</code> with empty brackets <strong>between two of your existing lines</strong> — not at the end.</li>
           <li>Run your code.</li>
+        </ul>
+      </label>
+    </div>
+
+    <div class="q-card step-hidden" id="qcard_i6_prompt" style="border-left-color:var(--stage-i)">
+      <label class="q-label"><span class="q-num" style="background:var(--stage-i)">6</span>
+        Last one — practise spotting and fixing this error quickly, on your own.
+        <ul style="margin:0.5rem 0 0 1.2rem;line-height:2">
+          <li>Under the editor, press <strong>😈 Break it</strong> — it removes one quotation mark for you and runs the code, so you can watch the <strong>SyntaxError</strong> appear.</li>
+          <li><strong>Fix it yourself:</strong> look at the line Python points to and add the missing closing speech mark <code style="background:#ede0ff;padding:0 3px;border-radius:3px">"</code> at the end of the text.</li>
+          <li>Press <strong>▶ Run code</strong> above to check it worked, then press <strong>😈 Break it</strong> again and repeat — do this <strong>two or three times</strong>.</li>
         </ul>
       </label>
     </div>
@@ -711,8 +724,14 @@ color:  purple
 
     <div class="q-card step-hidden" id="qcard_i4" style="border-left-color:var(--stage-i)">
       <div style="font-size:0.84rem;color:var(--muted);margin-bottom:0.4rem">✍️ Your answer — step 4 (read the error)</div>
-      <label class="q-label">Write <strong>what the error said</strong> and <strong>which line number</strong> Python pointed to.</label>
-      <textarea id="i4" placeholder="e.g. It said SyntaxError and pointed to line 3…" oninput="saveState()"></textarea>
+      <label class="q-label">You ran the broken line and read the error. <strong>What was Python complaining about?</strong></label>
+      <div class="radio-opts" id="ropts_i4_mcq" style="margin-top:0.5rem">
+        <label class="radio-opt"><input type="radio" name="i4_mcq" value="option_a" onchange="saveState()"> <span>The word print was spelled wrong on that line</span></label>
+        <label class="radio-opt"><input type="radio" name="i4_mcq" value="option_b" onchange="saveState()"> <span>A piece of text was missing its closing speech mark</span></label>
+        <label class="radio-opt"><input type="radio" name="i4_mcq" value="option_c" onchange="saveState()"> <span>There were too many round brackets on that line</span></label>
+        <label class="radio-opt"><input type="radio" name="i4_mcq" value="option_d" onchange="saveState()"> <span>Python did not recognise one of the words used</span></label>
+      </div>
+      <div class="mcq-fb" id="fb_i4"></div>
       <button class="btn btn-next" id="btn_check_i4" style="margin-top:10px" onclick="nextStep('I', 4)" disabled>✓ Check answer</button>
       <button class="btn btn-skip" id="btn_skip_i4" style="margin-top:6px;display:none" onclick="skipStep('I')">Move on without completing →</button>
     </div>
@@ -721,8 +740,26 @@ color:  purple
       <div style="font-size:0.84rem;color:var(--muted);margin-bottom:0.4rem">✍️ Your answer — step 5</div>
       <label class="q-label">What appears between those two lines in the output?</label>
       <textarea id="i5" placeholder="Describe what you found…" oninput="saveState()"></textarea>
-      <button class="btn btn-next" id="btn_check_i5" style="margin-top:10px" onclick="tryCompleteInvestigate()" disabled>✓ Check answer</button>
+      <button class="btn btn-next" id="btn_check_i5" style="margin-top:10px" onclick="nextStep('I', 5)" disabled>✓ Check answer</button>
       <button class="btn btn-skip" id="btn_skip_i5" style="margin-top:6px;display:none" onclick="skipStep('I')">Move on without completing →</button>
+    </div>
+
+    <div class="q-card step-hidden" id="qcard_i6" style="border-left-color:var(--stage-i)">
+      <div style="font-size:0.84rem;color:var(--muted);margin-bottom:0.4rem">✍️ Your answer — step 6 (errors come and go)</div>
+      <div style="display:flex;gap:0.6rem;flex-wrap:wrap;margin-bottom:0.7rem;align-items:center">
+        <button class="btn btn-check" type="button" onclick="breakItDemo()">😈 Break it</button>
+        <span style="font-size:0.82rem;color:var(--muted);font-style:italic">then fix the line yourself and press ▶ Run code above</span>
+      </div>
+      <label class="q-label">Each time you fixed the missing quotation mark and ran the code again, what happened?</label>
+      <div class="radio-opts" id="ropts_i6_mcq" style="margin-top:0.5rem">
+        <label class="radio-opt"><input type="radio" name="i6_mcq" value="option_a" onchange="saveState()"> <span>Python quietly fixed the code and ran it anyway</span></label>
+        <label class="radio-opt"><input type="radio" name="i6_mcq" value="option_b" onchange="saveState()"> <span>The same SyntaxError appeared, and fixing it cleared it</span></label>
+        <label class="radio-opt"><input type="radio" name="i6_mcq" value="option_c" onchange="saveState()"> <span>The program ran but showed no output on the screen</span></label>
+        <label class="radio-opt"><input type="radio" name="i6_mcq" value="option_d" onchange="saveState()"> <span>A brand new, different error came up on each attempt</span></label>
+      </div>
+      <div class="mcq-fb" id="fb_i6"></div>
+      <button class="btn btn-next" id="btn_check_i6" style="margin-top:10px" onclick="tryCompleteInvestigate()" disabled>✓ Check answer</button>
+      <button class="btn btn-skip" id="btn_skip_i6" style="margin-top:6px;display:none" onclick="skipStep('I')">Move on without completing →</button>
     </div>
 
   </div>
@@ -1067,16 +1104,21 @@ print("This is fun!")`;
 
 const VP_STARTER_CODE = `name = "Alice"\nschool = "Grange Academy"\nprint(name)\nprint(school)`;
 
-const STEP_COUNT_I  = 5;
+// Investigate step 4 plants this broken line automatically (missing closing ")
+// so the student meets a real SyntaxError without sabotaging their own code.
+const I4_BUG_LINE   = 'print("Debugging is normal!)';
+const I4_FIXED_LINE  = 'print("Debugging is normal!")';
+
+const STEP_COUNT_I  = 6;
 const STEP_COUNT_M1 = 4;
 
 const TEXT_FIELDS = [
   'r_editor', 'r1',
-  'i_editor', 'i1', 'i4', 'i5',
+  'i_editor', 'i1', 'i5',
   'm1_editor', 'm2_editor',
   'vp_editor', 'vp_try_answer', 'vp_m_editor', 'vp_challenge_editor',
 ];
-const RADIO_GROUPS = ['p_mcq1', 'p_mcq2', 'i2_mcq', 'i3_tf', 'vp_mcq1', 'vp_mcq2'];
+const RADIO_GROUPS = ['p_mcq1', 'p_mcq2', 'i2_mcq', 'i3_tf', 'i4_mcq', 'i6_mcq', 'vp_mcq1', 'vp_mcq2'];
 
 const P_CORRECT = {
   p_mcq1: 'option_c',
@@ -1108,14 +1150,21 @@ const I_CODE_CHECKS = [
     return null;
   },
   function(code) {
-    // step 4 — planted bug: a missing double-quote. Must be re-balanced before moving on so Modify inherits working code.
+    // step 4 — a broken line is planted automatically (maybePlantI4Bug). It must be
+    // re-balanced before moving on so Modify inherits working code.
     if ((code.match(/"/g) || []).length % 2 !== 0)
-      return 'There is still an unmatched " — Python stops with a SyntaxError. Put the missing quotation mark back so the code runs, then check.';
+      return 'There is still a line with an unmatched " — add the missing closing quotation mark so the code runs, then check.';
     return null;
   },
   function(code) {
     if (!/\bprint\s*\(\s*\)/.test(code))
       return 'No empty print() found — add print() with nothing inside the brackets.';
+    return null;
+  },
+  function(code) {
+    // step 6 — the Break it demo. They must fix the line themselves before checking.
+    if ((code.match(/"/g) || []).length % 2 !== 0)
+      return 'Add the missing closing " to the line you broke, so the program runs cleanly again, then check.';
     return null;
   },
 ];
@@ -1146,13 +1195,16 @@ const I_FIELDS = [
       return null;
     },
   },
-  { id:'i4', cardId:'qcard_i4', type:'text', needsNewLine: false, validate(v) {
-    if (v.length < 4)  return 'Write what the error said — even a few words is fine.';
-    if (isNonsense(v)) return "That doesn't look like a real answer.";
-    if (!/error|syntax|line|quot|mark|missing|invalid|unterminated|literal|string|speechmark/i.test(v))
-      return 'Use the Debugging Recipe: name the error (it was a SyntaxError) and the line number Python pointed to.';
-    return null;
-  }},
+  { id:'i4', cardId:'qcard_i4', type:'mcq', radioName:'i4_mcq', correctValue:'option_b', needsNewLine: false,
+    passMsg: 'Exactly — Python reached the end of the line before the text was closed with a matching " mark.',
+    failMsg: 'Read the error and the line it points to again — the text is missing its closing speech mark.',
+    validate() {
+      const chosen = document.querySelector('input[name="i4_mcq"]:checked');
+      if (!chosen) return 'Select an answer before checking — even a guess is fine.';
+      if (chosen.value !== 'option_b') return 'Not quite — read the error message again. Which part of the line is missing?';
+      return null;
+    },
+  },
   { id:'i5', cardId:'qcard_i5', type:'text', needsNewLine: true, validate(v) {
     if (v.length < 4)  return 'Describe what appeared between the two lines — even a few words is fine.';
     // "nothing"/"none" is the correct answer here (the blank line), so an on-topic
@@ -1163,6 +1215,16 @@ const I_FIELDS = [
       return 'Hint: look between the two lines in the output. Is there a gap, a blank line, or nothing at all?';
     return null;
   }},
+  { id:'i6', cardId:'qcard_i6', type:'mcq', radioName:'i6_mcq', correctValue:'option_b', needsNewLine: false,
+    passMsg: 'Right — the same SyntaxError every time, and it went away the moment you put the quote back.',
+    failMsg: 'Look again — each time the quote was missing Python stopped with the same SyntaxError, and fixing it cleared it instantly.',
+    validate() {
+      const chosen = document.querySelector('input[name="i6_mcq"]:checked');
+      if (!chosen) return 'Select an answer before checking — even a guess is fine.';
+      if (chosen.value !== 'option_b') return 'Not quite — think about what happened each time the quotation mark was missing.';
+      return null;
+    },
+  },
 ];
 
 // ── STATE ─────────────────────────────────────────────
@@ -1271,6 +1333,7 @@ function updateStepVisibility() {
     const checkBtn = document.getElementById('btn_check_i' + i);
     if (checkBtn) checkBtn.disabled = !iStepRan[i];
   }
+  maybePlantI4Bug();
   // (The Debugging Recipe now appears automatically in the error helper below the
   // editor a few seconds after a failed run — no top-of-stage box to toggle.)
   for (let i = 1; i <= STEP_COUNT_M1; i++) {
@@ -1513,7 +1576,7 @@ async function runCodeInEditor(editorId, statusElId, inputs = []) {
     statusEl.textContent = '⏳ Running…';
   }
   const result = await runPython(code, { inputs });
-  setEditorOutput(editorEl, result.output, !result.ok);
+  setEditorOutput(editorEl, result.output, !result.ok, result.line);
   clearSyntaxHint(editorEl);
 
   if (editorId === 'r_editor' && !firstRunShown) {
@@ -1547,8 +1610,58 @@ async function runCodeInEditor(editorId, statusElId, inputs = []) {
 function resetInvestigateEditor() {
   const ta = document.getElementById('i_editor');
   ta.value = STARTER_CODE;
+  state.i4Planted = false;
   refreshEditor(ta);
   saveState();
+  if (stepI === 4) maybePlantI4Bug();   // step 4 always starts from a broken line
+}
+
+// Investigate step 4 plants ONE broken line automatically so the student meets a
+// real SyntaxError without having to sabotage their own code. It is removed again
+// once they have fixed it and moved on (see nextStep). Idempotent — safe to call
+// from updateStepVisibility on every render.
+function maybePlantI4Bug() {
+  const lineSpan = document.getElementById('i4_line');
+  if (state.i4Planted && state.i4PlantedLineNo && lineSpan)
+    lineSpan.textContent = String(state.i4PlantedLineNo);
+  if (stepI !== 4 || state.i4Planted || maxStepI > 4) return;
+  const ta = document.getElementById('i_editor');
+  if (!ta) return;
+  const body = ta.value.replace(/\s+$/, '');
+  ta.value = body + '\n' + I4_BUG_LINE + '\n';
+  state.i4Planted = true;
+  state.i4PlantedLineNo = body.split('\n').length + 1;
+  if (lineSpan) lineSpan.textContent = String(state.i4PlantedLineNo);
+  refreshEditor(ta);
+  saveState();
+}
+
+// Investigate step 6 — "Break it" removes one quotation mark for the student and
+// runs, so they meet the SyntaxError instantly; the student then fixes it
+// themselves in the editor (no auto-restore button) and presses Run to confirm.
+// Pressing Break it again while the code is still broken just re-runs it — it
+// never removes a second quote — so it's safe to mash.
+function breakItDemo() {
+  const ta = document.getElementById('i_editor');
+  if (!ta) return;
+  const balanced = (ta.value.match(/"/g) || []).length % 2 === 0;
+  if (balanced) {
+    if (!/"([^"\n]*)"/.test(ta.value)) return;              // nothing left to break
+    ta.value = ta.value.replace(/"([^"\n]*)"/, '"$1');       // drop one closing quote
+    refreshEditor(ta);
+  }
+  runCodeInEditor('i_editor', 'i_fb_run', []);
+}
+
+// Remove the step-4 auto-planted line once it has done its job (student advanced
+// or skipped past step 4), whether they fixed it or left it broken.
+function stripPlantedI4Line() {
+  const ta = document.getElementById('i_editor');
+  if (!ta) return;
+  ta.value = ta.value.split('\n')
+    .filter(l => l.trim() !== I4_FIXED_LINE && l.trim() !== I4_BUG_LINE)
+    .join('\n');
+  refreshEditor(ta);
 }
 
 function insertNewLine(editorId) {
@@ -1897,6 +2010,7 @@ function nextStep(stage, n) {
     card.classList.remove('is-right');
     stepI = n + 1;
     maxStepI = Math.max(maxStepI, stepI);
+    if (n === 4) stripPlantedI4Line();   // planted line has served its purpose
     const nextField = I_FIELDS[stepI - 1];
     updateStepVisibility();
     saveState();
@@ -1938,12 +2052,20 @@ function tryCompleteInvestigate() {
     let msg;
     if (f.type === 'mcq') {
       msg = f.validate();
-      if (msg) {
-        const chosen = document.querySelector(`input[name="${f.radioName}"]:checked`);
-        if (chosen && chosen.value !== f.correctValue) {
-          const fb = document.getElementById('fb_' + f.id);
-          if (fb) { fb.className = 'mcq-fb fail'; fb.textContent = '✘ ' + f.failMsg; }
-        }
+      // highlight each option (green = correct, red = the wrong pick) and show feedback
+      const chosen = document.querySelector(`input[name="${f.radioName}"]:checked`);
+      document.querySelectorAll(`input[name="${f.radioName}"]`).forEach(r => {
+        const opt = r.closest('.radio-opt');
+        if (!opt) return;
+        opt.classList.remove('correct', 'wrong');
+        if (r.value === f.correctValue) opt.classList.add('correct');
+        else if (chosen && r.value === chosen.value) opt.classList.add('wrong');
+      });
+      const fb = document.getElementById('fb_' + f.id);
+      if (fb && chosen) {
+        const ok = chosen.value === f.correctValue;
+        fb.className = 'mcq-fb ' + (ok ? 'pass' : 'fail');
+        fb.textContent = (ok ? '✔ ' : '✘ ') + (ok ? f.passMsg : f.failMsg);
       }
     } else {
       msg = f.validate((document.getElementById(f.id)?.value || '').trim());
@@ -2271,6 +2393,7 @@ function markStageSkipped(stage) {
 function skipStep(stage) {
   markStageSkipped(stage);
   if (stage === 'I') {
+    if (stepI === 4) stripPlantedI4Line();   // don't carry the broken line forward
     if (stepI < STEP_COUNT_I) { stepI++; maxStepI = Math.max(maxStepI, stepI); updateStepVisibility(); saveState(); }
     else { completeStage('I'); }
   } else if (stage === 'M1') {
@@ -2308,7 +2431,7 @@ Object.assign(window, {
   tryCompleteInvestigate, nextStep,
   checkMod, completeStage,
   checkMake, checkExt,
-  runCodeInEditor, resetInvestigateEditor, insertNewLine,
+  runCodeInEditor, resetInvestigateEditor, insertNewLine, breakItDemo,
   skipStep, goBack, goForward,
   checkVpMcq1, checkVpMcq2, nextVpStep, checkVpTry, checkVpMod, checkVpChallenge,
 });

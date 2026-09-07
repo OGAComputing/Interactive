@@ -113,15 +113,27 @@ export async function runPython(code, { inputs = [] } = {}) {
       `    return _v\n` +
       `_b.input = _mock_input\n`
     : '';
+  // Line numbers in the traceback are relative to preamble + code — shift them
+  // back by the (invisible-to-the-student) preamble length before reporting.
+  const preambleLines = preamble ? preamble.split('\n').length - 1 : 0;
 
   try {
     await _pyodide.runPythonAsync(preamble + code);
     return { ok: true, output: out.length ? out.join('\n') + '\n' : '' };
   } catch (err) {
     // Return only the final error line — strip the Python traceback header
-    const lines = String(err).split('\n').filter(l => l.trim());
-    const msg = lines[lines.length - 1] || String(err);
-    return { ok: false, output: msg };
+    const raw = String(err);
+    const lines = raw.split('\n').filter(l => l.trim());
+    const msg = lines[lines.length - 1] || raw;
+    // Pull the deepest "line N" the traceback reports — the frame closest to
+    // the actual failure — so the help card can point the student at it.
+    const lineMatches = [...raw.matchAll(/, line (\d+)/g)];
+    let line = null;
+    if (lineMatches.length) {
+      const n = parseInt(lineMatches[lineMatches.length - 1][1], 10) - preambleLines;
+      if (n >= 1) line = n;
+    }
+    return { ok: false, output: msg, line };
   }
 }
 
@@ -133,14 +145,14 @@ export async function analyzeCode(code) {
     py.runPython(`
 import tokenize, io, html, keyword, json, ast
 def _py_analyze(code):
-    result = {"ok": True, "line": None, "msg": "", "html": ""}
+    result = {"ok": True, "line": None, "msg": "", "html": "", "type": ""}
     # 1. Syntax Check
     try:
         ast.parse(code)
     except SyntaxError as e:
-        result.update({"ok": False, "line": e.lineno, "msg": str(e.msg)})
+        result.update({"ok": False, "line": e.lineno, "msg": str(e.msg), "type": type(e).__name__})
     except Exception as e:
-        result.update({"ok": False, "line": None, "msg": str(e)})
+        result.update({"ok": False, "line": None, "msg": str(e), "type": type(e).__name__})
 
     # 2. Highlighting
     tokens_html = []
