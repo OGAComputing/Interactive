@@ -480,6 +480,18 @@
     "color": "purple"
   },
   {
+    "path": "Y8/Python Unit 1/L3_Data_Types_Casting/1_Casting_PRIMM.html",
+    "title": "Data Types & Casting \u2014 PRIMM Practice",
+    "year": "Year 8",
+    "topic": "Python Unit 1",
+    "lesson_num": 3,
+    "lesson": "Data Types Casting",
+    "type": "PRIMM",
+    "stars": 3,
+    "desc": "Predict, Run, Investigate, Modify and Make with data types, int()/float() casting and arithmetic",
+    "color": "purple"
+  },
+  {
     "path": "Y8/Python Unit 2/L1_Dealing_With_Errors/1_Spot_the_Error.html",
     "title": "Spot the Error",
     "year": "Year 8",
