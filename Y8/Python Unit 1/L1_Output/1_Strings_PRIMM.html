@@ -921,7 +921,57 @@ color:  purple
     </div>
   </div>
 
-  <!-- ════ VARIABLES PREVIEW (bonus extension, revealed after \n task) ════ -->
+  <!-- ════ TRIPLE QUOTES (bonus extension, revealed after Make 2) ════ -->
+  <div id="tq_block" class="step-hidden" style="margin-top:2.5rem">
+
+    <div style="display:flex;align-items:center;gap:0.8rem;margin-bottom:1rem;padding-bottom:0.8rem;border-bottom:2px solid #2d1060">
+      <div style="width:48px;height:48px;border-radius:50%;background:linear-gradient(135deg,var(--stage-i),var(--teal));display:flex;align-items:center;justify-content:center;font-size:1.4rem;font-weight:900;color:white;flex-shrink:0">❝</div>
+      <div>
+        <h2 style="color:var(--white);font-size:1.2rem">Triple-Quote Preview</h2>
+        <p style="color:#b4a0e0;font-size:0.83rem;margin-top:0.15rem">A shortcut for printing several lines with just one print()</p>
+      </div>
+    </div>
+
+    <div class="info-box">
+      <span class="icon">📜</span>
+      <span>So far every new line of output has needed its own <code style="background:#2d1060;padding:0 3px;border-radius:3px">print()</code> call. Python has a shortcut: wrap text in <strong>triple quotes</strong> — <code style="background:#2d1060;padding:0 3px;border-radius:3px">"""</code> — and press Enter inside them. Every line you type becomes a new line of output, all from <strong>one</strong> print().</span>
+    </div>
+
+    <pre style="background:var(--code-bg);border:1px solid rgba(124,99,210,0.4);border-radius:12px;padding:1rem 1.3rem;font-family:var(--font-mono);font-size:0.88rem;line-height:1.7;color:var(--code-text);margin-bottom:1.2rem;white-space:pre-wrap"><span class="fn">print</span>(<span class="st">"""Hello
+World
+Goodbye"""</span>)</pre>
+
+    <div class="q-card" id="qcard_tq_mcq">
+      <label class="q-label"><span class="q-num" style="background:var(--stage-i)">1</span> How many lines of output will this <strong>one</strong> print() call produce?</label>
+      <div class="radio-opts">
+        <label class="radio-opt"><input type="radio" name="tq_mcq" value="a" onchange="saveState()"> <span>1 — it's only a single print() call</span></label>
+        <label class="radio-opt"><input type="radio" name="tq_mcq" value="b" onchange="saveState()"> <span>3 — one line for each line inside the triple quotes</span></label>
+        <label class="radio-opt"><input type="radio" name="tq_mcq" value="c" onchange="saveState()"> <span>It will show an error — print() can't span several lines</span></label>
+        <label class="radio-opt"><input type="radio" name="tq_mcq" value="d" onchange="saveState()"> <span>9 — one line for each word in the text</span></label>
+      </div>
+      <div class="mcq-fb" id="fb_tq_mcq"></div>
+      <div style="margin-top:0.8rem">
+        <button class="btn btn-check" id="btn_check_tq_mcq" onclick="checkTqMcq()">✓ Check prediction</button>
+      </div>
+    </div>
+
+    <div id="tq_try_block" class="step-hidden" style="margin-top:1rem">
+      <div class="hint-box">💡 Run the example below to confirm your prediction. Then edit it into your <strong>own</strong> multi-line message (a short poem, an address, a mini fact file — anything with at least 3 lines) — keep it inside one print() using triple quotes.</div>
+
+      <div class="code-checker">
+        <textarea class="checker-textarea" id="tq_editor" data-title="Triple Quotes"></textarea>
+        <div class="checker-footer">
+          <button class="btn btn-check" onclick="runCodeInEditor('tq_editor', 'tq_fb_run', [])">▶ Run code</button>
+          <button class="btn btn-check" id="btn_check_tq" style="background:var(--stage-i)" onclick="checkTripleQuote()">⚡ Check my multi-line message</button>
+          <div class="feedback hidden" id="fb_tq"></div>
+          <div class="feedback loading hidden" id="tq_fb_run"></div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- ════ VARIABLES PREVIEW (bonus extension, revealed after the triple-quote task) ════ -->
   <div id="vars_preview_block" class="step-hidden" style="margin-top:2.5rem">
 
     <div style="display:flex;align-items:center;gap:0.8rem;margin-bottom:1rem;padding-bottom:0.8rem;border-bottom:2px solid #2d1060">
@@ -1092,7 +1142,7 @@ color:  purple
 <script src="../../../classroom.js"></script>
 
 <script type="module">
-import { normalise, has, MOD_CHECKS, MOD_INPUTS, validateMake, validateExt, validateVpMod1, validateVpMod2, validateVpChallenge } from './checkers_strings.js';
+import { normalise, has, MOD_CHECKS, MOD_INPUTS, validateMake, validateExt, validateMake2, validateTripleQuote, validateVpMod1, validateVpMod2, validateVpChallenge } from './checkers_strings.js';
 import { runPython, preload } from '../../../pyodide-runner.js';
 import { setupEditors, clearSyntaxHint, setEditorOutput, refreshEditor } from '../../../code-editor.js';
 
@@ -1103,6 +1153,7 @@ print("I am learning Python.")
 print("This is fun!")`;
 
 const VP_STARTER_CODE = `name = "Alice"\nschool = "Grange Academy"\nprint(name)\nprint(school)`;
+const TQ_STARTER_CODE = `print("""Hello\nWorld\nGoodbye""")`;
 
 // Investigate step 4 plants this broken line automatically (missing closing ")
 // so the student meets a real SyntaxError without sabotaging their own code.
@@ -1116,9 +1167,10 @@ const TEXT_FIELDS = [
   'r_editor', 'r1',
   'i_editor', 'i1', 'i5',
   'm1_editor', 'm2_editor',
+  'tq_editor',
   'vp_editor', 'vp_try_answer', 'vp_m_editor', 'vp_challenge_editor',
 ];
-const RADIO_GROUPS = ['p_mcq1', 'p_mcq2', 'i2_mcq', 'i3_tf', 'i4_mcq', 'i6_mcq', 'vp_mcq1', 'vp_mcq2'];
+const RADIO_GROUPS = ['p_mcq1', 'p_mcq2', 'i2_mcq', 'i3_tf', 'i4_mcq', 'i6_mcq', 'tq_mcq', 'vp_mcq1', 'vp_mcq2'];
 
 const P_CORRECT = {
   p_mcq1: 'option_c',
@@ -1127,10 +1179,12 @@ const P_CORRECT = {
 const P_PASS_MSG = {
   p_mcq1: 'Correct — each print() call produces exactly one line of output, so three calls give three lines.',
   p_mcq2: 'Correct — Python never prints the speech marks themselves, only the text inside them.',
+  tq_mcq: 'Correct — one print() call, but the triple-quoted text spans 3 lines, so the output has 3 lines.',
 };
 const P_FAIL_MSG = {
   p_mcq1: 'Not quite — count the number of print() calls. Each one produces exactly one line of output.',
   p_mcq2: 'Not quite — think about what the speech marks are for. They tell Python where the text begins and ends; Python shows only the text inside them, not the marks themselves.',
+  tq_mcq: 'Not quite — count the lines INSIDE the triple quotes, not the number of print() calls.',
 };
 
 const I_CODE_CHECKS = [
@@ -1313,8 +1367,9 @@ function updateGranularProgress() {
   const m2Fill = document.getElementById('progress-fill-M2');
   if (m2Fill) {
     let pct = 0;
-    if (passedChecks['m2_make']) pct += 50;
-    if (passedChecks['m2_ext'])  pct += 50;
+    if (passedChecks['m2_make']) pct += 34;
+    if (passedChecks['m2_ext'])  pct += 33;
+    if (passedChecks['m2b'])     pct += 33;
     m2Fill.style.width = pct + '%';
   }
 }
@@ -1351,13 +1406,15 @@ function updateStepVisibility() {
 
   document.getElementById('btn_goto_m2')?.classList.toggle('step-hidden', !passedChecks['m1_code' + STEP_COUNT_M1]);
 
-  if (passedChecks['m2_make']) showExtensionTask();
-  if (passedChecks['m2_ext']) showCompletion();
+  if (passedChecks['m2b']) showCompletion();
+  else if (passedChecks['m2_ext']) showMake2Task();
+  else if (passedChecks['m2_make']) showExtensionTask();
 
   const m2Btn = document.getElementById('btn_check_m2');
   if (m2Btn) {
-    m2Btn.textContent = passedChecks['m2_make'] ? '⚡ Check extension' : '⚡ Check program';
-    m2Btn.onclick = passedChecks['m2_make'] ? checkExt : checkMake;
+    if (passedChecks['m2_ext'])       { m2Btn.textContent = '⚡ Check second program'; m2Btn.onclick = checkMake2; }
+    else if (passedChecks['m2_make']) { m2Btn.textContent = '⚡ Check extension';       m2Btn.onclick = checkExt; }
+    else                               { m2Btn.textContent = '⚡ Check program';         m2Btn.onclick = checkMake; }
   }
   renderStepNav('I');
   renderStepNav('M1');
@@ -2195,12 +2252,99 @@ async function checkExt() {
   setEditorOutput(document.getElementById('m2_editor'), run.output, false);
   passedChecks['m2_ext'] = true;
   window.ActivityUI?.miniCelebration(fbEl);
-  window.ActivityUI?.showToast('🌟 Extension complete! Outstanding!');
+  window.ActivityUI?.showToast('🌟 Extension complete! One more program to go…');
+  updateStepVisibility();
+  saveState(); submitScore();
+}
+
+function showMake2Task() {
+  const taskText = document.getElementById('m2_task_text');
+  const reqLabel = document.getElementById('m2_req_label');
+  const reqList  = document.getElementById('m2_req_list');
+  if (!taskText) return;
+  taskText.innerHTML = `
+    <strong>★★★★ Make 2 — a brand new program, from scratch.</strong><br>
+    Clear the editor and write a completely new program: a short <strong>"Top 3" list</strong> (your top 3 films, games, or songs — you choose).
+    <ul style="margin:0.5rem 0 0 1.2rem;line-height:2">
+      <li>Print a <strong>title line</strong> first (e.g. <code style="background:#ede0ff;color:#4c1d95;padding:0 3px;border-radius:3px">print("My Top 3 Films")</code>).</li>
+      <li>Add an <strong>empty print()</strong> to leave a blank line under your title.</li>
+      <li>Print your <strong>3 items</strong>, one per line.</li>
+    </ul>
+    Run it, then click Check.`;
+  taskText.closest('.info-box').querySelector('.icon').textContent = '🔨';
+  if (reqLabel) reqLabel.style.display = 'none';
+  if (reqList)  reqList.style.display  = 'none';
+}
+
+async function checkMake2() {
+  if (window.Classroom?.verifyAuth() === false) return;
+  const raw  = document.getElementById('m2_editor')?.value || '';
+  const fbEl = document.getElementById('fb_m2');
+  fbEl.classList.remove('hidden');
+  const structural = validateMake2(raw);
+  if (!structural.pass) {
+    fbEl.className = 'feedback fail'; fbEl.textContent = structural.msg; return;
+  }
+  fbEl.className = 'feedback loading'; fbEl.textContent = '⏳ Checking…';
+  const run = await runPython(raw, { inputs: [] });
+  if (!run.ok) {
+    fbEl.className = 'feedback fail';
+    fbEl.textContent = '❌ Your program has an error: ' + run.output; return;
+  }
+  fbEl.className = 'feedback pass'; fbEl.textContent = structural.msg;
+  setEditorOutput(document.getElementById('m2_editor'), run.output, false);
+  passedChecks['m2b'] = true;
+  window.ActivityUI?.miniCelebration(fbEl);
+  window.ActivityUI?.showToast('🌟 Second program complete! Outstanding!');
   if (!completedStages.includes('M2')) { completedStages.push('M2'); updateNav(); saveState(); }
   updateStepVisibility();
   showCompletion(true);
-  setTimeout(() => showVarsPreview(true), 1200);
+  setTimeout(() => showTripleQuote(true), 1200);
   saveState(); submitScore();
+}
+
+function showTripleQuote(scroll = false) {
+  const el = document.getElementById('tq_block');
+  if (!el) return;
+  el.classList.remove('step-hidden');
+  const ta = document.getElementById('tq_editor');
+  if (ta && !ta.value) { ta.value = TQ_STARTER_CODE; refreshEditor(ta); }
+  if (scroll) setTimeout(() => el.scrollIntoView({ behavior: 'smooth', block: 'start' }), 100);
+}
+
+function checkTqMcq() {
+  if (window.Classroom?.verifyAuth() === false) return;
+  const attempted = applyMCQFeedback('tq_mcq', 'b');
+  const card = document.getElementById('qcard_tq_mcq');
+  if (!attempted) { card?.classList.add('error'); fieldHint(card, 'Select an option — even a guess is fine.'); return; }
+  card?.classList.remove('error'); fieldHint(card, '');
+  if (document.querySelector('input[name="tq_mcq"]:checked')?.value === 'b') window.ActivityUI?.miniCelebration(card);
+  document.getElementById('btn_check_tq_mcq')?.classList.add('step-hidden');
+  document.getElementById('tq_try_block')?.classList.remove('step-hidden');
+  document.getElementById('tq_try_block')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  passedChecks['tq_predict'] = true;
+  saveState();
+}
+
+async function checkTripleQuote() {
+  if (window.Classroom?.verifyAuth() === false) return;
+  const raw  = document.getElementById('tq_editor')?.value || '';
+  const fbEl = document.getElementById('fb_tq');
+  if (!fbEl) return;
+  fbEl.classList.remove('hidden');
+  const structural = validateTripleQuote(raw);
+  if (!structural.pass) { fbEl.className = 'feedback fail'; fbEl.textContent = structural.msg; return; }
+  fbEl.className = 'feedback loading'; fbEl.textContent = '⏳ Checking…';
+  const run = await runPython(raw, { inputs: [] });
+  if (!run.ok) { fbEl.className = 'feedback fail'; fbEl.textContent = '❌ Error: ' + run.output; return; }
+  setEditorOutput(document.getElementById('tq_editor'), run.output, false);
+  clearSyntaxHint(document.getElementById('tq_editor'));
+  fbEl.className = 'feedback pass'; fbEl.textContent = structural.msg;
+  passedChecks['tq'] = true;
+  window.ActivityUI?.miniCelebration(fbEl);
+  window.ActivityUI?.showToast('📜 Triple quotes mastered!');
+  saveState(); submitScore();
+  setTimeout(() => showVarsPreview(true), 1200);
 }
 
 function showVarsPreview(scroll = false) {
@@ -2431,6 +2575,7 @@ Object.assign(window, {
   tryCompleteInvestigate, nextStep,
   checkMod, completeStage,
   checkMake, checkExt,
+  checkTqMcq, checkTripleQuote,
   runCodeInEditor, resetInvestigateEditor, insertNewLine, breakItDemo,
   skipStep, goBack, goForward,
   checkVpMcq1, checkVpMcq2, nextVpStep, checkVpTry, checkVpMod, checkVpChallenge,
@@ -2457,7 +2602,8 @@ window.addEventListener('DOMContentLoaded', () => {
     const fb = document.getElementById('fb_m2');
     if (fb) { fb.classList.remove('hidden'); fb.className = 'feedback pass'; fb.textContent = '✅ Main program complete.'; }
   }
-  if (passedChecks['m2_ext']) showCompletion();
+  if (passedChecks['m2b']) showCompletion();
+  else if (passedChecks['m2_ext']) showMake2Task();
   else if (passedChecks['m2_make']) showExtensionTask();
 
   skippedStages.forEach(s => {
@@ -2474,8 +2620,22 @@ window.addEventListener('DOMContentLoaded', () => {
 
   updateStepVisibility();
 
+  // Restore Triple-Quote extension state
+  if (passedChecks['m2b']) {
+    showTripleQuote(false);
+    if (passedChecks['tq_predict']) {
+      applyMCQFeedback('tq_mcq', 'b');
+      document.getElementById('btn_check_tq_mcq')?.classList.add('step-hidden');
+      document.getElementById('tq_try_block')?.classList.remove('step-hidden');
+    }
+    if (passedChecks['tq']) {
+      const fb = document.getElementById('fb_tq');
+      if (fb) { fb.classList.remove('hidden'); fb.className = 'feedback pass'; fb.textContent = '✅ Triple-quote message complete.'; }
+    }
+  }
+
   // Restore Variables Preview state
-  if (passedChecks['m2_ext']) {
+  if (passedChecks['tq']) {
     showVarsPreview(false);
     if (vpMcqStep >= 2) {
       applyVpMCQFeedback('vp_mcq1', 'b');

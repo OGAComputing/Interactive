@@ -74,9 +74,39 @@ export function validateMake(raw) {
 export function validateExt(raw) {
   if (raw.trim().length < 10)
     return { pass: false, msg: '⚠️ Paste your extended program above first.' };
+  const printCount = countPrints(raw);
+  if (printCount > 1)
+    return { pass: false, msg: `❌ Use a SINGLE print() statement — you currently have ${printCount}. Combine all four names into one print() using \\n.` };
+  if (printCount < 1)
+    return { pass: false, msg: '❌ Add one print() statement containing all four names.' };
   if (!has(raw, /\\n/))
-    return { pass: false, msg: '❌ Use \\n inside one print() to display all five names without separate print() calls.' };
+    return { pass: false, msg: '❌ Use \\n inside your print() to display all four names on separate lines.' };
   return { pass: true, msg: '✅ Extension complete — all four names in a single print() using \\n. Excellent!' };
+}
+
+export function validateMake2(raw) {
+  if (raw.trim().length < 10)
+    return { pass: false, msg: '⚠️ Write your second program first, then click Check.' };
+  const textPrints = countPrints(raw) - (raw.match(/\bprint\s*\(\s*\)/g) || []).length;
+  if (textPrints < 4)
+    return { pass: false, msg: `❌ You need at least 4 print() lines of text — a title plus 3 items. You have ${textPrints}.` };
+  if (!has(raw, /print\s*\(\s*\)/))
+    return { pass: false, msg: '❌ Add an empty print() to leave a blank line between your title and your list.' };
+  return { pass: true, msg: '✅ Second program complete — great job building it from scratch!' };
+}
+
+export function validateTripleQuote(raw) {
+  if (raw.trim().length < 10)
+    return { pass: false, msg: '⚠️ Write your triple-quote print() first.' };
+  const tripleMatches = raw.match(/("""[\s\S]*?"""|'''[\s\S]*?''')/g) || [];
+  if (tripleMatches.length === 0)
+    return { pass: false, msg: '❌ Use triple quotes (""" ... """) around your text — you haven\'t used any yet.' };
+  const longEnough = tripleMatches.some(m => (m.match(/\n/g) || []).length >= 2);
+  if (!longEnough)
+    return { pass: false, msg: '❌ Your triple-quoted text needs at least 3 lines — press Enter inside the quotes to add more lines.' };
+  if (!has(raw, /\bprint\s*\(/))
+    return { pass: false, msg: '❌ Wrap your triple-quoted text in a print() call so it actually displays.' };
+  return { pass: true, msg: "✅ Multi-line printing with triple quotes — excellent! You've previewed a technique early." };
 }
 
 export function validateVpMod1(raw) {
