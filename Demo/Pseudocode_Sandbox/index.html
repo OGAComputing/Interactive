@@ -105,35 +105,6 @@ color:  purple
     min-height: 260px;
   }
 
-  /* ── Inputs bar ──────────────────────────────────────── */
-  .inputs-bar {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    background: var(--surface);
-    border: 1px solid var(--surface-mid);
-    border-radius: 8px;
-    padding: 8px 14px;
-  }
-  .inputs-bar label {
-    font-size: 0.75rem;
-    color: var(--muted);
-    white-space: nowrap;
-    font-family: var(--font-body);
-  }
-  .inputs-bar input {
-    flex: 1;
-    background: var(--surface-mid);
-    color: var(--text);
-    border: 1px solid var(--surface-dim);
-    padding: 5px 10px;
-    font-size: 0.8rem;
-    font-family: 'Courier New', monospace;
-    border-radius: 6px;
-    min-width: 0;
-  }
-  .inputs-bar input::placeholder { color: var(--muted); opacity: 0.7; }
-
   /* ── Transpiled Python panel ─────────────────────────── */
   #pyPanel {
     background: var(--surface);
@@ -309,12 +280,6 @@ next i
 </textarea>
   </div>
 
-  <!-- Inputs bar -->
-  <div class="inputs-bar">
-    <label for="inputsField">Inputs (one per line, for input() calls):</label>
-    <input type="text" id="inputsField" placeholder="e.g.  Alice  (press Enter to add more)">
-  </div>
-
   <!-- Transpiled Python panel (hidden by default) -->
   <div id="pyPanel" hidden aria-label="Transpiled Python">
     <div class="panel-bar">
@@ -445,10 +410,43 @@ const pyPanel    = document.getElementById('pyPanel');
 const pyOut      = document.getElementById('pyOut');
 const pyLineCount = document.getElementById('pyLineCount');
 const sampleSel  = document.getElementById('sampleSel');
-const inputsFld  = document.getElementById('inputsField');
 const fileInputs = document.getElementById('fileInputs');
 const addFileBtn = document.getElementById('addFileBtn');
 const writtenFiles = document.getElementById('writtenFiles');
+
+// ── Autosave to localStorage ────────────────────────────────────────────────
+const STORAGE_KEY = 'pseudocode-sandbox-state-v1';
+
+function saveState() {
+  try {
+    const files = {};
+    for (const row of fileInputs.querySelectorAll('.file-entry')) {
+      const name = row.querySelector('[data-file-name]').value.trim();
+      const content = row.querySelector('[data-file-content]').value;
+      if (name) files[name] = content;
+    }
+    localStorage.setItem(STORAGE_KEY, JSON.stringify({ code: pscEditor.value, files }));
+  } catch { /* storage unavailable — autosave is best-effort */ }
+}
+
+function loadState() {
+  try {
+    const raw = localStorage.getItem(STORAGE_KEY);
+    return raw ? JSON.parse(raw) : null;
+  } catch { return null; }
+}
+
+let saveTimer = null;
+function scheduleSave() {
+  clearTimeout(saveTimer);
+  saveTimer = setTimeout(saveState, 400);
+}
+
+const savedState = loadState();
+if (savedState?.code) pscEditor.value = savedState.code;
+
+pscEditor.addEventListener('input', scheduleSave);
+fileInputs.addEventListener('input', scheduleSave);
 
 // ── Sample loader ─────────────────────────────────────────────────────────────
 for (const [label] of SAMPLES) {
@@ -469,7 +467,14 @@ sampleSel.addEventListener('change', () => {
     ensureFileRow('notes.txt', 'First line\nSecond line\nThird line');
     document.getElementById('filesDetails').open = true;
   }
+  scheduleSave();
 });
+
+// Restore any previously saved input files
+if (savedState?.files) {
+  for (const [name, content] of Object.entries(savedState.files)) ensureFileRow(name, content);
+  if (Object.keys(savedState.files).length) document.getElementById('filesDetails').open = true;
+}
 
 // ── Pyodide load ──────────────────────────────────────────────────────────────
 preload().then(() => {
@@ -547,7 +552,7 @@ function ensureFileRow(name = '', content = '') {
   fileInputs.appendChild(div);
 }
 
-addFileBtn.addEventListener('click', () => ensureFileRow());
+addFileBtn.addEventListener('click', () => { ensureFileRow(); scheduleSave(); });
 
 function getInputFiles() {
   const files = {};
@@ -579,16 +584,12 @@ runBtn.addEventListener('click', async () => {
   runBtn.disabled = true;
   runBtn.textContent = 'Running…';
 
-  // Collect inputs (one per comma-separated token in the single input field)
-  const inputs = inputsFld.value
-    .split(',')
-    .map(s => s.trim())
-    .filter(Boolean);
-
   // Inject any input files the user has set up
   setFiles(getInputFiles());
 
-  const r = await runPseudocode(pscEditor, { inputs });
+  // inputs left unset: runPseudocode scans the code for input() calls and
+  // prompts for each one, in order, right in the output panel as it runs.
+  const r = await runPseudocode(pscEditor);
 
   // Re-render Python panel with error line highlighted if needed
   if (lastResult && pyVisible) {

@@ -150,6 +150,10 @@ function _injectStyles() {
       padding-top: 0.3rem;
       flex-shrink: 0;
     }
+    /* The [hidden] attribute's UA-stylesheet display:none has no !important, so
+       the display:flex rule above silently wins and the row (with its now-empty
+       prompt label and input) stays on screen looking like an unanswered prompt. */
+    .output-input-row[hidden] { display: none; }
     :where(.output-prompt-label) {
       color: #5eead4;
       white-space: pre;
@@ -562,13 +566,10 @@ export async function runPseudocode(ta, { inputs = null } = {}) {
   const hasHistory = resolvedInputs.length > 0 && content?.textContent;
 
   if (r.ok) {
-    const out = r.output || '(no output)';
-    if (hasHistory) {
-      panel.classList.remove('error');
-      content.textContent += out;
-    } else {
-      setEditorOutput(ta, out);
-    }
+    // r.output already reconstructs the full prompt/answer conversation (the
+    // mocked input() re-echoes every prompt+value), so it replaces — rather
+    // than appends to — the live echo shown during collection.
+    setEditorOutput(ta, r.output || '(no output)');
   } else {
     const m = r.output.match(/line\s+(\d+)/);
     const pyLine = m ? Number(m[1]) : null;

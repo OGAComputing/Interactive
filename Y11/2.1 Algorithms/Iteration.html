@@ -1,0 +1,1113 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<!-- ACTIVITY
+title:  Iteration — While Loops and For Loops
+type:   Practice
+stars:  3
+desc:   Five algorithm-writing challenges built around condition-controlled and count-controlled loops — from a repeat-until-true air conditioning check to a three times table — with instant mark-scheme feedback on every Run.
+color:  blue
+-->
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Iteration — While Loops and For Loops — Year 11</title>
+
+<link rel="stylesheet" href="../../shared.css">
+
+<style>
+  /* ── Sticky header ───────────────────────────────────── */
+  header {
+    background: var(--surface);
+    border-bottom: 2px solid var(--surface-mid);
+    padding: 12px 20px;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    box-shadow: 0 2px 12px rgba(0,0,0,0.35);
+  }
+  .header-progress {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  /* ── Page body ───────────────────────────────────────── */
+  .page-wrap { padding: 28px 16px 60px; }
+
+  /* ── Page title ──────────────────────────────────────── */
+  .page-title {
+    font-size: 1.35rem;
+    font-weight: 700;
+    text-align: center;
+    color: var(--accent-light);
+    margin-bottom: 4px;
+  }
+  .page-subtitle {
+    text-align: center;
+    font-size: 0.82rem;
+    color: var(--muted);
+    margin-bottom: 28px;
+  }
+
+  /* ── Pill tab bar ────────────────────────────────────── */
+  .tabs {
+    display: flex;
+    justify-content: center;
+    gap: 8px;
+    flex-wrap: wrap;
+    margin-bottom: 28px;
+  }
+  .tab-btn {
+    padding: 7px 16px;
+    border: 2px solid var(--surface-mid);
+    border-radius: 20px;
+    background: var(--surface);
+    color: var(--muted);
+    font-family: var(--font-body);
+    font-size: 0.8rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: border-color 0.2s, background 0.2s, color 0.2s;
+    user-select: none;
+  }
+  .tab-btn:hover:not(.active) { border-color: var(--accent); color: var(--text); }
+  .tab-btn.active    { background: var(--accent);  border-color: var(--accent);  color: var(--text-inv); }
+  .tab-btn.done-green { background: var(--green);  border-color: var(--green);   color: #fff; }
+  .tab-btn.done-gold  { background: var(--gold);   border-color: var(--gold);    color: #111; }
+
+  /* ── Panels ──────────────────────────────────────────── */
+  .panel { display: none; max-width: 880px; margin: 0 auto; animation: ac-fade-in 0.2s ease; }
+  .panel.active { display: block; }
+
+  /* ── Section card ────────────────────────────────────── */
+  .card {
+    background: var(--surface);
+    border-left: 4px solid var(--accent);
+    border-radius: 8px;
+    padding: 18px 22px;
+    margin-bottom: 22px;
+  }
+  .card h2 {
+    font-size: 0.82rem;
+    font-weight: 700;
+    color: var(--accent);
+    text-transform: uppercase;
+    letter-spacing: 0.8px;
+    margin-bottom: 12px;
+  }
+  .card p { color: var(--text); font-size: 0.9rem; line-height: 1.7; margin-bottom: 10px; }
+  .card p:last-child { margin-bottom: 0; }
+  .card ul {
+    margin: 6px 0 0 1.2em;
+    color: var(--text);
+    font-size: 0.9rem;
+    line-height: 1.8;
+  }
+  .card .extra {
+    margin-top: 14px;
+    color: var(--muted);
+    font-size: 0.85rem;
+    line-height: 1.6;
+    font-style: italic;
+  }
+
+  /* ── Goal banner ─────────────────────────────────────── */
+  .goal {
+    background: var(--surface);
+    border-left: 4px solid var(--accent);
+    border-radius: 0 8px 8px 0;
+    padding: 10px 16px;
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: var(--text);
+    margin-bottom: 20px;
+  }
+
+  /* ── Code checker ────────────────────────────────────── */
+  .code-checker {
+    background: var(--surface);
+    border-radius: 12px;
+    border: 2px solid var(--surface-mid);
+    overflow: hidden;
+    margin-bottom: 14px;
+  }
+  .checker-footer {
+    display: flex;
+    gap: 10px;
+    padding: 10px 14px;
+    background: var(--surface-mid);
+    border-top: 1px solid var(--surface-dim);
+    flex-wrap: wrap;
+    align-items: center;
+  }
+  .checker-footer .ac-btn-secondary { font-size: 0.78rem; padding: 5px 14px; }
+  .checker-footer .ac-btn           { font-size: 0.78rem; padding: 5px 14px; }
+
+  /* ── Mark scheme card ────────────────────────────────── */
+  .markscheme {
+    background: var(--surface);
+    border: 2px solid var(--surface-mid);
+    border-radius: 8px;
+    padding: 14px 18px;
+    margin-bottom: 22px;
+  }
+  .ms-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 12px;
+  }
+  .ms-header h3 {
+    font-size: 0.75rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--accent);
+  }
+  .ms-total {
+    font-size: 0.72rem;
+    font-family: var(--font-head, monospace);
+    color: var(--muted);
+    letter-spacing: 0.06em;
+  }
+  .ms-list {
+    list-style: none;
+    margin: 0 0 10px;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+  }
+  .ms-row {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    padding: 5px 8px;
+    border-radius: 6px;
+    font-size: 0.87rem;
+    transition: background 0.15s;
+  }
+  .ms-tick {
+    font-size: 1rem;
+    width: 1.3em;
+    text-align: center;
+    color: var(--muted);
+    flex-shrink: 0;
+    margin-top: 0.05em;
+  }
+  .ms-text { flex: 1; color: var(--text); line-height: 1.5; }
+  .ms-marks {
+    font-size: 0.7rem;
+    font-family: var(--font-head, monospace);
+    color: var(--muted);
+    white-space: nowrap;
+    margin-top: 0.2em;
+    flex-shrink: 0;
+  }
+  .ms-row.pass { background: rgba(52,211,153,0.08); }
+  .ms-row.pass .ms-tick { color: var(--green); }
+  .ms-row.pass .ms-text { color: var(--green); }
+  .ms-row.pass .ms-marks { color: var(--green); }
+  .ms-row.fail { background: rgba(248,113,113,0.06); }
+  .ms-row.fail .ms-tick { color: var(--red); }
+  .ms-row.fail .ms-text { color: var(--muted); text-decoration: line-through; text-decoration-color: var(--red); }
+
+  .ms-divider {
+    border: none;
+    border-top: 1px solid var(--surface-mid);
+    margin: 8px 0;
+  }
+  .ms-score {
+    font-size: 0.88rem;
+    font-weight: 700;
+    color: var(--accent);
+    text-align: right;
+  }
+  .ms-score.full { color: var(--green); }
+
+  /* ── Score / progress bar ────────────────────────────── */
+  .score-row {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 24px;
+  }
+  .score-label {
+    font-size: 0.72rem;
+    font-family: var(--font-head, monospace);
+    color: var(--muted);
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    white-space: nowrap;
+  }
+  .score-pct {
+    font-family: var(--font-head, monospace);
+    font-size: 0.8rem;
+    color: var(--accent);
+  }
+
+</style>
+</head>
+
+<body>
+<!--
+  Year-group and topic are auto-detected from the URL path by classroom.js.
+  Do NOT set data-year or data-topic manually — the correct theme is applied automatically.
+-->
+
+<!-- Completion banner -->
+<div id="done-banner" class="ac-banner gold">
+  Full marks — you've mastered iteration!
+</div>
+
+<!-- Sticky header -->
+<header>
+  <div class="header-progress">
+    <div class="ac-progress-bar" style="flex:1;">
+      <div class="ac-progress-fill" id="progress-fill"></div>
+    </div>
+    <span class="score-pct" id="progress-pct">0 / 24</span>
+  </div>
+</header>
+
+<div class="page-wrap">
+  <h2 class="page-title">Iteration — Writing Loops</h2>
+  <p class="page-subtitle">Algorithms · Iteration · 24 marks total</p>
+
+  <!-- Tab bar -->
+  <div class="tabs" id="tab-bar">
+    <button class="tab-btn active" data-idx="0">Q1 · 4m</button>
+    <button class="tab-btn"        data-idx="1">Q2 · 4m</button>
+    <button class="tab-btn"        data-idx="2">Q3 · 5m</button>
+    <button class="tab-btn"        data-idx="3">Q4 · 6m</button>
+    <button class="tab-btn"        data-idx="4">Q5 · 5m</button>
+  </div>
+
+  <!-- ══════════════════════════════════════════════════════════
+       Q1 — Ronald's Air Conditioning (condition-controlled · 4 marks)
+       ══════════════════════════════════════════════════════════ -->
+  <div class="panel active" id="panel-0">
+    <div class="goal">Write an algorithm that switches on the air conditioning once it gets too warm.</div>
+
+    <div class="card">
+      <h2>Scenario</h2>
+      <p>Ronald wants to switch on his air conditioning automatically once the room gets too warm. His program should keep asking for the current temperature until it is above 30 degrees, at which point it switches the air conditioning on.</p>
+      <h2 style="margin-top:14px;">Your algorithm must:</h2>
+      <ul>
+        <li>Ask for the current temperature</li>
+        <li>If the temperature is over 30, output "switch on air conditioning"</li>
+        <li>Keep repeating the question until the air conditioning is switched on</li>
+      </ul>
+      <p class="extra">Extra challenge (not marked): once switched on, keep checking the temperature until it drops below 15, then output "Switch off air conditioning".</p>
+    </div>
+
+    <div class="code-checker" id="checker-0">
+      <div class="checker-header">
+        <span class="checker-dot dot-r"></span>
+        <span class="checker-dot dot-y"></span>
+        <span class="checker-dot dot-g"></span>
+        <span>Q1 — Write your pseudocode here</span>
+      </div>
+      <textarea class="pseudocode-textarea" id="editor-0" spellcheck="false"
+                autocomplete="off" autocapitalize="off">// Write your OCR pseudocode here
+</textarea>
+      <div class="checker-footer">
+        <button class="ac-btn" id="run-0" type="button">Run ▶</button>
+        <button class="ac-btn-secondary" id="clear-0" type="button">Clear</button>
+        <span id="run-status-0" style="font-size:0.75rem;color:var(--muted);"></span>
+      </div>
+    </div>
+
+    <div class="markscheme" id="ms-0">
+      <div class="ms-header">
+        <h3>Mark Scheme</h3>
+        <span class="ms-total">4 marks available</span>
+      </div>
+      <ul class="ms-list" id="ms-list-0">
+        <li class="ms-row" data-bp="0">
+          <span class="ms-tick">○</span>
+          <span class="ms-text">Asks for the current temperature and stores the answer</span>
+          <span class="ms-marks">1 mark</span>
+        </li>
+        <li class="ms-row" data-bp="1">
+          <span class="ms-tick">○</span>
+          <span class="ms-text">Attempts to use iteration (any loop present)</span>
+          <span class="ms-marks">1 mark</span>
+        </li>
+        <li class="ms-row" data-bp="2">
+          <span class="ms-tick">○</span>
+          <span class="ms-text">Outputs "switch on air conditioning" once the temperature is above 30</span>
+          <span class="ms-marks">1 mark</span>
+        </li>
+        <li class="ms-row" data-bp="3">
+          <span class="ms-tick">○</span>
+          <span class="ms-text">Boundary — keeps asking at exactly 30 degrees, and switches on once a temperature above 30 (e.g. 31) is entered</span>
+          <span class="ms-marks">1 mark</span>
+        </li>
+      </ul>
+      <hr class="ms-divider">
+      <div class="ms-score" id="ms-score-0">— / 4 marks</div>
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════════════════════════════
+       Q2 — Alice's Plant Watering (condition-controlled · 4 marks)
+       ══════════════════════════════════════════════════════════ -->
+  <div class="panel" id="panel-1">
+    <div class="goal">Write an algorithm that waters Alice's plants once the soil gets too dry.</div>
+
+    <div class="card">
+      <h2>Scenario</h2>
+      <p>Alice wants to water her plants automatically when the soil gets too dry. Her program should keep asking for the current soil moisture level until it falls below 30%, at which point it waters the plants.</p>
+      <h2 style="margin-top:14px;">Your algorithm must:</h2>
+      <ul>
+        <li>Ask for the current soil moisture level</li>
+        <li>If the moisture level is below 30%, output "water the plants"</li>
+        <li>Keep repeating the question until the plants are watered</li>
+      </ul>
+      <p class="extra">Extra challenge (not marked): once watered, keep checking the moisture level until it rises above 70%, then output "Stop watering plants".</p>
+    </div>
+
+    <div class="code-checker" id="checker-1">
+      <div class="checker-header">
+        <span class="checker-dot dot-r"></span>
+        <span class="checker-dot dot-y"></span>
+        <span class="checker-dot dot-g"></span>
+        <span>Q2 — Write your pseudocode here</span>
+      </div>
+      <textarea class="pseudocode-textarea" id="editor-1" spellcheck="false"
+                autocomplete="off" autocapitalize="off">// Write your OCR pseudocode here
+</textarea>
+      <div class="checker-footer">
+        <button class="ac-btn" id="run-1" type="button">Run ▶</button>
+        <button class="ac-btn-secondary" id="clear-1" type="button">Clear</button>
+        <span id="run-status-1" style="font-size:0.75rem;color:var(--muted);"></span>
+      </div>
+    </div>
+
+    <div class="markscheme" id="ms-1">
+      <div class="ms-header">
+        <h3>Mark Scheme</h3>
+        <span class="ms-total">4 marks available</span>
+      </div>
+      <ul class="ms-list" id="ms-list-1">
+        <li class="ms-row" data-bp="0">
+          <span class="ms-tick">○</span>
+          <span class="ms-text">Asks for the current soil moisture level and stores the answer</span>
+          <span class="ms-marks">1 mark</span>
+        </li>
+        <li class="ms-row" data-bp="1">
+          <span class="ms-tick">○</span>
+          <span class="ms-text">Attempts to use iteration (any loop present)</span>
+          <span class="ms-marks">1 mark</span>
+        </li>
+        <li class="ms-row" data-bp="2">
+          <span class="ms-tick">○</span>
+          <span class="ms-text">Outputs "water the plants" once the moisture level is below 30%</span>
+          <span class="ms-marks">1 mark</span>
+        </li>
+        <li class="ms-row" data-bp="3">
+          <span class="ms-tick">○</span>
+          <span class="ms-text">Boundary — keeps asking at exactly 30%, and waters once the level drops below 30 (e.g. 29)</span>
+          <span class="ms-marks">1 mark</span>
+        </li>
+      </ul>
+      <hr class="ms-divider">
+      <div class="ms-score" id="ms-score-1">— / 4 marks</div>
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════════════════════════════
+       Q3 — Cecil's Marathon Training (condition-controlled · 5 marks)
+       ══════════════════════════════════════════════════════════ -->
+  <div class="panel" id="panel-2">
+    <div class="goal">Write an algorithm that checks in on Cecil after every run.</div>
+
+    <div class="card">
+      <h2>Scenario</h2>
+      <p>Cecil is training to run a marathon and wants a program that tells him whether he's had a good workout, after every run he logs. He wants to be able to log as many runs as he likes, and to stop the program whenever he chooses.</p>
+      <h2 style="margin-top:14px;">Your algorithm must:</h2>
+      <ul>
+        <li>Ask the user how far they have run</li>
+        <li>Output "Well done!" if they have run over 5 miles, or "run further!" if not</li>
+        <li>Repeatedly ask for distances that have been run</li>
+        <li>Stop the program as soon as the user enters "quit" instead of a distance</li>
+      </ul>
+      <p class="extra">Extra challenge (not marked): keep track of the average distance for his runs, and output it when the program finishes.</p>
+    </div>
+
+    <div class="code-checker" id="checker-2">
+      <div class="checker-header">
+        <span class="checker-dot dot-r"></span>
+        <span class="checker-dot dot-y"></span>
+        <span class="checker-dot dot-g"></span>
+        <span>Q3 — Write your pseudocode here</span>
+      </div>
+      <textarea class="pseudocode-textarea" id="editor-2" spellcheck="false"
+                autocomplete="off" autocapitalize="off">// Write your OCR pseudocode here
+</textarea>
+      <div class="checker-footer">
+        <button class="ac-btn" id="run-2" type="button">Run ▶</button>
+        <button class="ac-btn-secondary" id="clear-2" type="button">Clear</button>
+        <span id="run-status-2" style="font-size:0.75rem;color:var(--muted);"></span>
+      </div>
+    </div>
+
+    <div class="markscheme" id="ms-2">
+      <div class="ms-header">
+        <h3>Mark Scheme</h3>
+        <span class="ms-total">5 marks available</span>
+      </div>
+      <ul class="ms-list" id="ms-list-2">
+        <li class="ms-row" data-bp="0">
+          <span class="ms-tick">○</span>
+          <span class="ms-text">Asks the user how far they have run and stores the answer</span>
+          <span class="ms-marks">1 mark</span>
+        </li>
+        <li class="ms-row" data-bp="1">
+          <span class="ms-tick">○</span>
+          <span class="ms-text">Attempts to use iteration (any loop present)</span>
+          <span class="ms-marks">1 mark</span>
+        </li>
+        <li class="ms-row" data-bp="2">
+          <span class="ms-tick">○</span>
+          <span class="ms-text">Outputs "Well done!" for a distance of over 5 miles</span>
+          <span class="ms-marks">1 mark</span>
+        </li>
+        <li class="ms-row" data-bp="3">
+          <span class="ms-tick">○</span>
+          <span class="ms-text">Outputs "run further!" for a distance of 5 miles or less</span>
+          <span class="ms-marks">1 mark</span>
+        </li>
+        <li class="ms-row" data-bp="4">
+          <span class="ms-tick">○</span>
+          <span class="ms-text">Stops asking for a distance as soon as the user enters "quit"</span>
+          <span class="ms-marks">1 mark</span>
+        </li>
+      </ul>
+      <hr class="ms-divider">
+      <div class="ms-score" id="ms-score-2">— / 5 marks</div>
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════════════════════════════
+       Q4 — Barbara's Sweet Shop (accumulator · 6 marks)
+       ══════════════════════════════════════════════════════════ -->
+  <div class="panel" id="panel-3">
+    <div class="goal">Write an algorithm that totals up the sweets in Barbara's jars.</div>
+
+    <div class="card">
+      <h2>Scenario</h2>
+      <p>Barbara runs a sweet shop and wants a program that calculates how many sweets she has in total across several jars, warning her if she has far too many.</p>
+      <h2 style="margin-top:14px;">Your algorithm must:</h2>
+      <ul>
+        <li>Allow the user to enter a number of sweets, one jar at a time</li>
+        <li>Add the number of sweets entered to a running total</li>
+        <li>If the running total goes over 100, output "watch out!"</li>
+        <li>After asking for a number of sweets, ask the question again</li>
+        <li>If Barbara enters 0 instead of a number of sweets, output the total and stop the program</li>
+      </ul>
+      <p class="extra">Hint: create the variable for the running total outside the loop, before it starts.</p>
+    </div>
+
+    <div class="code-checker" id="checker-3">
+      <div class="checker-header">
+        <span class="checker-dot dot-r"></span>
+        <span class="checker-dot dot-y"></span>
+        <span class="checker-dot dot-g"></span>
+        <span>Q4 — Write your pseudocode here</span>
+      </div>
+      <textarea class="pseudocode-textarea" id="editor-3" spellcheck="false"
+                autocomplete="off" autocapitalize="off">// Write your OCR pseudocode here
+</textarea>
+      <div class="checker-footer">
+        <button class="ac-btn" id="run-3" type="button">Run ▶</button>
+        <button class="ac-btn-secondary" id="clear-3" type="button">Clear</button>
+        <span id="run-status-3" style="font-size:0.75rem;color:var(--muted);"></span>
+      </div>
+    </div>
+
+    <div class="markscheme" id="ms-3">
+      <div class="ms-header">
+        <h3>Mark Scheme</h3>
+        <span class="ms-total">6 marks available</span>
+      </div>
+      <ul class="ms-list" id="ms-list-3">
+        <li class="ms-row" data-bp="0">
+          <span class="ms-tick">○</span>
+          <span class="ms-text">Asks for a number of sweets and stores the answer</span>
+          <span class="ms-marks">1 mark</span>
+        </li>
+        <li class="ms-row" data-bp="1">
+          <span class="ms-tick">○</span>
+          <span class="ms-text">Attempts to use iteration (any loop present)</span>
+          <span class="ms-marks">1 mark</span>
+        </li>
+        <li class="ms-row" data-bp="2">
+          <span class="ms-tick">○</span>
+          <span class="ms-text">Correctly totals a single jar before stopping — 45 sweets gives a total of 45</span>
+          <span class="ms-marks">1 mark</span>
+        </li>
+        <li class="ms-row" data-bp="3">
+          <span class="ms-tick">○</span>
+          <span class="ms-text">Correctly totals multiple jars added together — 30 then 40 sweets gives a total of 70</span>
+          <span class="ms-marks">1 mark</span>
+        </li>
+        <li class="ms-row" data-bp="4">
+          <span class="ms-tick">○</span>
+          <span class="ms-text">Outputs "watch out!" once the running total goes over 100 — 60 then 50 sweets gives a total of 110</span>
+          <span class="ms-marks">1 mark</span>
+        </li>
+        <li class="ms-row" data-bp="5">
+          <span class="ms-tick">○</span>
+          <span class="ms-text">Does not output "watch out!" while the running total is 100 or less</span>
+          <span class="ms-marks">1 mark</span>
+        </li>
+      </ul>
+      <hr class="ms-divider">
+      <div class="ms-score" id="ms-score-3">— / 6 marks</div>
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════════════════════════════
+       Q5 — Rufus's Three Times Table (count-controlled · 5 marks)
+       ══════════════════════════════════════════════════════════ -->
+  <div class="panel" id="panel-4">
+    <div class="goal">Write an algorithm that prints the three times table using iteration.</div>
+
+    <div class="card">
+      <h2>Scenario</h2>
+      <p>Rufus needs a program that prints out the three times table, from 1 × 3 up to 12 × 3. It must use iteration rather than writing out each line by hand.</p>
+      <h2 style="margin-top:14px;">Your algorithm must:</h2>
+      <ul>
+        <li>Use a loop that counts from 1 up to 12 (you can include 0 × 3 as well, if you want to)</li>
+        <li>Multiply the loop counter by 3 on each pass</li>
+        <li>Output each result</li>
+      </ul>
+    </div>
+
+    <div class="code-checker" id="checker-4">
+      <div class="checker-header">
+        <span class="checker-dot dot-r"></span>
+        <span class="checker-dot dot-y"></span>
+        <span class="checker-dot dot-g"></span>
+        <span>Q5 — Write your pseudocode here</span>
+      </div>
+      <textarea class="pseudocode-textarea" id="editor-4" spellcheck="false"
+                autocomplete="off" autocapitalize="off">// Write your OCR pseudocode here
+</textarea>
+      <div class="checker-footer">
+        <button class="ac-btn" id="run-4" type="button">Run ▶</button>
+        <button class="ac-btn-secondary" id="clear-4" type="button">Clear</button>
+        <span id="run-status-4" style="font-size:0.75rem;color:var(--muted);"></span>
+      </div>
+    </div>
+
+    <div class="markscheme" id="ms-4">
+      <div class="ms-header">
+        <h3>Mark Scheme</h3>
+        <span class="ms-total">5 marks available</span>
+      </div>
+      <ul class="ms-list" id="ms-list-4">
+        <li class="ms-row" data-bp="0">
+          <span class="ms-tick">○</span>
+          <span class="ms-text">Attempts to use iteration (any loop present)</span>
+          <span class="ms-marks">1 mark</span>
+        </li>
+        <li class="ms-row" data-bp="1">
+          <span class="ms-tick">○</span>
+          <span class="ms-text">Outputs the start of the three times table correctly — 3, 6, 9</span>
+          <span class="ms-marks">1 mark</span>
+        </li>
+        <li class="ms-row" data-bp="2">
+          <span class="ms-tick">○</span>
+          <span class="ms-text">Outputs the middle of the three times table correctly — 18, 21, 24</span>
+          <span class="ms-marks">1 mark</span>
+        </li>
+        <li class="ms-row" data-bp="3">
+          <span class="ms-tick">○</span>
+          <span class="ms-text">Finishes the table correctly at 12 × 3 — 30, 33, 36</span>
+          <span class="ms-marks">1 mark</span>
+        </li>
+        <li class="ms-row" data-bp="4">
+          <span class="ms-tick">○</span>
+          <span class="ms-text">Runs the loop the correct number of times (12 results, or 13 if 0 × 3 is included)</span>
+          <span class="ms-marks">1 mark</span>
+        </li>
+      </ul>
+      <hr class="ms-divider">
+      <div class="ms-score" id="ms-score-4">— / 5 marks</div>
+    </div>
+  </div>
+
+</div><!-- /.page-wrap -->
+
+<div class="ac-toast" id="toast"></div>
+
+<script type="module">
+import { setupEditors, runPseudocode, clearSyntaxHint } from '../../pseudocode-editor.js';
+import { preload } from '../../pyodide-runner.js';
+
+// ── Constants ─────────────────────────────────────────────────
+const TASK_COUNT     = 5;
+const TOTAL_MARKS    = 24;
+const ACTIVITY_TITLE = 'Iteration — Writing Loops';
+const STORE_NS = location.pathname;
+
+// ── Task definitions ───────────────────────────────────────────
+// Each task has:
+//   maxMarks  — total marks for this question
+//   tests     — array of { inputs: string[] }
+//   criteria  — array of { text, marks, check({src, runs}) → bool }
+//
+// src  = normalised (lowercase, comments stripped) pseudocode source
+// runs = [{ inputs, output, ok }, …] parallel to tests array
+
+const TASKS = [
+
+  // ── Q1: Ronald's Air Conditioning (condition-controlled · 4 marks) ──
+  {
+    maxMarks: 4,
+    tests: [
+      { inputs: ['15', '40'] },  // typical case — two readings, second triggers
+      { inputs: ['30', '31'] },  // boundary — 30 does not trigger, 31 does
+    ],
+    criteria: [
+      {
+        text: 'Asks for the current temperature and stores the answer',
+        marks: 1,
+        check: ({ src }) => /\binput\s*\(/.test(src),
+      },
+      {
+        text: 'Attempts to use iteration (any loop present)',
+        marks: 1,
+        check: ({ src }) => /\bfor\b|\bwhile\b|\bdo\b/.test(src),
+      },
+      {
+        text: 'Outputs "switch on air conditioning" once the temperature is above 30',
+        marks: 1,
+        check: ({ runs }) => outHas(runs[0], 'switch on air conditioning'),
+      },
+      {
+        text: 'Boundary — keeps asking at exactly 30 degrees, and switches on once a temperature above 30 (e.g. 31) is entered',
+        marks: 1,
+        check: ({ runs }) => outHas(runs[1], '31', 'switch on air conditioning'),
+      },
+    ],
+  },
+
+  // ── Q2: Alice's Plant Watering (condition-controlled · 4 marks) ─────
+  {
+    maxMarks: 4,
+    tests: [
+      { inputs: ['50', '20'] },  // typical case
+      { inputs: ['30', '29'] },  // boundary — 30 does not trigger, 29 does
+    ],
+    criteria: [
+      {
+        text: "Asks for the current soil moisture level and stores the answer",
+        marks: 1,
+        check: ({ src }) => /\binput\s*\(/.test(src),
+      },
+      {
+        text: 'Attempts to use iteration (any loop present)',
+        marks: 1,
+        check: ({ src }) => /\bfor\b|\bwhile\b|\bdo\b/.test(src),
+      },
+      {
+        text: 'Outputs "water the plants" once the moisture level is below 30%',
+        marks: 1,
+        check: ({ runs }) => outHas(runs[0], 'water the plants'),
+      },
+      {
+        text: 'Boundary — keeps asking at exactly 30%, and waters once the level drops below 30 (e.g. 29)',
+        marks: 1,
+        check: ({ runs }) => outHas(runs[1], '29', 'water the plants'),
+      },
+    ],
+  },
+
+  // ── Q3: Cecil's Marathon Training (condition-controlled · 5 marks) ──
+  {
+    maxMarks: 5,
+    tests: [
+      { inputs: ['3', '6', 'quit'] },  // one short run, one long run, then quit
+      { inputs: ['3', 'quit'] },       // stops immediately after quit
+    ],
+    criteria: [
+      {
+        text: 'Asks the user how far they have run and stores the answer',
+        marks: 1,
+        check: ({ src }) => /\binput\s*\(/.test(src),
+      },
+      {
+        text: 'Attempts to use iteration (any loop present)',
+        marks: 1,
+        check: ({ src }) => /\bfor\b|\bwhile\b|\bdo\b/.test(src),
+      },
+      {
+        text: 'Outputs "Well done!" for a distance of over 5 miles',
+        marks: 1,
+        check: ({ runs }) => outHas(runs[0], 'well done'),
+      },
+      {
+        text: 'Outputs "run further!" for a distance of 5 miles or less',
+        marks: 1,
+        check: ({ runs }) => outHas(runs[0], 'run further'),
+      },
+      {
+        text: 'Stops asking for a distance as soon as the user enters "quit"',
+        marks: 1,
+        check: ({ runs }) => outHas(runs[1], 'run further'),
+      },
+    ],
+  },
+
+  // ── Q4: Barbara's Sweet Shop (accumulator · 6 marks) ────────────────
+  {
+    maxMarks: 6,
+    tests: [
+      { inputs: ['45', '0'] },        // single jar
+      { inputs: ['30', '40', '0'] },  // two jars, total 70 (under 100)
+      { inputs: ['60', '50', '0'] },  // two jars, total 110 (over 100)
+    ],
+    criteria: [
+      {
+        text: 'Asks for a number of sweets and stores the answer',
+        marks: 1,
+        check: ({ src }) => /\binput\s*\(/.test(src),
+      },
+      {
+        text: 'Attempts to use iteration (any loop present)',
+        marks: 1,
+        check: ({ src }) => /\bfor\b|\bwhile\b|\bdo\b/.test(src),
+      },
+      {
+        text: 'Correctly totals a single jar before stopping — 45 sweets gives a total of 45',
+        marks: 1,
+        check: ({ runs }) => outHasNum(runs[0], 45),
+      },
+      {
+        text: 'Correctly totals multiple jars added together — 30 then 40 sweets gives a total of 70',
+        marks: 1,
+        check: ({ runs }) => outHasNum(runs[1], 70),
+      },
+      {
+        text: 'Outputs "watch out!" once the running total goes over 100 — 60 then 50 sweets gives a total of 110',
+        marks: 1,
+        check: ({ runs }) => outHas(runs[2], 'watch out'),
+      },
+      {
+        text: 'Does not output "watch out!" while the running total is 100 or less',
+        marks: 1,
+        check: ({ runs }) => runs[1].ok && !(runs[1].output || '').toLowerCase().includes('watch out'),
+      },
+    ],
+  },
+
+  // ── Q5: Rufus's Three Times Table (count-controlled · 5 marks) ─────
+  {
+    maxMarks: 5,
+    tests: [
+      { inputs: [] },  // no input needed — pure output
+    ],
+    criteria: [
+      {
+        text: 'Attempts to use iteration (any loop present)',
+        marks: 1,
+        check: ({ src }) => /\bfor\b|\bwhile\b|\bdo\b/.test(src),
+      },
+      {
+        text: 'Outputs the start of the three times table correctly — 3, 6, 9',
+        marks: 1,
+        check: ({ runs }) => seqCheck(runs[0], [3, 6, 9]),
+      },
+      {
+        text: 'Outputs the middle of the three times table correctly — 18, 21, 24',
+        marks: 1,
+        check: ({ runs }) => seqCheck(runs[0], [18, 21, 24]),
+      },
+      {
+        text: 'Finishes the table correctly at 12 × 3 — 30, 33, 36',
+        marks: 1,
+        check: ({ runs }) => {
+          if (!runs[0].ok) return false;
+          const nums = lineNums(runs[0].output);
+          return containsSeq(nums, [30, 33, 36]) && nums[nums.length - 1] === 36;
+        },
+      },
+      {
+        text: 'Runs the loop the correct number of times (12 results, or 13 if 0 × 3 is included)',
+        marks: 1,
+        check: ({ runs }) => {
+          if (!runs[0].ok) return false;
+          const n = lineNums(runs[0].output).length;
+          return n === 12 || n === 13;
+        },
+      },
+    ],
+  },
+
+]; // end TASKS
+
+// ── State ──────────────────────────────────────────────────────
+const taskEarned = new Array(TASK_COUNT).fill(0);
+const taskAttempted = new Array(TASK_COUNT).fill(false);
+
+// ── Helpers ────────────────────────────────────────────────────
+
+function normSrc(raw) {
+  // Strip // comments, collapse whitespace, lowercase
+  return raw.replace(/\/\/[^\n]*/g, ' ').replace(/\s+/g, ' ').toLowerCase().trim();
+}
+
+function outHas(run, ...needles) {
+  if (!run || !run.ok || !run.output) return false;
+  const o = run.output.toLowerCase();
+  return needles.every(n => o.includes(n.toLowerCase()));
+}
+
+function outHasNum(run, n) {
+  if (!run || !run.ok || !run.output) return false;
+  return new RegExp('\\b' + n + '\\b').test(run.output);
+}
+
+// Take the last standalone number on each non-empty output line — robust to
+// formats like "3", "1 x 3 = 3", or "3 x 1 = 3".
+function lineNums(output) {
+  return (output || '').split('\n').map(l => l.trim()).filter(Boolean)
+    .map(l => {
+      const m = l.match(/-?\d+/g);
+      return m ? Number(m[m.length - 1]) : null;
+    })
+    .filter(n => n !== null);
+}
+
+function containsSeq(nums, seq) {
+  for (let i = 0; i <= nums.length - seq.length; i++) {
+    if (seq.every((v, j) => nums[i + j] === v)) return true;
+  }
+  return false;
+}
+
+function seqCheck(run, seq) {
+  if (!run || !run.ok) return false;
+  return containsSeq(lineNums(run.output), seq);
+}
+
+// ── Editor setup ───────────────────────────────────────────────
+for (let i = 0; i < TASK_COUNT; i++) {
+  const saved = localStorage.getItem(STORE_NS + ':e' + i);
+  if (saved !== null) document.getElementById('editor-' + i).value = saved;
+}
+setupEditors('.pseudocode-textarea');
+
+// ── Pyodide preload ────────────────────────────────────────────
+preload();
+
+// ── Restore mark scheme state ──────────────────────────────────
+for (let i = 0; i < TASK_COUNT; i++) {
+  const raw = localStorage.getItem(STORE_NS + ':ms' + i);
+  if (!raw) continue;
+  try {
+    const { earned, passed } = JSON.parse(raw);
+    taskEarned[i] = earned;
+    applyMarkscheme(i, passed, earned, TASKS[i].maxMarks);
+    updateTabState(i, earned, TASKS[i].maxMarks);
+  } catch (_) {}
+}
+updateProgress();
+
+// ── Tab switching ──────────────────────────────────────────────
+document.getElementById('tab-bar').addEventListener('click', e => {
+  const tab = e.target.closest('.tab-btn');
+  if (!tab) return;
+  const idx = +tab.dataset.idx;
+  document.querySelectorAll('.tab-btn').forEach(t => t.classList.remove('active'));
+  document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
+  tab.classList.add('active');
+  document.getElementById('panel-' + idx).classList.add('active');
+});
+
+// ── Run button wiring ──────────────────────────────────────────
+for (let idx = 0; idx < TASK_COUNT; idx++) {
+  const runBtn   = document.getElementById('run-' + idx);
+  const clearBtn = document.getElementById('clear-' + idx);
+  const statusEl = document.getElementById('run-status-' + idx);
+  const editorEl = document.getElementById('editor-' + idx);
+
+  runBtn.addEventListener('click', async () => {
+    await handleRun(idx, editorEl, runBtn, statusEl);
+  });
+
+  clearBtn.addEventListener('click', () => {
+    editorEl.value = '';
+    editorEl.dispatchEvent(new Event('input'));
+    resetMarkscheme(idx);
+    try {
+      localStorage.removeItem(STORE_NS + ':e' + idx);
+      localStorage.removeItem(STORE_NS + ':ms' + idx);
+    } catch (_) {}
+  });
+
+  let saveTimer;
+  editorEl.addEventListener('input', () => {
+    clearTimeout(saveTimer);
+    saveTimer = setTimeout(() => {
+      try { localStorage.setItem(STORE_NS + ':e' + idx, editorEl.value); } catch (_) {}
+    }, 500);
+  });
+}
+
+async function handleRun(idx, editorEl, runBtn, statusEl) {
+  const task = TASKS[idx];
+
+  runBtn.disabled = true;
+  statusEl.textContent = 'Running…';
+
+  // Run each test case sequentially
+  const runs = [];
+  for (const test of task.tests) {
+    const r = await runPseudocode(editorEl, { inputs: test.inputs });
+    runs.push({ inputs: test.inputs, output: r.output || '', ok: r.ok });
+  }
+
+  statusEl.textContent = '';
+  runBtn.disabled = false;
+  taskAttempted[idx] = true;
+
+  _renderTestOutput(editorEl, task.tests, runs);
+
+  // If the first run didn't produce any output at all, likely a syntax error
+  if (!runs[0].ok && !runs[0].output) {
+    window.ActivityUI?.showToast('Fix the syntax error shown in the editor before checking marks.', 'warn');
+  }
+
+  // Evaluate each criterion
+  const src = normSrc(editorEl.value);
+  let earned = 0;
+  const passed = task.criteria.map(c => {
+    let result = false;
+    try { result = !!c.check({ src, runs }); } catch (_) { result = false; }
+    if (result) earned += c.marks;
+    return result;
+  });
+
+  // Update mark scheme UI
+  applyMarkscheme(idx, passed, earned, task.maxMarks);
+  try { localStorage.setItem(STORE_NS + ':ms' + idx, JSON.stringify({ earned, passed })); } catch (_) {}
+
+  // Update tab + global progress
+  taskEarned[idx] = earned;
+  updateTabState(idx, earned, task.maxMarks);
+  updateProgress();
+
+  // Submit grade
+  const totalEarned = taskEarned.reduce((s, v) => s + v, 0);
+  window.Classroom?.submitGrade(
+    Math.round(totalEarned / TOTAL_MARKS * 100),
+    ACTIVITY_TITLE
+  );
+
+  if (totalEarned === TOTAL_MARKS) allComplete();
+}
+
+// ── Per-test coloured output ───────────────────────────────────
+
+function _renderTestOutput(editorEl, tests, runs) {
+  const outputPanel = editorEl.closest('.editor-wrap')?.querySelector('.output-panel');
+  if (!outputPanel) return;
+  outputPanel.classList.remove('error');
+  const content = outputPanel.querySelector('.output-content');
+  const inputRow = outputPanel.querySelector('.output-input-row');
+  if (inputRow) inputRow.hidden = true;
+  if (!content) return;
+
+  const SEP = '─'.repeat(44);
+  const esc = s => s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+
+  content.innerHTML = runs.map((run, i) => {
+    const label = run.inputs.length === 0
+      ? '(no input)'
+      : run.inputs.length === 1
+        ? `input: "${run.inputs[0]}"`
+        : `inputs: ${run.inputs.map(v => `"${v}"`).join(', ')}`;
+
+    const out = run.ok ? (run.output || '(no output)') : `⚠ ${run.output || 'Error — check syntax'}`;
+    const color = run.ok ? '#5eead4' : '#ff6b6b';
+    return `<span style="color:${color}">${esc(`Test ${i + 1}  (${label})\n${SEP}\n${out}`)}</span>`;
+  }).join('\n\n');
+}
+
+// ── Mark scheme DOM updates ────────────────────────────────────
+
+function applyMarkscheme(idx, passed, earned, maxMarks) {
+  const list = document.getElementById('ms-list-' + idx);
+  const rows = list.querySelectorAll('.ms-row');
+  rows.forEach((row, i) => {
+    const tick = row.querySelector('.ms-tick');
+    row.classList.remove('pass', 'fail');
+    if (passed[i]) {
+      row.classList.add('pass');
+      tick.textContent = '✓';
+    } else {
+      row.classList.add('fail');
+      tick.textContent = '✗';
+    }
+  });
+
+  const scoreEl = document.getElementById('ms-score-' + idx);
+  scoreEl.textContent = earned + ' / ' + maxMarks + ' mark' + (maxMarks === 1 ? '' : 's');
+  scoreEl.classList.toggle('full', earned === maxMarks);
+}
+
+function resetMarkscheme(idx) {
+  const list = document.getElementById('ms-list-' + idx);
+  list.querySelectorAll('.ms-row').forEach(row => {
+    row.classList.remove('pass', 'fail');
+    row.querySelector('.ms-tick').textContent = '○';
+  });
+  document.getElementById('ms-score-' + idx).textContent =
+    '— / ' + TASKS[idx].maxMarks + ' mark' + (TASKS[idx].maxMarks === 1 ? '' : 's');
+  document.getElementById('ms-score-' + idx).classList.remove('full');
+}
+
+// ── Tab state ──────────────────────────────────────────────────
+
+function updateTabState(idx, earned, maxMarks) {
+  const tab = document.querySelector('.tab-btn[data-idx="' + idx + '"]');
+  if (!tab) return;
+  tab.classList.remove('done-green', 'done-gold');
+  if (earned === maxMarks) {
+    tab.classList.add('done-green');
+  } else if (earned > 0) {
+    tab.classList.add('done-gold');
+  }
+}
+
+// ── Progress bar ───────────────────────────────────────────────
+
+function updateProgress() {
+  const totalEarned = taskEarned.reduce((s, v) => s + v, 0);
+  const pct = Math.round(totalEarned / TOTAL_MARKS * 100);
+  document.getElementById('progress-fill').style.width = pct + '%';
+  document.getElementById('progress-pct').textContent  = totalEarned + ' / ' + TOTAL_MARKS;
+}
+
+// ── All tasks complete ─────────────────────────────────────────
+
+function allComplete() {
+  document.getElementById('done-banner').classList.add('show');
+  window.ActivityUI?.launchCelebration();
+}
+
+// ── Toast ──────────────────────────────────────────────────────
+
+window.showToast = (msg, type = '') => window.ActivityUI?.showToast(msg, type);
+</script>
+
+<script src="../../activity-ui.js"></script>
+<!-- Google Classroom integration (no-op when no ?courseId= param) -->
+<script src="../../classroom.js"></script>
+</body>
+</html>

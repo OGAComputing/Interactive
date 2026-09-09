@@ -1,0 +1,1109 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<!-- ACTIVITY
+title:  Selection — If Statements
+type:   Practice
+stars:  3
+desc:   Five algorithm-writing challenges built around if statements — from a simple one-branch check to combined conditions and boundary rules — with instant mark-scheme feedback on every Run.
+color:  blue
+-->
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Selection — If Statements — Year 11</title>
+
+<link rel="stylesheet" href="../../shared.css">
+
+<style>
+  /* ── Sticky header ───────────────────────────────────── */
+  header {
+    background: var(--surface);
+    border-bottom: 2px solid var(--surface-mid);
+    padding: 12px 20px;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    box-shadow: 0 2px 12px rgba(0,0,0,0.35);
+  }
+  .header-progress {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  /* ── Page body ───────────────────────────────────────── */
+  .page-wrap { padding: 28px 16px 60px; }
+
+  /* ── Page title ──────────────────────────────────────── */
+  .page-title {
+    font-size: 1.35rem;
+    font-weight: 700;
+    text-align: center;
+    color: var(--accent-light);
+    margin-bottom: 4px;
+  }
+  .page-subtitle {
+    text-align: center;
+    font-size: 0.82rem;
+    color: var(--muted);
+    margin-bottom: 28px;
+  }
+
+  /* ── Pill tab bar ────────────────────────────────────── */
+  .tabs {
+    display: flex;
+    justify-content: center;
+    gap: 8px;
+    flex-wrap: wrap;
+    margin-bottom: 28px;
+  }
+  .tab-btn {
+    padding: 7px 16px;
+    border: 2px solid var(--surface-mid);
+    border-radius: 20px;
+    background: var(--surface);
+    color: var(--muted);
+    font-family: var(--font-body);
+    font-size: 0.8rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: border-color 0.2s, background 0.2s, color 0.2s;
+    user-select: none;
+  }
+  .tab-btn:hover:not(.active) { border-color: var(--accent); color: var(--text); }
+  .tab-btn.active    { background: var(--accent);  border-color: var(--accent);  color: var(--text-inv); }
+  .tab-btn.done-green { background: var(--green);  border-color: var(--green);   color: #fff; }
+  .tab-btn.done-gold  { background: var(--gold);   border-color: var(--gold);    color: #111; }
+
+  /* ── Panels ──────────────────────────────────────────── */
+  .panel { display: none; max-width: 880px; margin: 0 auto; animation: ac-fade-in 0.2s ease; }
+  .panel.active { display: block; }
+
+  /* ── Section card ────────────────────────────────────── */
+  .card {
+    background: var(--surface);
+    border-left: 4px solid var(--accent);
+    border-radius: 8px;
+    padding: 18px 22px;
+    margin-bottom: 22px;
+  }
+  .card h2 {
+    font-size: 0.82rem;
+    font-weight: 700;
+    color: var(--accent);
+    text-transform: uppercase;
+    letter-spacing: 0.8px;
+    margin-bottom: 12px;
+  }
+  .card p { color: var(--text); font-size: 0.9rem; line-height: 1.7; margin-bottom: 10px; }
+  .card p:last-child { margin-bottom: 0; }
+  .card ul {
+    margin: 6px 0 0 1.2em;
+    color: var(--text);
+    font-size: 0.9rem;
+    line-height: 1.8;
+  }
+  .card .extra {
+    margin-top: 14px;
+    color: var(--muted);
+    font-size: 0.85rem;
+    line-height: 1.6;
+    font-style: italic;
+  }
+
+  /* ── Goal banner ─────────────────────────────────────── */
+  .goal {
+    background: var(--surface);
+    border-left: 4px solid var(--accent);
+    border-radius: 0 8px 8px 0;
+    padding: 10px 16px;
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: var(--text);
+    margin-bottom: 20px;
+  }
+
+  /* ── Code checker ────────────────────────────────────── */
+  .code-checker {
+    background: var(--surface);
+    border-radius: 12px;
+    border: 2px solid var(--surface-mid);
+    overflow: hidden;
+    margin-bottom: 14px;
+  }
+  .checker-footer {
+    display: flex;
+    gap: 10px;
+    padding: 10px 14px;
+    background: var(--surface-mid);
+    border-top: 1px solid var(--surface-dim);
+    flex-wrap: wrap;
+    align-items: center;
+  }
+  .checker-footer .ac-btn-secondary { font-size: 0.78rem; padding: 5px 14px; }
+  .checker-footer .ac-btn           { font-size: 0.78rem; padding: 5px 14px; }
+
+  /* ── Mark scheme card ────────────────────────────────── */
+  .markscheme {
+    background: var(--surface);
+    border: 2px solid var(--surface-mid);
+    border-radius: 8px;
+    padding: 14px 18px;
+    margin-bottom: 22px;
+  }
+  .ms-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 12px;
+  }
+  .ms-header h3 {
+    font-size: 0.75rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--accent);
+  }
+  .ms-total {
+    font-size: 0.72rem;
+    font-family: var(--font-head, monospace);
+    color: var(--muted);
+    letter-spacing: 0.06em;
+  }
+  .ms-list {
+    list-style: none;
+    margin: 0 0 10px;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+  }
+  .ms-row {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    padding: 5px 8px;
+    border-radius: 6px;
+    font-size: 0.87rem;
+    transition: background 0.15s;
+  }
+  .ms-tick {
+    font-size: 1rem;
+    width: 1.3em;
+    text-align: center;
+    color: var(--muted);
+    flex-shrink: 0;
+    margin-top: 0.05em;
+  }
+  .ms-text { flex: 1; color: var(--text); line-height: 1.5; }
+  .ms-marks {
+    font-size: 0.7rem;
+    font-family: var(--font-head, monospace);
+    color: var(--muted);
+    white-space: nowrap;
+    margin-top: 0.2em;
+    flex-shrink: 0;
+  }
+  .ms-row.pass { background: rgba(52,211,153,0.08); }
+  .ms-row.pass .ms-tick { color: var(--green); }
+  .ms-row.pass .ms-text { color: var(--green); }
+  .ms-row.pass .ms-marks { color: var(--green); }
+  .ms-row.fail { background: rgba(248,113,113,0.06); }
+  .ms-row.fail .ms-tick { color: var(--red); }
+  .ms-row.fail .ms-text { color: var(--muted); text-decoration: line-through; text-decoration-color: var(--red); }
+
+  .ms-divider {
+    border: none;
+    border-top: 1px solid var(--surface-mid);
+    margin: 8px 0;
+  }
+  .ms-score {
+    font-size: 0.88rem;
+    font-weight: 700;
+    color: var(--accent);
+    text-align: right;
+  }
+  .ms-score.full { color: var(--green); }
+
+  /* ── Score / progress bar ────────────────────────────── */
+  .score-row {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 24px;
+  }
+  .score-label {
+    font-size: 0.72rem;
+    font-family: var(--font-head, monospace);
+    color: var(--muted);
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    white-space: nowrap;
+  }
+  .score-pct {
+    font-family: var(--font-head, monospace);
+    font-size: 0.8rem;
+    color: var(--accent);
+  }
+
+</style>
+</head>
+
+<body>
+<!--
+  Year-group and topic are auto-detected from the URL path by classroom.js.
+  Do NOT set data-year or data-topic manually — the correct theme is applied automatically.
+-->
+
+<!-- Completion banner -->
+<div id="done-banner" class="ac-banner gold">
+  Full marks — you've mastered if statements!
+</div>
+
+<!-- Sticky header -->
+<header>
+  <div class="header-progress">
+    <div class="ac-progress-bar" style="flex:1;">
+      <div class="ac-progress-fill" id="progress-fill"></div>
+    </div>
+    <span class="score-pct" id="progress-pct">0 / 24</span>
+  </div>
+</header>
+
+<div class="page-wrap">
+  <h2 class="page-title">Selection — Writing If Statements</h2>
+  <p class="page-subtitle">Algorithms · Selection · 24 marks total</p>
+
+  <!-- Tab bar -->
+  <div class="tabs" id="tab-bar">
+    <button class="tab-btn active" data-idx="0">Q1 · 4m</button>
+    <button class="tab-btn"        data-idx="1">Q2 · 5m</button>
+    <button class="tab-btn"        data-idx="2">Q3 · 5m</button>
+    <button class="tab-btn"        data-idx="3">Q4 · 5m</button>
+    <button class="tab-btn"        data-idx="4">Q5 · 5m</button>
+  </div>
+
+  <!-- ══════════════════════════════════════════════════════════
+       Q1 — Pet Store Return (4 marks)
+       ══════════════════════════════════════════════════════════ -->
+  <div class="panel active" id="panel-0">
+    <div class="goal">Write an algorithm that tells a customer to return their parrot if it is dead.</div>
+
+    <div class="card">
+      <h2>Scenario</h2>
+      <p>A pet shop has a self-service kiosk. Customers use it to check whether they need to return a parrot to the store. The kiosk asks the customer whether their parrot is dead, and if it is, tells them to return it to the store.</p>
+      <h2 style="margin-top:14px;">Your algorithm must:</h2>
+      <ul>
+        <li>Ask the customer whether their parrot is dead</li>
+        <li>If the parrot is dead, output a message telling them to return the parrot to the store</li>
+      </ul>
+      <p class="extra">Extra challenge (not marked): if the customer says the parrot is not dead, keep asking until they agree that it is.</p>
+    </div>
+
+    <div class="code-checker" id="checker-0">
+      <div class="checker-header">
+        <span class="checker-dot dot-r"></span>
+        <span class="checker-dot dot-y"></span>
+        <span class="checker-dot dot-g"></span>
+        <span>Q1 — Write your pseudocode here</span>
+      </div>
+      <textarea class="pseudocode-textarea" id="editor-0" spellcheck="false"
+                autocomplete="off" autocapitalize="off">// Write your OCR pseudocode here
+</textarea>
+      <div class="checker-footer">
+        <button class="ac-btn" id="run-0" type="button">Run ▶</button>
+        <button class="ac-btn-secondary" id="clear-0" type="button">Clear</button>
+        <span id="run-status-0" style="font-size:0.75rem;color:var(--muted);"></span>
+      </div>
+    </div>
+
+    <div class="markscheme" id="ms-0">
+      <div class="ms-header">
+        <h3>Mark Scheme</h3>
+        <span class="ms-total">4 marks available</span>
+      </div>
+      <ul class="ms-list" id="ms-list-0">
+        <li class="ms-row" data-bp="0">
+          <span class="ms-tick">○</span>
+          <span class="ms-text">Asks the customer whether the parrot is dead and stores their answer</span>
+          <span class="ms-marks">1 mark</span>
+        </li>
+        <li class="ms-row" data-bp="1">
+          <span class="ms-tick">○</span>
+          <span class="ms-text">Attempts to use selection (any <code>if</code> statement present)</span>
+          <span class="ms-marks">1 mark</span>
+        </li>
+        <li class="ms-row" data-bp="2">
+          <span class="ms-tick">○</span>
+          <span class="ms-text">Outputs a message telling the customer to return the parrot when it is dead</span>
+          <span class="ms-marks">1 mark</span>
+        </li>
+        <li class="ms-row" data-bp="3">
+          <span class="ms-tick">○</span>
+          <span class="ms-text">Does not output the return message when the parrot is not dead</span>
+          <span class="ms-marks">1 mark</span>
+        </li>
+      </ul>
+      <hr class="ms-divider">
+      <div class="ms-score" id="ms-score-0">— / 4 marks</div>
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════════════════════════════
+       Q2 — Cat Mood Checker (5 marks)
+       ══════════════════════════════════════════════════════════ -->
+  <div class="panel" id="panel-1">
+    <div class="goal">Write an algorithm that works out whether a cat is happy, not happy, or angry.</div>
+
+    <div class="card">
+      <h2>Scenario</h2>
+      <p>Maria has built a smart cat-monitoring app. It asks whether her cat is purring — a purring cat is happy, and a cat that isn't purring is not happy. It then separately checks whether the cat's tail is swishing, which is a sure sign the cat is getting angry.</p>
+      <h2 style="margin-top:14px;">Your algorithm must:</h2>
+      <ul>
+        <li>Ask whether the cat is purring</li>
+        <li>Output that the cat is happy if it is purring, or that it is not happy if it is not</li>
+        <li>Ask whether the cat's tail is swishing</li>
+        <li>Output a message warning that the cat is angry if the tail is swishing</li>
+      </ul>
+      <p class="extra">Extra challenge (not marked): make the program repeat this check for five different cats.</p>
+    </div>
+
+    <div class="code-checker" id="checker-1">
+      <div class="checker-header">
+        <span class="checker-dot dot-r"></span>
+        <span class="checker-dot dot-y"></span>
+        <span class="checker-dot dot-g"></span>
+        <span>Q2 — Write your pseudocode here</span>
+      </div>
+      <textarea class="pseudocode-textarea" id="editor-1" spellcheck="false"
+                autocomplete="off" autocapitalize="off">// Write your OCR pseudocode here
+</textarea>
+      <div class="checker-footer">
+        <button class="ac-btn" id="run-1" type="button">Run ▶</button>
+        <button class="ac-btn-secondary" id="clear-1" type="button">Clear</button>
+        <span id="run-status-1" style="font-size:0.75rem;color:var(--muted);"></span>
+      </div>
+    </div>
+
+    <div class="markscheme" id="ms-1">
+      <div class="ms-header">
+        <h3>Mark Scheme</h3>
+        <span class="ms-total">5 marks available</span>
+      </div>
+      <ul class="ms-list" id="ms-list-1">
+        <li class="ms-row" data-bp="0">
+          <span class="ms-tick">○</span>
+          <span class="ms-text">Asks whether the cat is purring and whether its tail is swishing, storing both answers</span>
+          <span class="ms-marks">1 mark</span>
+        </li>
+        <li class="ms-row" data-bp="1">
+          <span class="ms-tick">○</span>
+          <span class="ms-text">Attempts to use selection (any <code>if</code> statement present)</span>
+          <span class="ms-marks">1 mark</span>
+        </li>
+        <li class="ms-row" data-bp="2">
+          <span class="ms-tick">○</span>
+          <span class="ms-text">Outputs that the cat is happy when purring (and not the "not happy" message)</span>
+          <span class="ms-marks">1 mark</span>
+        </li>
+        <li class="ms-row" data-bp="3">
+          <span class="ms-tick">○</span>
+          <span class="ms-text">Outputs that the cat is not happy when it is not purring</span>
+          <span class="ms-marks">1 mark</span>
+        </li>
+        <li class="ms-row" data-bp="4">
+          <span class="ms-tick">○</span>
+          <span class="ms-text">Outputs an angry warning message when the tail is swishing</span>
+          <span class="ms-marks">1 mark</span>
+        </li>
+      </ul>
+      <hr class="ms-divider">
+      <div class="ms-score" id="ms-score-1">— / 5 marks</div>
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════════════════════════════
+       Q3 — Exam Grade Calculator (5 marks)
+       ══════════════════════════════════════════════════════════ -->
+  <div class="panel" id="panel-2">
+    <div class="goal">Write an algorithm that calculates Bartholomew's exam grade from his score.</div>
+
+    <div class="card">
+      <h2>Scenario</h2>
+      <p>Bartholomew wants a program that works out his exam grade from his percentage score. A score over 60 earns an <strong>A</strong>, a score over 40 earns a <strong>B</strong>, and anything lower earns a <strong>C</strong>. The program should output the grade — and only the grade.</p>
+      <h2 style="margin-top:14px;">Your algorithm must:</h2>
+      <ul>
+        <li>Ask Bartholomew to enter his score</li>
+        <li>Output <code>A</code>, <code>B</code>, or <code>C</code> using the boundaries above</li>
+        <li>Output nothing except the single grade letter</li>
+      </ul>
+      <p class="extra">Extra challenge (not marked): also work out how many marks Bartholomew is away from the next grade up.</p>
+    </div>
+
+    <div class="code-checker" id="checker-2">
+      <div class="checker-header">
+        <span class="checker-dot dot-r"></span>
+        <span class="checker-dot dot-y"></span>
+        <span class="checker-dot dot-g"></span>
+        <span>Q3 — Write your pseudocode here</span>
+      </div>
+      <textarea class="pseudocode-textarea" id="editor-2" spellcheck="false"
+                autocomplete="off" autocapitalize="off">// Write your OCR pseudocode here
+</textarea>
+      <div class="checker-footer">
+        <button class="ac-btn" id="run-2" type="button">Run ▶</button>
+        <button class="ac-btn-secondary" id="clear-2" type="button">Clear</button>
+        <span id="run-status-2" style="font-size:0.75rem;color:var(--muted);"></span>
+      </div>
+    </div>
+
+    <div class="markscheme" id="ms-2">
+      <div class="ms-header">
+        <h3>Mark Scheme</h3>
+        <span class="ms-total">5 marks available</span>
+      </div>
+      <ul class="ms-list" id="ms-list-2">
+        <li class="ms-row" data-bp="0">
+          <span class="ms-tick">○</span>
+          <span class="ms-text">Inputs and stores the score</span>
+          <span class="ms-marks">1 mark</span>
+        </li>
+        <li class="ms-row" data-bp="1">
+          <span class="ms-tick">○</span>
+          <span class="ms-text">Attempts to use selection (any <code>if</code> statement present)</span>
+          <span class="ms-marks">1 mark</span>
+        </li>
+        <li class="ms-row" data-bp="2">
+          <span class="ms-tick">○</span>
+          <span class="ms-text">Correct boundary — score 61 → A, score 60 → B</span>
+          <span class="ms-marks">1 mark</span>
+        </li>
+        <li class="ms-row" data-bp="3">
+          <span class="ms-tick">○</span>
+          <span class="ms-text">Correct boundary — score 41 → B, score 40 → C</span>
+          <span class="ms-marks">1 mark</span>
+        </li>
+        <li class="ms-row" data-bp="4">
+          <span class="ms-tick">○</span>
+          <span class="ms-text">Outputs only the grade letter, with no other text</span>
+          <span class="ms-marks">1 mark</span>
+        </li>
+      </ul>
+      <hr class="ms-divider">
+      <div class="ms-score" id="ms-score-2">— / 5 marks</div>
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════════════════════════════
+       Q4 — Wimbledon Roof Decision (5 marks)
+       ══════════════════════════════════════════════════════════ -->
+  <div class="panel" id="panel-3">
+    <div class="goal">Write an algorithm that decides whether the Wimbledon roof should close.</div>
+
+    <div class="card">
+      <h2>Scenario</h2>
+      <p>The Wimbledon roof control system decides whether to close the roof. The roof should close only if it is currently raining <strong>and</strong> the forecast says the rain will last <strong>60 minutes or more</strong>.</p>
+      <h2 style="margin-top:14px;">Your algorithm must:</h2>
+      <ul>
+        <li>Ask how many minutes the rain is forecast to last</li>
+        <li>Ask whether it is currently raining</li>
+        <li>Output that the roof should close only when both conditions are met</li>
+        <li>Output that the roof should stay open in every other case</li>
+      </ul>
+      <p class="extra">Extra challenge (not marked): keep asking until the roof ends up closed.</p>
+    </div>
+
+    <div class="code-checker" id="checker-3">
+      <div class="checker-header">
+        <span class="checker-dot dot-r"></span>
+        <span class="checker-dot dot-y"></span>
+        <span class="checker-dot dot-g"></span>
+        <span>Q4 — Write your pseudocode here</span>
+      </div>
+      <textarea class="pseudocode-textarea" id="editor-3" spellcheck="false"
+                autocomplete="off" autocapitalize="off">// Write your OCR pseudocode here
+</textarea>
+      <div class="checker-footer">
+        <button class="ac-btn" id="run-3" type="button">Run ▶</button>
+        <button class="ac-btn-secondary" id="clear-3" type="button">Clear</button>
+        <span id="run-status-3" style="font-size:0.75rem;color:var(--muted);"></span>
+      </div>
+    </div>
+
+    <div class="markscheme" id="ms-3">
+      <div class="ms-header">
+        <h3>Mark Scheme</h3>
+        <span class="ms-total">5 marks available</span>
+      </div>
+      <ul class="ms-list" id="ms-list-3">
+        <li class="ms-row" data-bp="0">
+          <span class="ms-tick">○</span>
+          <span class="ms-text">Inputs and stores both the forecast minutes and whether it is currently raining</span>
+          <span class="ms-marks">1 mark</span>
+        </li>
+        <li class="ms-row" data-bp="1">
+          <span class="ms-tick">○</span>
+          <span class="ms-text">Attempts to use selection (any <code>if</code> statement present)</span>
+          <span class="ms-marks">1 mark</span>
+        </li>
+        <li class="ms-row" data-bp="2">
+          <span class="ms-tick">○</span>
+          <span class="ms-text">Outputs "close roof" when it is raining and the forecast is 60 minutes or more</span>
+          <span class="ms-marks">1 mark</span>
+        </li>
+        <li class="ms-row" data-bp="3">
+          <span class="ms-tick">○</span>
+          <span class="ms-text">Outputs "open roof" when only one of the two conditions is true</span>
+          <span class="ms-marks">1 mark</span>
+        </li>
+        <li class="ms-row" data-bp="4">
+          <span class="ms-tick">○</span>
+          <span class="ms-text">Outputs "open roof" when neither condition is true</span>
+          <span class="ms-marks">1 mark</span>
+        </li>
+      </ul>
+      <hr class="ms-divider">
+      <div class="ms-score" id="ms-score-3">— / 5 marks</div>
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════════════════════════════
+       Q5 — Afternoon Tea Order (5 marks)
+       ══════════════════════════════════════════════════════════ -->
+  <div class="panel" id="panel-4">
+    <div class="goal">Write an algorithm that works out how much food to prepare for an afternoon tea.</div>
+
+    <div class="card">
+      <h2>Scenario</h2>
+      <p>A hotel's afternoon tea order system works out how much food to prepare. Every guest gets <strong>1 sandwich</strong> and <strong>3 cakes</strong> — but if there are <strong>more than 3 guests</strong>, the kitchen makes <strong>one less cake overall</strong> to avoid waste. For example, 4 guests need 4 sandwiches and 11 cakes.</p>
+      <h2 style="margin-top:14px;">Your algorithm must:</h2>
+      <ul>
+        <li>Ask for the number of guests</li>
+        <li>Calculate and output the correct number of sandwiches</li>
+        <li>Calculate and output the correct number of cakes, applying the one-less-cake rule for groups larger than 3</li>
+      </ul>
+      <p class="extra">Extra challenge (not marked): put the whole program in a loop so it can process orders for many groups until the user types "x".</p>
+    </div>
+
+    <div class="code-checker" id="checker-4">
+      <div class="checker-header">
+        <span class="checker-dot dot-r"></span>
+        <span class="checker-dot dot-y"></span>
+        <span class="checker-dot dot-g"></span>
+        <span>Q5 — Write your pseudocode here</span>
+      </div>
+      <textarea class="pseudocode-textarea" id="editor-4" spellcheck="false"
+                autocomplete="off" autocapitalize="off">// Write your OCR pseudocode here
+</textarea>
+      <div class="checker-footer">
+        <button class="ac-btn" id="run-4" type="button">Run ▶</button>
+        <button class="ac-btn-secondary" id="clear-4" type="button">Clear</button>
+        <span id="run-status-4" style="font-size:0.75rem;color:var(--muted);"></span>
+      </div>
+    </div>
+
+    <div class="markscheme" id="ms-4">
+      <div class="ms-header">
+        <h3>Mark Scheme</h3>
+        <span class="ms-total">5 marks available</span>
+      </div>
+      <ul class="ms-list" id="ms-list-4">
+        <li class="ms-row" data-bp="0">
+          <span class="ms-tick">○</span>
+          <span class="ms-text">Inputs and stores the number of guests</span>
+          <span class="ms-marks">1 mark</span>
+        </li>
+        <li class="ms-row" data-bp="1">
+          <span class="ms-tick">○</span>
+          <span class="ms-text">Attempts to use selection (any <code>if</code> statement present)</span>
+          <span class="ms-marks">1 mark</span>
+        </li>
+        <li class="ms-row" data-bp="2">
+          <span class="ms-tick">○</span>
+          <span class="ms-text">Calculates and outputs the correct number of sandwiches (1 per guest) for any group size</span>
+          <span class="ms-marks">1 mark</span>
+        </li>
+        <li class="ms-row" data-bp="3">
+          <span class="ms-tick">○</span>
+          <span class="ms-text">Outputs the correct number of cakes for a group of 3 or fewer guests (no adjustment)</span>
+          <span class="ms-marks">1 mark</span>
+        </li>
+        <li class="ms-row" data-bp="4">
+          <span class="ms-tick">○</span>
+          <span class="ms-text">Outputs the correct number of cakes for a group of more than 3 guests (one less cake)</span>
+          <span class="ms-marks">1 mark</span>
+        </li>
+      </ul>
+      <hr class="ms-divider">
+      <div class="ms-score" id="ms-score-4">— / 5 marks</div>
+    </div>
+  </div>
+
+</div><!-- /.page-wrap -->
+
+<div class="ac-toast" id="toast"></div>
+
+<script type="module">
+import { setupEditors, runPseudocode, clearSyntaxHint } from '../../pseudocode-editor.js';
+import { preload } from '../../pyodide-runner.js';
+
+// ── Constants ─────────────────────────────────────────────────
+const TASK_COUNT    = 5;
+const TOTAL_MARKS   = 24;
+const ACTIVITY_TITLE = 'Selection — If Statements';
+const STORE_NS = location.pathname;
+
+// ── Task definitions ───────────────────────────────────────────
+// Each task has:
+//   maxMarks  — total marks for this question
+//   tests     — array of { inputs: string[], expected?: string | string[] }
+//   criteria  — array of { text, marks, check({src, runs}) → bool }
+//
+// src  = normalised (lowercase, comments stripped) pseudocode source
+// runs = [{ inputs, output, ok }, …] parallel to tests array
+
+const TASKS = [
+
+  // ── Q1: Pet Store Return (4 marks) ─────────────────────────
+  {
+    maxMarks: 4,
+    tests: [
+      { inputs: ['yes'], expected: 'return' },  // dead → return message
+      { inputs: ['no'] },                       // not dead → no return message
+    ],
+    criteria: [
+      {
+        text: 'Asks the customer whether the parrot is dead and stores their answer',
+        marks: 1,
+        check: ({ src }) => /\binput\s*\(/.test(src),
+      },
+      {
+        text: 'Attempts to use selection (any if statement present)',
+        marks: 1,
+        check: ({ src }) => /\bif\b/.test(src),
+      },
+      {
+        text: 'Outputs a message telling the customer to return the parrot when it is dead',
+        marks: 1,
+        check: ({ runs }) => outHas(runs[0], 'return'),
+      },
+      {
+        text: 'Does not output the return message when the parrot is not dead',
+        marks: 1,
+        check: ({ runs }) => runs[1].ok && !(runs[1].output || '').toLowerCase().includes('return'),
+      },
+    ],
+  },
+
+  // ── Q2: Cat Mood Checker (5 marks) ──────────────────────────
+  {
+    maxMarks: 5,
+    tests: [
+      { inputs: ['yes', 'no'] },  // purring, tail still → happy only
+      { inputs: ['no',  'no'] },  // not purring, tail still → not happy
+      { inputs: ['yes', 'yes'] }, // purring, tail swishing → happy + angry warning
+    ],
+    criteria: [
+      {
+        text: 'Asks whether the cat is purring and whether its tail is swishing, storing both answers',
+        marks: 1,
+        check: ({ src }) => (src.match(/\binput\s*\(/g) || []).length >= 2,
+      },
+      {
+        text: 'Attempts to use selection (any if statement present)',
+        marks: 1,
+        check: ({ src }) => /\bif\b/.test(src),
+      },
+      {
+        text: 'Outputs that the cat is happy when purring (and not the "not happy" message)',
+        marks: 1,
+        check: ({ runs }) => {
+          const o = (runs[0].output || '').toLowerCase();
+          return runs[0].ok && o.includes('happy') && !o.includes('not happy');
+        },
+      },
+      {
+        text: 'Outputs that the cat is not happy when it is not purring',
+        marks: 1,
+        check: ({ runs }) => outHas(runs[1], 'not happy'),
+      },
+      {
+        text: 'Outputs an angry warning message when the tail is swishing',
+        marks: 1,
+        check: ({ runs }) => outHas(runs[2], 'angry'),
+      },
+    ],
+  },
+
+  // ── Q3: Exam Grade Calculator (5 marks) ─────────────────────
+  {
+    maxMarks: 5,
+    tests: [
+      { inputs: ['61'], expected: 'a' },  // A
+      { inputs: ['60'], expected: 'b' },  // boundary → B
+      { inputs: ['41'], expected: 'b' },  // B
+      { inputs: ['40'], expected: 'c' },  // boundary → C
+    ],
+    criteria: [
+      {
+        text: 'Inputs and stores the score',
+        marks: 1,
+        check: ({ src }) => /\binput\s*\(/.test(src),
+      },
+      {
+        text: 'Attempts to use selection (any if statement present)',
+        marks: 1,
+        check: ({ src }) => /\bif\b/.test(src),
+      },
+      {
+        text: 'Correct boundary — score 61 → A, score 60 → B',
+        marks: 1,
+        check: ({ runs }) => /\ba\b/i.test(runs[0].output || '') && /\bb\b/i.test(runs[1].output || ''),
+      },
+      {
+        text: 'Correct boundary — score 41 → B, score 40 → C',
+        marks: 1,
+        check: ({ runs }) => /\bb\b/i.test(runs[2].output || '') && /\bc\b/i.test(runs[3].output || ''),
+      },
+      {
+        text: 'Outputs only the grade letter, with no other text',
+        marks: 1,
+        check: ({ runs }) => runs.every(r => {
+          if (!r.ok) return false;
+          // Output includes the echoed input prompt on its own line, so only
+          // the final printed line (the grade itself) should be checked.
+          const lines = (r.output || '').split('\n').map(l => l.trim()).filter(Boolean);
+          const last = lines[lines.length - 1] || '';
+          return /^[abc]$/i.test(last);
+        }),
+      },
+    ],
+  },
+
+  // ── Q4: Wimbledon Roof Decision (5 marks) ───────────────────
+  {
+    maxMarks: 5,
+    // inputs order: [minutes, raining]
+    tests: [
+      { inputs: ['60', 'yes'], expected: 'close' },  // both true → close
+      { inputs: ['30', 'yes'], expected: 'open' },   // raining but not long enough
+      { inputs: ['90', 'no'],  expected: 'open' },   // long forecast but not raining now
+      { inputs: ['10', 'no'],  expected: 'open' },   // neither true
+    ],
+    criteria: [
+      {
+        text: 'Inputs and stores both the forecast minutes and whether it is currently raining',
+        marks: 1,
+        check: ({ src }) => (src.match(/\binput\s*\(/g) || []).length >= 2,
+      },
+      {
+        text: 'Attempts to use selection (any if statement present)',
+        marks: 1,
+        check: ({ src }) => /\bif\b/.test(src),
+      },
+      {
+        text: 'Outputs "close roof" when it is raining and the forecast is 60 minutes or more',
+        marks: 1,
+        check: ({ runs }) => outHas(runs[0], 'close'),
+      },
+      {
+        text: 'Outputs "open roof" when only one of the two conditions is true',
+        marks: 1,
+        check: ({ runs }) => outHas(runs[1], 'open') && outHas(runs[2], 'open'),
+      },
+      {
+        text: 'Outputs "open roof" when neither condition is true',
+        marks: 1,
+        check: ({ runs }) => outHas(runs[3], 'open'),
+      },
+    ],
+  },
+
+  // ── Q5: Afternoon Tea Order (5 marks) ───────────────────────
+  {
+    maxMarks: 5,
+    tests: [
+      { inputs: ['2'], expected: '2' },   // 2 guests → 2 sandwiches, 6 cakes
+      { inputs: ['3'], expected: '9' },   // 3 guests → 3 sandwiches, 9 cakes (no adjustment)
+      { inputs: ['4'], expected: ['4', '11'] },  // 4 guests → 4 sandwiches, 11 cakes
+      { inputs: ['6'], expected: '17' },  // 6 guests → 6 sandwiches, 17 cakes
+    ],
+    criteria: [
+      {
+        text: 'Inputs and stores the number of guests',
+        marks: 1,
+        check: ({ src }) => /\binput\s*\(/.test(src),
+      },
+      {
+        text: 'Attempts to use selection (any if statement present)',
+        marks: 1,
+        check: ({ src }) => /\bif\b/.test(src),
+      },
+      {
+        text: 'Calculates and outputs the correct number of sandwiches (1 per guest) for any group size',
+        marks: 1,
+        check: ({ runs }) => outHasNum(runs[0], 2) && outHasNum(runs[2], 4),
+      },
+      {
+        text: 'Outputs the correct number of cakes for a group of 3 or fewer guests (no adjustment)',
+        marks: 1,
+        check: ({ runs }) => outHasNum(runs[1], 9),
+      },
+      {
+        text: 'Outputs the correct number of cakes for a group of more than 3 guests (one less cake)',
+        marks: 1,
+        check: ({ runs }) => outHasNum(runs[2], 11) && outHasNum(runs[3], 17),
+      },
+    ],
+  },
+
+]; // end TASKS
+
+// ── State ──────────────────────────────────────────────────────
+const taskEarned = new Array(TASK_COUNT).fill(0);
+const taskAttempted = new Array(TASK_COUNT).fill(false);
+
+// ── Helpers ────────────────────────────────────────────────────
+
+function normSrc(raw) {
+  // Strip // comments, collapse whitespace, lowercase
+  return raw.replace(/\/\/[^\n]*/g, ' ').replace(/\s+/g, ' ').toLowerCase().trim();
+}
+
+function outHas(run, ...needles) {
+  if (!run || !run.ok || !run.output) return false;
+  const o = run.output.toLowerCase();
+  return needles.every(n => o.includes(n.toLowerCase()));
+}
+
+function outHasNum(run, n) {
+  if (!run || !run.ok || !run.output) return false;
+  return new RegExp('\\b' + n + '\\b').test(run.output);
+}
+
+// ── Editor setup ───────────────────────────────────────────────
+for (let i = 0; i < TASK_COUNT; i++) {
+  const saved = localStorage.getItem(STORE_NS + ':e' + i);
+  if (saved !== null) document.getElementById('editor-' + i).value = saved;
+}
+setupEditors('.pseudocode-textarea');
+
+// ── Pyodide preload ────────────────────────────────────────────
+preload();
+
+// ── Restore mark scheme state ──────────────────────────────────
+for (let i = 0; i < TASK_COUNT; i++) {
+  const raw = localStorage.getItem(STORE_NS + ':ms' + i);
+  if (!raw) continue;
+  try {
+    const { earned, passed } = JSON.parse(raw);
+    taskEarned[i] = earned;
+    applyMarkscheme(i, passed, earned, TASKS[i].maxMarks);
+    updateTabState(i, earned, TASKS[i].maxMarks);
+  } catch (_) {}
+}
+updateProgress();
+
+// ── Tab switching ──────────────────────────────────────────────
+document.getElementById('tab-bar').addEventListener('click', e => {
+  const tab = e.target.closest('.tab-btn');
+  if (!tab) return;
+  const idx = +tab.dataset.idx;
+  document.querySelectorAll('.tab-btn').forEach(t => t.classList.remove('active'));
+  document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
+  tab.classList.add('active');
+  document.getElementById('panel-' + idx).classList.add('active');
+});
+
+// ── Run button wiring ──────────────────────────────────────────
+for (let idx = 0; idx < TASK_COUNT; idx++) {
+  const runBtn   = document.getElementById('run-' + idx);
+  const clearBtn = document.getElementById('clear-' + idx);
+  const statusEl = document.getElementById('run-status-' + idx);
+  const editorEl = document.getElementById('editor-' + idx);
+
+  runBtn.addEventListener('click', async () => {
+    await handleRun(idx, editorEl, runBtn, statusEl);
+  });
+
+  clearBtn.addEventListener('click', () => {
+    editorEl.value = '';
+    editorEl.dispatchEvent(new Event('input'));
+    resetMarkscheme(idx);
+    try {
+      localStorage.removeItem(STORE_NS + ':e' + idx);
+      localStorage.removeItem(STORE_NS + ':ms' + idx);
+    } catch (_) {}
+  });
+
+  let saveTimer;
+  editorEl.addEventListener('input', () => {
+    clearTimeout(saveTimer);
+    saveTimer = setTimeout(() => {
+      try { localStorage.setItem(STORE_NS + ':e' + idx, editorEl.value); } catch (_) {}
+    }, 500);
+  });
+}
+
+async function handleRun(idx, editorEl, runBtn, statusEl) {
+  const task = TASKS[idx];
+
+  runBtn.disabled = true;
+  statusEl.textContent = 'Running…';
+
+  // Run each test case sequentially
+  const runs = [];
+  for (const test of task.tests) {
+    const r = await runPseudocode(editorEl, { inputs: test.inputs });
+    runs.push({ inputs: test.inputs, output: r.output || '', ok: r.ok });
+  }
+
+  statusEl.textContent = '';
+  runBtn.disabled = false;
+  taskAttempted[idx] = true;
+
+  _renderTestOutput(editorEl, task.tests, runs);
+
+  // If the first run didn't produce any output at all, likely a syntax error
+  if (!runs[0].ok && !runs[0].output) {
+    window.ActivityUI?.showToast('Fix the syntax error shown in the editor before checking marks.', 'warn');
+  }
+
+  // Evaluate each criterion
+  const src = normSrc(editorEl.value);
+  let earned = 0;
+  const passed = task.criteria.map(c => {
+    let result = false;
+    try { result = !!c.check({ src, runs }); } catch (_) { result = false; }
+    if (result) earned += c.marks;
+    return result;
+  });
+
+  // Update mark scheme UI
+  applyMarkscheme(idx, passed, earned, task.maxMarks);
+  try { localStorage.setItem(STORE_NS + ':ms' + idx, JSON.stringify({ earned, passed })); } catch (_) {}
+
+  // Update tab + global progress
+  taskEarned[idx] = earned;
+  updateTabState(idx, earned, task.maxMarks);
+  updateProgress();
+
+  // Submit grade
+  const totalEarned = taskEarned.reduce((s, v) => s + v, 0);
+  window.Classroom?.submitGrade(
+    Math.round(totalEarned / TOTAL_MARKS * 100),
+    ACTIVITY_TITLE
+  );
+
+  if (totalEarned === TOTAL_MARKS) allComplete();
+}
+
+// ── Per-test coloured output ───────────────────────────────────
+
+function _renderTestOutput(editorEl, tests, runs) {
+  const outputPanel = editorEl.closest('.editor-wrap')?.querySelector('.output-panel');
+  if (!outputPanel) return;
+  outputPanel.classList.remove('error');
+  const content = outputPanel.querySelector('.output-content');
+  const inputRow = outputPanel.querySelector('.output-input-row');
+  if (inputRow) inputRow.hidden = true;
+  if (!content) return;
+
+  const SEP = '─'.repeat(44);
+  const esc = s => s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+
+  content.innerHTML = runs.map((run, i) => {
+    const test = tests[i];
+    const label = run.inputs.length === 1
+      ? `input: "${run.inputs[0]}"`
+      : `inputs: ${run.inputs.map(v => `"${v}"`).join(', ')}`;
+
+    let testPassed;
+    if (!run.ok) {
+      testPassed = false;
+    } else if (test.expected !== undefined) {
+      const out = (run.output || '').toLowerCase();
+      const needles = Array.isArray(test.expected) ? test.expected : [test.expected];
+      testPassed = needles.every(n => out.includes(n.toLowerCase()));
+    } else {
+      testPassed = true;
+    }
+
+    const out = run.ok ? (run.output || '(no output)') : `⚠ ${run.output || 'Error — check syntax'}`;
+    const color = testPassed ? '#5eead4' : '#ff6b6b';
+    return `<span style="color:${color}">${esc(`Test ${i + 1}  (${label})\n${SEP}\n${out}`)}</span>`;
+  }).join('\n\n');
+}
+
+// ── Mark scheme DOM updates ────────────────────────────────────
+
+function applyMarkscheme(idx, passed, earned, maxMarks) {
+  const list = document.getElementById('ms-list-' + idx);
+  const rows = list.querySelectorAll('.ms-row');
+  rows.forEach((row, i) => {
+    const tick = row.querySelector('.ms-tick');
+    row.classList.remove('pass', 'fail');
+    if (passed[i]) {
+      row.classList.add('pass');
+      tick.textContent = '✓';
+    } else {
+      row.classList.add('fail');
+      tick.textContent = '✗';
+    }
+  });
+
+  const scoreEl = document.getElementById('ms-score-' + idx);
+  scoreEl.textContent = earned + ' / ' + maxMarks + ' mark' + (maxMarks === 1 ? '' : 's');
+  scoreEl.classList.toggle('full', earned === maxMarks);
+}
+
+function resetMarkscheme(idx) {
+  const list = document.getElementById('ms-list-' + idx);
+  list.querySelectorAll('.ms-row').forEach(row => {
+    row.classList.remove('pass', 'fail');
+    row.querySelector('.ms-tick').textContent = '○';
+  });
+  document.getElementById('ms-score-' + idx).textContent =
+    '— / ' + TASKS[idx].maxMarks + ' mark' + (TASKS[idx].maxMarks === 1 ? '' : 's');
+  document.getElementById('ms-score-' + idx).classList.remove('full');
+}
+
+// ── Tab state ──────────────────────────────────────────────────
+
+function updateTabState(idx, earned, maxMarks) {
+  const tab = document.querySelector('.tab-btn[data-idx="' + idx + '"]');
+  if (!tab) return;
+  tab.classList.remove('done-green', 'done-gold');
+  if (earned === maxMarks) {
+    tab.classList.add('done-green');
+  } else if (earned > 0) {
+    tab.classList.add('done-gold');
+  }
+}
+
+// ── Progress bar ───────────────────────────────────────────────
+
+function updateProgress() {
+  const totalEarned = taskEarned.reduce((s, v) => s + v, 0);
+  const pct = Math.round(totalEarned / TOTAL_MARKS * 100);
+  document.getElementById('progress-fill').style.width = pct + '%';
+  document.getElementById('progress-pct').textContent  = totalEarned + ' / ' + TOTAL_MARKS;
+}
+
+// ── All tasks complete ─────────────────────────────────────────
+
+function allComplete() {
+  document.getElementById('done-banner').classList.add('show');
+  window.ActivityUI?.launchCelebration();
+}
+
+// ── Toast ──────────────────────────────────────────────────────
+
+window.showToast = (msg, type = '') => window.ActivityUI?.showToast(msg, type);
+</script>
+
+<script src="../../activity-ui.js"></script>
+<!-- Google Classroom integration (no-op when no ?courseId= param) -->
+<script src="../../classroom.js"></script>
+</body>
+</html>
