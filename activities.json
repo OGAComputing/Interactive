@@ -324,6 +324,18 @@
     "color": "blue"
   },
   {
+    "path": "Y11/2.1 Algorithms/Iteration.html",
+    "title": "Iteration \u2014 While Loops and For Loops",
+    "year": "Year 11",
+    "topic": "2.1 Algorithms",
+    "lesson_num": null,
+    "lesson": null,
+    "type": "Practice",
+    "stars": 3,
+    "desc": "Five algorithm-writing challenges built around condition-controlled and count-controlled loops \u2014 from a repeat-until-true air conditioning check to a three times table \u2014 with instant mark-scheme feedback on every Run.",
+    "color": "blue"
+  },
+  {
     "path": "Y11/2.1 Algorithms/Practice.html",
     "title": "Algorithm Practice",
     "year": "Year 11",
@@ -369,6 +381,18 @@
     "type": "Practice",
     "stars": 3,
     "desc": "Build GCSE-style SQL queries and see the selected records update live.",
+    "color": "blue"
+  },
+  {
+    "path": "Y11/2.1 Algorithms/Selection.html",
+    "title": "Selection \u2014 If Statements",
+    "year": "Year 11",
+    "topic": "2.1 Algorithms",
+    "lesson_num": null,
+    "lesson": null,
+    "type": "Practice",
+    "stars": 3,
+    "desc": "Five algorithm-writing challenges built around if statements \u2014 from a simple one-branch check to combined conditions and boundary rules \u2014 with instant mark-scheme feedback on every Run.",
     "color": "blue"
   },
   {
